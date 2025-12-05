@@ -1,27 +1,47 @@
-import {WebSocketServer , WebSocket} from 'ws'
+import { WebSocketServer , WebSocket} from "ws";
 
-let UserCount = 0;
-
+//new connection 
 const wss = new WebSocketServer({port : 8080});
-let Users : WebSocket[] = [];
 
-wss.on("connection" , function(socket)
-{
-    UserCount = UserCount + 1;
-    Users.push(socket);
-    console.log("User Connected to the Server are #" + UserCount);
-
-    socket.on("message" , function(message)
+//storing users
+interface UserType {
+    socket : WebSocket , 
+    RoomNo : string
+};
+const Users : UserType[] = [];
+//connection established
+wss.on("connection" , function(socket){
+    socket.on("message" , function(e)
     {
-        console.log("The message recieved is " + message.toString());
-        for(let i = 0 ; i<Users.length ; i++)
+        const Message:any = JSON.stringify(e.toString());
+        //users can join a room 
+        if(Message.type == "join")
         {
-            Users[i]?.send("Message Sent by one of the user is " + message.toString());
+            Users.push({
+                socket : socket , 
+                RoomNo : Message.payload.roomId
+            });
+        }//users can c761756699976175
+        else if(Message.type === "chat")
+        {
+            let CurrentUserRoom = null;
+            for(let i = 0 ; i<Users.length ; i++)
+            {
+                if(Users[i]?.socket === socket)
+                {
+                    CurrentUserRoom = Users[i]?.RoomNo;
+                }
+            }
+            if(CurrentUserRoom != null)
+            {
+                for(let i = 0 ; i < Users.length ; i++)
+                {
+                    if(Users[i]?.RoomNo === CurrentUserRoom)
+                    {   
+                        socket.send(Message.payload.message);
+                    }
+                }
+            }
         }
-    }); 
-    socket.on("close" , function()
-    {
-        Users = Users.filter(i => i != socket);
-        console.log("Users DisConnected in the array is " + Users.length);
-    }) ;
+    });
 });
