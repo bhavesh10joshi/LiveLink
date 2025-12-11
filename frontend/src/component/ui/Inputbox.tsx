@@ -6,7 +6,7 @@ interface Inputboxstyles
     color ?: string
 };
 const inputStyles = {
-    "sm" : "" ,
+    "sm" : "w-[31rem] h-[2.5rem] p-[1rem] placeholder-grey-200 text-[#FFFFFF]" ,
     "md" : "w-[35rem] h-[2rem] p-[1rem]" ,
     "lg" : "w-[38rem] h-[3rem] p-[1rem] placeholder-black"
 };

@@ -11,11 +11,11 @@ interface ButtonStyles
     textcolor ?: string
 }  
 const Buttonsizes = {
-   "sm" : "" ,
+   "sm" : "w-[12rem] h-[2rem] text-[1rem] font-bold" ,
    "md" : "w-[12rem] h-[2rem] text-[1.1rem] " ,
-    "lg" : ""
+    "lg" : "w-[13.9rem] h-[3rem] text-[1.1rem] "
 };
-const defaultstyles : string = "rounded-xl mt-[1rem]"; 
+const defaultstyles : string = "rounded-xl mt-[1rem] font-bold"; 
 const hoverEffects : string = "hover:cursor:pointer hover:bg-blue-400"
 export function Button(props : ButtonStyles)
 {
