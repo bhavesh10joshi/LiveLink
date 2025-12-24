@@ -1,81 +1,72 @@
-import express, { NextFunction }  from "express";
-import bcrypt from "bcrypt" ; 
-import { z } from "zod" ; 
-import mongoose from "mongoose";
+import express from "express" ; 
 import jwt from "jsonwebtoken";
-import { Request , Response } from "express";
-
-const mongodbUrl:string = ""; 
-mongoose.connect(mongodbUrl);
-
-const USER_SECRET:string = "iambhaveshjoshi";
+import bcrypt from "bcrypt";
+import { z } from "zod";
+import { Request , response} from "express";
+const USER_SECRET = "mynameisbhaveshjoshi";
 
 const App = express();
 App.use(express.json());
 
-//zod validation 
-const NewZodobject = z.object({
-    username : z.string().min(8).regex(/[0-9]/ , { message : "The given username should contain atleast one Number !"})
-                                .regex(/[A-Z]/ , {message : "The given username should contain atleast one Capital Letter !"})
-                                .regex(/[a-z]/ , {message : "The username should contain atleast one Small Alphabet !"}) ,
-    password : z.string().min(8).regex(/[0-9]/ , { message : "The given password should contain atleast one Number !"})
-                                .regex(/[A-Z]/ , {message : "The given password should contain atleast one Capital Letter !"})
-                                .regex(/[a-z]/ , {message : "The password should contain atleast one Small Alphabet !"}) ,
-}); 
-//type inference in zod 
-type ZodObject = z.infer<typeof NewZodobject>;
+const UserObject = z.object({
+    Username : z.string().min(8).regex(/[0-9]/ , {message : "The Username should contain atleast One Number !"})
+                .regex(/[a-z]/,{message : "The password should contain atleast one lower char"}) 
+                .regex(/[A-Z]/,{message : "The password should contain atleast one Capital char"}),
+    Password : z.string().min(10).regex(/[0-9]/,{message : "The password should contain atleast one number"}) 
+                .regex(/[a-z]/,{message : "The password should contain atleast one char"})
+});
+type User = z.infer<typeof UserObject>;
 
-//SignUp EndPoint
-App.post("/User/SignUp" , async function(req:Request , res:Response)
+App.post("/LiveLink/User/SignUp" , async function(req,res)
 {
-    const Signup:ZodObject = req.body;
-    const Zodsafeobject = NewZodobject.safeParse(req.body);
+    const SignUp : User = req.body;
+    const zodsafeObject = UserObject.safeParse(req.body);
     
-    if(Zodsafeobject)
+    if(zodsafeObject)
     {
-        //hashing the password by the user 
-        const Hashedpassword = bcrypt.hash(Signup.password , 5);
+        const hashedpassword = bcrypt.hash(SignUp.Password , 5);
         try{
             await UserRouter.create({
-                username : Signup.username , 
-                password : Signup.password
+                username : SignUp.Username , 
+                password : hashedpassword
             });
-            res.status(200).json({
-                msg : "Signed Up Successfully !"
+            res.json({
+                msg : "SuccessfullY Logged In !"
             });
         }
         catch(e)
         {
-            res.status(404).json({
-                msg : "Internal Server error !"  
+            res.status(404).send({
+                msg : "Internal server Error !"
             });
         }
     }
     else
     {
         res.status(404).json({
-            msg : "The given Credentials are not correct !"
+            msg : "Internal Server Error !"
         });
     }
-}); 
-App.post("/User/SignIn" , async function(req:Request , res:Response)
+});
+App.post("/LiveLink/User/SignIn" , async function(req,res)
 {
     const username = req.body.username;
     const password = req.body.password;
-
-    const find = await UserRouter.findOne({
-        username : username  
+    
+    const User = await UserRouter.findOne({
+        username : username
     });
 
-    if(find)
-    {
-        const check = await bcrypt.compare(password , find.password);
-        if(check)
+    if(User)
+    {   
+        const Check = await bcrypt.compare(password , User.password);
+        if(Check)
         {
             const token = jwt.sign({
-                id : find._id
+                id : User._id
             } , USER_SECRET);
-            res.status(200).json({
+
+            res.json({
                 token : token
             });
         }
@@ -89,22 +80,8 @@ App.post("/User/SignIn" , async function(req:Request , res:Response)
     else
     {
         res.status(404).json({
-            msg : "The Username provided does not exist "
+            msg : "Internal Server Error "
         });
     }
 });
-//middleware
-function middleware(req:Request , res:Response , next:NextFunction)
-{
-    const token:any = req.headers["authorization"];
-    const check = jwt.verify(token , USER_SECRET);
-    if(check)
-    {
-        
-    }
-    else
-    {
-
-    }
-}
 App.listen(3000);
