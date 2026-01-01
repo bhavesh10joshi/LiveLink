@@ -7,8 +7,10 @@ const ObjectId = mongoose.Types.ObjectId;
 const Users = new Schema({
     username : {type : String , required : true , unique : true} , 
     password : {type : String , required : true , unique : true}  ,
-    UserSocket : {type : WebSocket } , 
-    ChatRoomId : {type : ObjectId}
+    UserSocket : {type : WebSocket , default : null} , 
+    ChatRoomId : {type : String , default : null}
+    // UserSocket will be only included when the User Joins a room !
+    // If the User is at the dashboard then the User will have no UserSocket
 }); 
 
 //ChatRoom Schema for storing room name , room id and Id of the Creator of that respective room

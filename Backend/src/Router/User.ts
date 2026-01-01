@@ -1,8 +1,10 @@
-import  express, { application }  from "express";
+import  express from "express";
 import { Router } from "express";
 import  jwt  from "jsonwebtoken";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+//Importing WebSocketServer 
+import { wss } from "../index";
 
 //Database Models Imports
 import { UserModel , ChatRoomModel} from "../Db/Db";
@@ -47,7 +49,8 @@ UserRouter.post("/LiveLink/User/SignUp" , async function(req,res)
     try{
         await UserModel.create({
             username : SignUp.username , 
-            password : hashedpassword
+            password : hashedpassword , 
+            ChatRoomId : ""
         });
         res.json({
                 msg : "SuccessfullY Logged In !"
@@ -100,7 +103,7 @@ UserRouter.post("/LiveLink/User/SignIn" , async function(req,res)
 });
 
 //Api Endpoint to get the details of the Current Rooms and the members connected to it !
-UserRouter.get("/Room/Details" , async function(req,res)
+UserRouter.get("/AllRooms/Details" , async function(req,res)
 {
     try{
         const AllRoomsDetails = await ChatRoomModel.find();
@@ -115,6 +118,28 @@ UserRouter.get("/Room/Details" , async function(req,res)
         });
     }
 });
+//API Endpoint to view all Users joined in a particular Room !
+UserRouter.get("/Room/Members" , async function(req,res)
+{
+    const RoomId = req.body.RoomId;
+    try{
+        //Finding all the members Connected in the particular db
+        const Members = await UserModel.find({
+            RoomId : RoomId
+        });
+        res.json({
+            Members : Members 
+        });
+    }
+    catch(e)
+    {
+        res.status(404).json({
+            msg : "Internal Server Error !" 
+        });
+        return;
+    }
+});
+
 //Usage of the middleware compulsory for Further Api Endpoints
 UserRouter.use(Middleware);
 
@@ -127,13 +152,17 @@ const RoomZodObject = z.object({
             .regex(/[^A-Z]/ , {message : "RoomId Should contain atleast One Upper Case Letters !"})
             .regex(/[^0-9]/ , {message : "RoomId Should contain atleast One Number !"})
 })
+
+//zod Type Inference
 type RoomCreationInput = z.infer<typeof RoomZodObject>;
+
 UserRouter.use("/Create/Rooms" , async function(req , res)
 {
     //gets From Middleware
     const UserId = req.body;
     const SafeParseRoomCreation = RoomZodObject.safeParse(req.body);
-    
+    const val = 1;
+
     if(!SafeParseRoomCreation.success)
     {
         res.status(404).json({
@@ -148,7 +177,8 @@ UserRouter.use("/Create/Rooms" , async function(req , res)
         await ChatRoomModel.create({
             RoomName : UserRoomCreation?.RoomName , 
             RoomId : UserRoomCreation?.RoomId ,
-            CreatorId : UserId  
+            CreatorId : UserId ,
+            Totalmembers : val 
         });
         res.json({
             msg : "The Chat Room is Successfully Connected !"
@@ -161,50 +191,84 @@ UserRouter.use("/Create/Rooms" , async function(req , res)
         });
     }
 });
+
+//Api Endpoint for the User to join the room , if he has Room Id !
 UserRouter.post("/Join/Room", async function(req , res)
 {
     const UserId = req.body;
     const RoomId = req.body.RoomId;
-    
-    //Authenticating whether the given RoomId Actually exists or not  
+
+    //Authenticating Whether there is such a room or not ?
     const FindRoom = await ChatRoomModel.findOne({
         RoomId : RoomId
     });
-
+    
     if(!FindRoom)
     {
         res.status(404).json({
-            msg : "The Given Room Does Not Exists !"
+            msg : "The Given Room is not Available !"   
         });
-        return;
+        return ;
     }
-    
-    //Updating the current User RoomID
+
+    //Updating the current Room of User in the database ! 
     try{
-        const Val : Number = FindRoom.Totalmembers;
-        const TotalMembers:Number = Val + 1;
-        await UserModel.findOneAndUpdate(
-        { _id: UserId },
+        await UserModel.updateOne(
+            { _id: UserId },
+            { $set: { ChatRoomId: RoomId } }
+        );
+        try{
+            //Problem1 :- If UserModel Successfully but chatModel does not then this can lead 
+            // to inconsistency in Database
+            // Solution :- Relationship in NoSql can be used 
+            await ChatRoomModel.updateOne(
+                { RoomId: RoomId },
+                { $inc: { TotalMembers: 1 } }
+            );
+            res.json({
+                msg : "Successfully Joined the Room !"
+            });
+        }
+        catch(e)
         {
-            $set: {
-                ChatRoomId: FindRoom._id
-            }
-        },
-        { new: true });
-        await ChatRoomModel.findOneAndUpdate(
-        { _id: UserId },
-        {
-            $set: {
-                Totalmembers : 
-            }
-        },
-        { new: true });
+            res.status(404).json({
+                msg : "Internal Server Error !"
+            });
+            return;
+        }
     }
     catch(e)
     {
-
+        res.status(404).json({
+            msg : "Internal Server Error !"
+        });
+        return;
     }
-    
-
 });
+
+//API Endpoint for Logging Out the Users from the Rooms
+UserRouter.post("/Room/Logout" , async function(req , res)
+{
+    const UserId = req.body;
+    
+    try{
+        await UserModel.updateOne(
+            { _id: UserId },
+            { $set: { ChatRoomId: null ,
+                      UserSocket : null } 
+            }
+        );
+        res.json({
+            msg : "Internal Server Error !"
+        });
+    }
+    catch(e)
+    {
+        res.status(404).json({
+            msg : "Internal Server Error !"
+        });
+        return;
+    }
+});
+
 export default UserRouter;
