@@ -50,7 +50,7 @@ UserRouter.post("/LiveLink/User/SignUp" , async function(req,res)
         await UserModel.create({
             username : SignUp.username , 
             password : hashedpassword , 
-            ChatRoomId : ""
+            ChatRoomId : null
         });
         res.json({
                 msg : "SuccessfullY Logged In !"
@@ -139,7 +139,26 @@ UserRouter.get("/Room/Members" , async function(req,res)
         return;
     }
 });
+// The Room will only be deleted if There are 0 members in it ! It cannot be deleted manually !
+UserRouter.post("/Room/Delete" , function(req,res)
+{
+    const RoomId = req.body.RoomId;
 
+    try{    
+        ChatRoomModel.deleteOne({
+            RoomId : RoomId
+        });
+        res.json({
+            msg : "Room Deleted Successfully !"
+        });
+    }   
+    catch(e)
+    {
+        res.status(404).json({
+            msg : "Internal Server Error !"
+        });
+    }
+})
 //Usage of the middleware compulsory for Further Api Endpoints
 UserRouter.use(Middleware);
 
@@ -156,7 +175,7 @@ const RoomZodObject = z.object({
 //zod Type Inference
 type RoomCreationInput = z.infer<typeof RoomZodObject>;
 
-UserRouter.use("/Create/Rooms" , async function(req , res)
+UserRouter.use("/Create/Room" , async function(req , res)
 {
     //gets From Middleware
     const UserId = req.body;
@@ -180,7 +199,11 @@ UserRouter.use("/Create/Rooms" , async function(req , res)
             CreatorId : UserId ,
             Totalmembers : val 
         });
+        //when i user creates a room then automatically he will join that particular room ??
+        //why this thing happens ?? -> There can be no room open with 0 member 
+        //There Should be at least one member for Room to be open  
         res.json({
+            RoomId : UserRoomCreation.RoomId,
             msg : "The Chat Room is Successfully Connected !"
         });
     }
@@ -270,5 +293,4 @@ UserRouter.post("/Room/Logout" , async function(req , res)
         return;
     }
 });
-
 export default UserRouter;
