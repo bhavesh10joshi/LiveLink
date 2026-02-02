@@ -19,11 +19,9 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mongoose": "^5.11.96",
-    "@types/ws": "^8.18.1",
-    "cors": "^2.8.5",
-    "jsonwebtoken": "^9.0.3",
+    "@types/nodemailer": "^7.0.9",
+    "cors": "^2.8.6",
     "typescript": "^5.9.3",
-    "ws": "^8.18.3",
-    "zod": "^4.2.1"
+    "zod": "^4.3.6"
   }
 }
