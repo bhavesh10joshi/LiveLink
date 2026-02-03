@@ -1,0 +1,12 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    hot: true, // ensures HMR is enabled
+    watch: {
+      usePolling: true, // helpful in WSL, Docker, or networked filesystems
+    },
+  },
+})
