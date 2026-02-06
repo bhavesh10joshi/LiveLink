@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.hero-gradient {
+            background: radial-gradient(circle at 50% -20%, rgba(13, 89, 242, 0.15) 0%, transparent 70%);
+}
+html, body, #root {
+  height: 100%;
+  background-color: #030712;
+}

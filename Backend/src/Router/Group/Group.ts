@@ -3,6 +3,7 @@ import { UserModel, GroupModel , MessageModel ,GroupInvitationsModel , PersonalI
 import { SuccessStatusCodes, ClientErrorStatusCodes , ServerErrors } from "../../StatusCodes";
 import { usermiddleware } from "../../Middleware/Index";
 import { UniqueId } from "../../uuid";
+import { server } from "typescript";
 
 const GroupRouter = Router();
 
@@ -196,4 +197,120 @@ GroupRouter.post("/Invitation/Group-Invite" , usermiddleware , async function(re
         return;
     }
 });
+// Endpoint For deleting the group 
+// Point to note is that the creator of the group can only delete the group no one else can delete it 
+GroupRouter.delete("/Delete/Confirm" , usermiddleware , async function(req:any , res)
+{
+    // checking whether the user is the creator Of the group or not 
+    const GroupUniqueId = req.body.GroupUniqueId;
+    const Group = await GroupModel.findOne({
+        UniqueId : GroupUniqueId
+    });
+
+    // Checking whether the Group exists or not 
+    if(!Group)
+    {
+        res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+            msg : "The Given group does not exist !"
+        });
+        return;
+    }
+
+    const members = Group.UsersList;
+    if(Group.creatorId == req.UserId)
+    {   
+        // Deleting the Group Reference in each and every user which was part of this group
+        for(let i = 0 ; i < members.length ; i++)
+        {
+            const User = members[i];
+            const result = await UserModel.updateOne(
+                    { _id: User },
+                    { 
+                        $pull: { GroupList: Group._id } 
+                    }
+            );
+            if(!result)
+            {
+                res.status(ClientErrorStatusCodes.Conflicts).json({
+                    msg : "Invalid members of the Group !"
+                });
+                return;
+            }
+        }
+        try{
+            await GroupModel.deleteOne({
+                _id : Group._id
+            });
+            res.status(SuccessStatusCodes.ResourceCreated).json({
+                msg : "Successfully Deleted the Group !" 
+            });
+        }
+        catch(e)
+        {
+            res.status(ServerErrors.InternalServerError).json({
+                msg : "Internal Server Error Encountered !"
+            });
+            return ;
+        }
+    }
+    else
+    {
+        req.status(ClientErrorStatusCodes.Conflicts).json({
+            msg : "You're not the Creator Of this group !"
+        });
+        return ;
+    }
+});
+// Endpoint for Removing members from the Group !
+GroupRouter.post("/Remove/Group-Member" , usermiddleware , async function(req:any , res)
+{
+    const GroupUniqueId = req.body.GroupUniqueId;
+    const UserUniqueId = req.body.UserUniqueId;
+
+    // Checking whether the Members still exists and also the Group Exists
+    const Group = await GroupModel.findOne({
+        UniqueId : GroupUniqueId
+    });
+    const User = await UserModel.findOne({
+        UniqueId : UserUniqueId  
+    });
+
+    if(!Group || !User)
+    {
+        res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+            msg : "The user or the Group curretly Do not Exists!"
+        });
+        return;
+    }
+    else if(Group && User)
+    {
+        //Removing the User from the groupList and Removing the Group from Users GroupList
+        try{
+            await UserModel.updateOne(
+                    { _id: User._id },
+                    { 
+                        $pull: { GroupList: Group._id } 
+                    }
+            );
+            await GroupModel.updateOne(
+                    { _id: User._id },
+                    { 
+                        $pull: { UsersList: User._id } 
+                    }
+            );
+            res.status(SuccessStatusCodes.ResourceCreated).json({
+                msg : "Successfully Removed !"
+            });
+        }
+        catch(e)
+        {
+            res.status(ServerErrors.InternalServerError).json({
+                msg : "Internal Server Error !"
+            });
+        }
+    }
+});
+// Endpoint For Editing the Group Profile Info of the Group
+GroupRouter.post()
+
 export default GroupRouter;

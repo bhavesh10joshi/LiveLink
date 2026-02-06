@@ -16,7 +16,10 @@ const user = new Schema({
     ResetOTPExpiry : {type : String} , 
     RecieversList : [{type : ObjectId}] ,
     GroupList : [{type : ObjectId}] ,
-    PersonalMessagingList : [{type : ObjectId}]
+    PersonalMessagingList : [{type : ObjectId}] ,
+    // It tells us whether the given account is Activated or Deactivated as per Users Request
+    // If the Status id true it means the Account is in Active Condition and if false then it means that the Account is in Deactive condition 
+    Status : {type : Boolean , default : true}
 });
 
 // contains messages related information of that particular user 
