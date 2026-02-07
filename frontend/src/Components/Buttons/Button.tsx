@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 
 interface ButtonStyles{
-    size : "primary" | "secondry" | "tertiary" ,
+    size : "primary" | "secondry" | "tertiary" | "extrasized" ,
     text : string ,
     FrontIcon ?: ReactElement ,
     BackIcon ?:ReactElement,
@@ -9,14 +9,16 @@ interface ButtonStyles{
     color : "Blue" | "Grey"
 };
 const Variants = {
-    "primary" : "" ,
+    "primary" : "h-8 w-40" ,
     "secondry" : "h-8 w-20" ,
-    "tertiary" : "h-12 w-52" 
+    "tertiary" : "h-12 w-52" ,
+    "extrasized" : "h-12 w-[29rem]"
 };
 const BorderStylingVariants = {
-    "primary" : "" , 
+    "primary" : "rounded-md" , 
     "secondry" : "rounded-md" , 
-    "tertiary" : "rounded-xl"
+    "tertiary" : "rounded-xl",
+    "extrasized" : "rounded-md"
 };
 const ColorVarients = { 
     "Blue" : "bg-blue-800 hover:shadow-blue-800/80" , 

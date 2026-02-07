@@ -7,7 +7,7 @@ export function Toggle(props : Style)
 {
     return<>
     {
-        props.IsYearly ?<div className="flex gap-3">
+        props.IsYearly ?<div className="flex gap-3 ">
             <div>
                 <button type="button" onClick={props.OnClick} className="text-slate-400 font-bold text-[1rem]">Monthly</button>
             </div>
@@ -22,7 +22,7 @@ export function Toggle(props : Style)
                     <div className="text-[#4ade80] font-bold text-[10px]">Save 20%</div>
                 </div>
             </div>
-        </div> :<div className="flex gap-3">
+        </div> :<div className="flex gap-3 ml-[1.7rem] lg:ml-[0rem]">
             <div>
                 <button type="button" onClick={props.OnClick} className="text-white text-[0.9rem] font-bold hover:text-slate-400">Monthly</button>
             </div>

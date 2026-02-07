@@ -36,7 +36,7 @@ export function PricingDetails(props:Style)
     return <>
     {
         props.Selection == props.type
-        ?<div className="border border-blue-800 border-[0.2rem] bg-slate-900 rounded h-[39rem] pt-[2rem] pl-[2rem] pr-[2rem] w-[23rem]">
+        ?<div className="border border-blue-800 border-[0.2rem] bg-slate-900 rounded h-[39rem] pt-[2rem] pl-[2rem] pr-[2rem] w-[23rem] mt-[1rem] lg:mt-[0rem]">
             <div className="text-blue-800 font-bold text-[0.9rem]">
                 {props.type}
             </div>
@@ -75,7 +75,7 @@ export function PricingDetails(props:Style)
                 ))}
             </div>
         </div>
-        :<div className="border border-slate-500 bg-slate-900 rounded h-[35rem] pt-[2rem] pl-[2rem] pr-[2rem] w-[23rem]">
+        :<div className="border border-blue-800 border-[0.2rem] bg-slate-900 rounded h-[39rem] pt-[2rem] pl-[2rem] pr-[2rem] w-[23rem] mt-[1rem] lg:mt-[0rem]">
             <div className="text-slate-500 font-bold text-[0.9rem]">
                 {props.type}
             </div>

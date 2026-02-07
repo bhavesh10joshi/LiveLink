@@ -73,6 +73,9 @@ export function Navbar()
                 <div>
                     <Button size="secondry" text="Sign In" color="Blue"/>
                 </div>
+                <div>
+                    <Button size="primary" text="Create Account" color="Blue"/>
+                </div>
             </div>
             <div className="md:hidden flex justify-center items-center">
                 <Drop onClick={SetOpenDropDown}/>

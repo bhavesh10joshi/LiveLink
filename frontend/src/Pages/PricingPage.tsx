@@ -7,7 +7,7 @@ import { Footer } from "../Components/Footer/Footer"
 import { Toggle } from "../Components/PricingToggles/PricingToggle";
 import { useState } from "react"
 import { PricingDetails } from "../Components/PricingDetails/pricingdetails";
-import { question } from "../Components/Faq/Faq"
+import { Question } from "../Components/Faq/Faq"
 
 export function PricingPage()
 {
@@ -23,10 +23,10 @@ export function PricingPage()
     return<>
     <div className="min-h-screen bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)]">
         <Navbar/>
-            <div className=" w-full justify-center items-center mt-5 text-[3rem] lg:text-[3.5rem] lg:flex lg:gap-2">
+            <div className="pl-[1rem] pr-[1rem] w-full justify-center items-center mt-5 text-[3rem] lg:text-[3.5rem] lg:flex lg:gap-2 lg:pl-[0rem] lg:pr-[0rem]">
                 <div className="text-white font-bold  flex justify-center items-center mt-20 lg:mr-2">Choose the plan that's right for your team. </div>
             </div>
-            <div className="mt-5 text-[0.6rem] text-slate-400 font-bold lg:text-[1rem]">
+            <div className="pl-[1rem] pr-[1rem] mt-5 text-[0.6rem] text-slate-400 font-bold lg:text-[1rem] lg:pl-[0rem] lg:pr-[0rem]">
                 <div className="w-full flex justify-center items-center">Simple, Transparent pricing for teams of all sizes . No hidden fees or complicated contracts !</div>
             </div>
             <div className=" w-full justify-center items-center mt-16 gap-8 lg:flex">
@@ -38,14 +38,18 @@ export function PricingPage()
                <div className="flex justify-center items-center"><PricingDetails type="ENTERPRISE" IsMonthly={Ismonthly} Selection={selected} onclick={()=>{SetSelected("ENTERPRISE")}}/></div> 
             </div>
             <div className=" w-full justify-center items-center mt-5 text-[0.7rem] lg:text-[2rem] lg:flex lg:gap-2">
-                <div className="text-white font-bold  flex justify-center items-center mt-20 lg:mr-2">Frequently Asked Questions</div>
+                <div className="text-white font-bold  flex justify-center items-center mt-20 lg:mr-2 text-[1.3rem] lg:text-[2rem]">Frequently Asked Questions</div>
             </div>
-            <div>
+            <div className=" mt-[1rem] lg:mt-[3rem]">
                 <div>
-                    question
+                    <Question Question={"Can I Change plans at any time ?"} Answer={"Yes , you can upgrade or downgrade your plans at any time . If You Upgrade , the change is immediate , Downgrades takes effect at the end of the current billing cycle."}/>
                 </div>
-                <div></div>
-                <div></div>
+                <div>
+                    <Question Question={"Is there a free trial for the Pro plan ?"} Answer={"Absolutely! We offer a 14-day free trial for the Pro plan with all features unlocked . No credit card required at Start"}/>
+                </div>
+                <div>
+                    <Question Question={"What happens to my data if i Cancel ?"} Answer={"Your data belongs to you . If you cancel , you'll still have access to your message history for 30 days , after which it will be archieved according to our retention policy ."}/>
+                </div>
             </div>
             <div className="mt-20">
                 <Footer/>
