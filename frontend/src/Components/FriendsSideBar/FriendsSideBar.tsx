@@ -2,10 +2,7 @@ import { SearchBar } from "../SearchBar/SearchBar"
 import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { useState } from "react"
 
-interface usertype{
-    ProfileImage : String ,
-    Name : String , 
-}
+
  
 export function FriendsSideBar()
 {
