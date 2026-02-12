@@ -31,7 +31,11 @@ export function FriendsUsers(props:style)
             <div>
                 <div>{props.Name}</div>
                 <div>
-                    {props.TypingStatus ?<div></div> :<div></div>} 
+                    {props.TypingStatus ?<div>Typing</div> :<div>{
+                        props.LastMessage ?<div>{props.LastMessage}</div> :null
+                        }
+                    </div> 
+                    }
                 </div>
             </div>
         </div>

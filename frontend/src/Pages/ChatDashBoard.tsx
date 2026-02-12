@@ -1,5 +1,7 @@
 import { SideBar } from "../Components/SideBar/SideBar"
 import { FriendsSideBar } from "../Components/FriendsSideBar/FriendsSideBar"
+import { UserToUserMessagePortal } from "../Components/Chatting/UserToUser"
+
 
 export function ChatDashboard()
 {
@@ -8,6 +10,7 @@ export function ChatDashboard()
             <div className="flex">
                 <SideBar/>
                 <FriendsSideBar/>
+                <UserToUserMessagePortal/>
             </div>
         </div>
     </>
