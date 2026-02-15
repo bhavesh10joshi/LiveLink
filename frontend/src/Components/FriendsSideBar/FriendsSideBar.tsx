@@ -37,11 +37,11 @@ const UsersFriends: FriendsUsers[] = [{
     IsSelected: false
 } ];
 
+
 export function FriendsSideBar() {
     const [selectedId, setSelectedId] = useState<string>("kskjfhdks45646_shdjagjhj");
-
     return (
-        <div className="bg-black-500 w-[23rem] h-screen rounded-xl px-8 py-4 ml-4 flex flex-col gap-4">
+        <div className="bg-black-500 w-[20rem] h-screen rounded-s-lg px-8 py-4 ml-4 flex flex-col gap-4">
             
             <div className="w-full">
                 <SearchBar placeholder="Search by Name or Unique Id" />

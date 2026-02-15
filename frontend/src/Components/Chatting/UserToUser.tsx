@@ -1,4 +1,3 @@
-import { RecievedMessage } from "../Messages/Message";
 import { UserToUserNavBar } from "./UserToUserNavBar";
 import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 

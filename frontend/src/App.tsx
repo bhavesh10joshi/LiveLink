@@ -5,11 +5,12 @@ import { SecurityPage } from './Pages/SecurityPage'
 import { FeaturesPage } from './Pages/FeaturesPage'
 import { CreateAccount } from './Pages/CreateAnAccount'
 import { SignInPage } from './Pages/SignInPage'
-import { ChatDashboard } from './Pages/ChatDashBoard'
+import { UserToGroupChatDashboard } from './Components/ChattingDashboards/UserToGroupChatDashboard'
+import { MainDashboard } from './Pages/MainDashboard'
 
 function App() {
   return <>
-    <ChatDashboard/>
+      <MainDashboard/>
   </>
 }
 
