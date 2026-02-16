@@ -1,8 +1,10 @@
 import { FriendsSideBar } from "../FriendsSideBar/FriendsSideBar"
-import { UserToUserMessagePortal } from "../Chatting/UserToUser"
+import { UserToUserNavBar } from "../Chatting/UserToUserNavBar"
 import DocumentImage from "../ui/Image/SampleImages/ChattingImages/DocumentImage.png"
 import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { TypeTheMessage } from "../Chatting/TypeMessageSend"
+import { UserInfo } from "../../Pages/UserInfo"
+import { useState } from "react"
 
 
 interface messagestyle{
@@ -47,76 +49,122 @@ const MessageData:messagestyle[] = [
     ProfilePhoto : Profile 
 }]; 
 
+interface FriendsUsers {
+    ProfileImage: string;
+    Name: string;
+    WasLastMessage ?: Boolean;
+    LastMessage ?: string;
+    TypingStatus ?: Boolean;
+    OnlineOrOfflineDots : Boolean;
+    UniqueId : string;
+    IsSelected: boolean;
+    About : string
+}
+
+const UserFriends : FriendsUsers[] = [{
+    ProfileImage : Profile , 
+    Name : "ajay" , 
+    WasLastMessage : false,
+    TypingStatus : true , 
+    OnlineOrOfflineDots : true , 
+    UniqueId : "jksahkhdaskjhdkalshkdja" , 
+    IsSelected : true , 
+    About : "Hi my name is bhavesh joshi this is a realtime chatting application !"
+}]
+
 export function UserToUserChatDashboard() {
-return<>
-    {/* 2. Chat List Sidebar */}
-    <FriendsSideBar />
-    
-    <div className="bg-slate-600 w-[0.2px]"></div>
-    {/* 3. Main Chat Area */}
-    <div className="flex-1 flex flex-col h-full relative">
-        {/* Header / Top Bar could go here */}
-            {/* Input Area (Your UserToUser or GroupToUser Portal) */}
-        <div className=" bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
-            <UserToUserMessagePortal />
-        </div>
-        {/* MESSAGE CONTAINER: Scrollable Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">
-            {MessageData.map((msg, index) => (
-                <div
-                    key={index}
-                    className={`flex w-full ${
-                        msg.typeofMessage === "Sent" ? "justify-end" : "justify-start"
-                    }`}
-                >
-                    <div className={`flex max-w-[60%] ${
-                        msg.typeofMessage === "Sent" ? "flex-row-reverse" : "flex-row"
-                    } gap-2`}>
-                        
-                        {/* Profile Photo (Optional: Hide for sent messages if you prefer) */}
-                        <img 
-                            src={msg.ProfilePhoto} 
-                            alt="profile" 
-                            className="w-8 h-8 rounded-full mt-1"
-                        />
+    const[UserInfoStatus , SetUserInfo] = useState(false);
+    const [selectedId, setSelectedId] = useState<string>("jksahkhdaskjhdkalshkdja");
 
-                        {/* Message Bubble */}
-                        <div className={`flex flex-col ${
-                            msg.typeofMessage === "Sent" 
-                                ? "items-end" 
-                                : "items-start"
-                        }`}>
-                            
-                            {/* Content Bubble */}
-                            <div className={`p-3 rounded-2xl ${
-                                msg.typeofMessage === "Sent"
-                                    ? "bg-blue-600 rounded-tr-none text-white"
-                                    : "bg-gray-800 rounded-tl-none text-gray-200"
-                            }`}>
-                                {/* Render Image or Text based on type */}
-                                {msg.typeOfContent === "Image" ? (
-                                    <img 
-                                        src={msg.ImageMessage} 
-                                        alt="Sent attachment" 
-                                        className="rounded-lg max-w-[250px] object-cover"
-                                    />
-                                ) : (
-                                    <p className="text-sm">{msg.TextMessage}</p>
-                                )}
-                            </div>
+    function SetUserInfoFunction()
+    {
+        SetUserInfo(!UserInfoStatus);
+    }
+    function SetSelectedId(val:string)
+    {
+        setSelectedId(val);
+    }
 
-                            {/* Timestamp */}
-                            <span className="text-[10px] text-gray-500 mt-1 px-1">
-                                {msg.TimeOfMesage}
-                            </span>
-                        </div>
-                    </div>
+    return <>
+    {
+        UserInfoStatus ? 
+        <div className="w-full h-full flex justify-center items-center">{
+            UserFriends.map((user)=>
+                user.UniqueId == selectedId ?<UserInfo Name={user.Name} ProfileImage={user.ProfileImage} SetUserSelector={()=>SetUserInfoFunction()} About={user.About} OnlineOrOffline={user.OnlineOrOfflineDots} UniqueId={user.UniqueId}/> :null  
+            )
+        }</div> 
+        :
+        // --- ADDED FRAGMENT WRAPPER < > ---
+            <div className="flex w-full h-full justify-center items-center">
+                {UserFriends.map((user)=>(<FriendsSideBar ProfileImage={user.ProfileImage} Name={user.Name}  UniqueId={user.UniqueId} IsSelected={user.IsSelected} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
+                <div className="bg-slate-600 w-[0.2px]"></div>
+                <div className="flex-1 flex flex-col h-full relative">
+                {/* Header / Top Bar could go here */}
+                    {/* Input Area (Your UserToUser or GroupToUser Portal) */}
+                <div className=" bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
+                    {
+                        UserFriends.map((user)=>
+                        user.UniqueId == selectedId ?<UserToUserNavBar Name={user.Name} ProfilePhoto={user.ProfileImage} SetGroupSelector={()=>SetUserInfoFunction()} IsOnlineOrNot={user.OnlineOrOfflineDots}/> :null  )}
                 </div>
-            ))}
-        </div>
-        <div className="bg-black-500 backdrop-blur-sm border-t border-gray-800 border border-slate-500 w-full">
-            <TypeTheMessage/>
-        </div>
-    </div>
-</>
+                {/* MESSAGE CONTAINER: Scrollable Area */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">
+                    {MessageData.map((msg, index) => (
+                        <div
+                            key={index}
+                            className={`flex w-full ${
+                                msg.typeofMessage === "Sent" ? "justify-end" : "justify-start"
+                            }`}
+                        >
+                            <div className={`flex max-w-[60%] ${
+                                msg.typeofMessage === "Sent" ? "flex-row-reverse" : "flex-row"
+                            } gap-2`}>
+                                
+                                {/* Profile Photo (Optional: Hide for sent messages if you prefer) */}
+                                <img 
+                                    src={msg.ProfilePhoto} 
+                                    alt="profile" 
+                                    className="w-8 h-8 rounded-full mt-1"
+                                />
+
+                                {/* Message Bubble */}
+                                <div className={`flex flex-col ${
+                                    msg.typeofMessage === "Sent" 
+                                        ? "items-end" 
+                                        : "items-start"
+                                }`}>
+                                    
+                                    {/* Content Bubble */}
+                                    <div className={`p-3 rounded-2xl ${
+                                        msg.typeofMessage === "Sent"
+                                            ? "bg-blue-600 rounded-tr-none text-white"
+                                            : "bg-gray-800 rounded-tl-none text-gray-200"
+                                    }`}>
+                                        {/* Render Image or Text based on type */}
+                                        {msg.typeOfContent === "Image" ? (
+                                            <img 
+                                                src={msg.ImageMessage} 
+                                                alt="Sent attachment" 
+                                                className="rounded-lg max-w-[250px] object-cover"
+                                            />
+                                        ) : (
+                                            <p className="text-sm">{msg.TextMessage}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Timestamp */}
+                                    <span className="text-[10px] text-gray-500 mt-1 px-1">
+                                        {msg.TimeOfMesage}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                    <div className="bg-black-500 backdrop-blur-sm border-t border-gray-800 border border-slate-500 w-full">
+                        <TypeTheMessage/>
+                    </div>
+                </div> 
+                </div>
+    }
+    </>
 }

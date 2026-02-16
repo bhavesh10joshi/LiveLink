@@ -4,7 +4,8 @@ import { More } from "../Icons/MoreIcon"
 interface UserStyle{
     Name : string ,
     IsOnlineOrNot : Boolean ,
-    ProfilePhoto : string     
+    ProfilePhoto : string    ,
+    SetGroupSelector : ()=>void 
 }
 
 export function UserToUserNavBar(props:UserStyle)
@@ -31,7 +32,7 @@ export function UserToUserNavBar(props:UserStyle)
                         <button className="flex justify-center items-center" aria-label="Name"><AddtoGroupUser/><span className="text-[#808080] font-bold text-[0.9rem] ml-[0.5rem]">Add To Group</span></button>
                    </div>
                    <div>
-                        <button type="button" className="flex justify-center items-center" aria-label="Name"><More/></button>
+                        <button type="button" className="flex justify-center items-center" aria-label="Name" onClick={()=>props.SetGroupSelector()}><More/></button>
                    </div>
                 </div>
         </div>

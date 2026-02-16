@@ -1,6 +1,5 @@
-import { SideBar } from "../SideBar/SideBar"
 import { FriendsSideBar } from "../FriendsSideBar/FriendsSideBar"
-import { GroupToUserMessagePortal } from "../Chatting/GroupToUser"
+import { UserToGroupNavBar } from "../Chatting/UserToGroupNavBar"
 import DocumentImage from "../ui/Image/SampleImages/ChattingImages/DocumentImage.png"
 import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { TypeTheMessage } from "../Chatting/TypeMessageSend"
@@ -14,9 +13,15 @@ interface messagestyle{
     TextMessage ?: string , 
     TimeOfMesage : string ,
     DateOfMessage : Number,
-    ProfilePhoto : string
+    ProfilePhoto : string 
 }
-
+interface GroupMembers{
+    MemberName : string ,
+    OnlineOrNot : Boolean , 
+    CreatorOrNot : Boolean , 
+    ProfilePhoto : string ,
+    UniqueId : string
+}
 const MessageData:messagestyle[] = [
 {
     typeofMessage : "Sent" ,
@@ -24,7 +29,7 @@ const MessageData:messagestyle[] = [
     TextMessage : "Hey There how are you doing ??", 
     TimeOfMesage : "3:59 Am",
     DateOfMessage : 12,
-    ProfilePhoto : Profile 
+    ProfilePhoto : Profile ,
 },{
     typeofMessage : "Recieved" ,
     typeOfContent : "text" ,
@@ -49,26 +54,105 @@ const MessageData:messagestyle[] = [
     ProfilePhoto : Profile 
 }]; 
 
+interface Usersgroup {
+    ProfileImage: string;
+    Name: string;
+    UniqueId: string;
+    IsSelected: boolean;
+    Groupmembers : GroupMembers[];
+    GroupInfo:string , 
+    CreationDate : string
+}
+
+interface FriendsUsers {
+    ProfileImage: string;
+    Name: string;
+    UniqueId : string;
+}
+
+const UserFriends : FriendsUsers[] = [{
+        Name : "Bhavesh Joshi",  
+        ProfileImage : Profile,
+        UniqueId:"kshjahkjsakjdhakljshdklja"
+    },{
+        Name : "Bhavesh Joshi", 
+        ProfileImage : Profile,
+        UniqueId:"ndsbfkbkfhhflsdjkahkfhsadkl"
+    },{
+        Name : "Bhavesh Joshi",  
+        ProfileImage : Profile,
+        UniqueId:"sjkhlkfihaiofhjdsabfb"
+    },{
+       Name : "Bhavesh Joshi", 
+        ProfileImage : Profile,
+        UniqueId:"dfkjbcscaKVWaiudiuau"
+    }]
+
+const UsersGroup: Usersgroup[] = [{
+    ProfileImage: Profile,
+    Name: "College-23-27",
+    UniqueId: "kskjfhdks45646_shdjagjhj",
+    IsSelected: true ,
+    GroupInfo : "My new College group , beacuse i am a brerozgaar aadmi , what about you gang , are you good hahahahahahah",  
+    Groupmembers : [{
+        MemberName : "Bhavesh Joshi", 
+        OnlineOrNot : true , 
+        CreatorOrNot : true , 
+        ProfilePhoto : Profile,
+        UniqueId:"kshjahkjsakjdhakljshdklja"
+    },{
+        MemberName : "Bhavesh Joshi", 
+        OnlineOrNot : false , 
+        CreatorOrNot : false , 
+        ProfilePhoto : Profile,
+        UniqueId:"ndsbfkbkfhhflsdjkahkfhsadkl"
+    },{
+        MemberName : "Bhavesh Joshi", 
+        OnlineOrNot : true , 
+        CreatorOrNot : true , 
+        ProfilePhoto : Profile,
+        UniqueId:"sjkhlkfihaiofhjdsabfb"
+    },{
+        MemberName : "Bhavesh Joshi", 
+        OnlineOrNot : false , 
+        CreatorOrNot : false , 
+        ProfilePhoto : Profile,
+        UniqueId:"dfkjbcscaKVWaiudiuau"
+    }],
+    CreationDate : "14-02-2026"
+}];
 
 export function UserToGroupChatDashboard() {
-    const[GroupInfoStatus , SetGroupInfo] = useState(true);
-    
+    const[GroupInfoStatus , SetGroupInfo] = useState(false);
+    const [selectedId, setSelectedId] = useState<string>("kskjfhdks45646_shdjagjhj");
+
     function SetGroupInfoFunction()
     {
         SetGroupInfo(!GroupInfoStatus);
     }
+    function SetSelectedId(val:string)
+    {
+        setSelectedId(val);
+    }
     return <>
     {
-        GroupInfoStatus ?<div className="w-full h-full flex justify-center items-center"><GroupInfo SetGroupSelector={SetGroupInfoFunction} GroupName={}/></div> 
-        :<div>
-            <FriendsSideBar />
+        // GroupInfoStatus ?<div className="w-full h-full flex justify-center items-center"><GroupInfo SetGroupSelector={SetGroupInfoFunction} GroupName={}/></div>:
+        GroupInfoStatus ?<div className="w-full h-full flex justify-center items-center">{
+            UsersGroup.map((user)=>
+              user.UniqueId == selectedId ?<GroupInfo GroupName={user.Name} GroupInfo={user.GroupInfo} Members={user.Groupmembers} GroupProfilePhoto={user.ProfileImage} CreationDate={user.CreationDate} SetGroupSelector={()=>SetGroupInfoFunction()} FriendsUser={UserFriends}/> :null  
+            )
+        }</div>:
+        <div className="flex w-full h-full justify-center items-center">
+            {UsersGroup.map((user)=>(<FriendsSideBar ProfileImage={user.ProfileImage} Name={user.Name}  UniqueId={user.UniqueId} IsSelected={user.IsSelected} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
             <div className="bg-slate-600 w-[0.2px]"></div>
             {/* 3. Main Chat Area */}
             <div className="flex-1 flex flex-col h-full relative">
                 {/* Header / Top Bar could go here */}
                     {/* Input Area (Your UserToUser or GroupToUser Portal) */}
                 <div className=" bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
-                    <GroupToUserMessagePortal />
+                    {
+                    UsersGroup.map((user)=>
+                    user.UniqueId == selectedId ?<UserToGroupNavBar Name={user.Name} ProfilePhoto={user.ProfileImage} SetGroupSelector={()=>SetGroupInfoFunction()}/> :null  )}
                 </div>
                 {/* MESSAGE CONTAINER: Scrollable Area */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">
@@ -130,7 +214,5 @@ export function UserToGroupChatDashboard() {
                 </div>
         </div>
     }
-    {/* 2. Chat List Sidebar */}
-    
     </>
 }

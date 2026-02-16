@@ -1,9 +1,9 @@
-import { AddtoGroupUser } from "../Icons/AddtoGroupUserIcon"
 import { More } from "../Icons/MoreIcon"
 
 interface UserStyle{
     Name : string ,
-    ProfilePhoto : string     
+    ProfilePhoto : string   ,
+    SetGroupSelector : ()=>void  
 }
 
 export function UserToGroupNavBar(props:UserStyle)
@@ -22,7 +22,7 @@ export function UserToGroupNavBar(props:UserStyle)
             </div>
                 <div className="flex justify-center items-end ">
                    <div>
-                        <button type="button" className="flex justify-center items-center" aria-label="Name"><More/></button>
+                        <button type="button" className="flex justify-center items-center" aria-label="Name" onClick={()=>props.SetGroupSelector()}><More/></button>
                    </div>
                 </div>
         </div>
