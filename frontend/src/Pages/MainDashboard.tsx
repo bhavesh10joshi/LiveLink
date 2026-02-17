@@ -2,12 +2,13 @@ import { UserToGroupChatDashboard } from "../Components/ChattingDashboards/UserT
 import { UserToUserChatDashboard } from "../Components/ChattingDashboards/UserToUserChatDashboard"
 import { SideBar } from "../Components/SideBar/SideBar"
 import { useState } from "react"
-import { UserSettingDashBoard } from "../Components/UserSettingDashBoard/UserSetting"
 import { NotificationDashboard } from "../Components/NotificationsDashboard/Notificationdashboard"
+import { UserSettings } from "./UserSettings"
+import { NewGroup } from "./NewGroup"
 
 export function MainDashboard()
 {
-    const [selector , setselctor] = useState("Settings");
+    const [selector , setselctor] = useState("Home");
     
     return<>
         <div className="min-h-screen w-full bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)] text-white">
@@ -17,10 +18,13 @@ export function MainDashboard()
                     selector == "Home" ?<UserToUserChatDashboard/>: null
                 }
                 {
-                    selector == "Settings" ?<UserSettingDashBoard/> : null
+                    selector == "Settings" ?<UserSettings SetSelectorFunction={()=>setselctor("Home")}/> : null
                 }
                 {
                     selector == "Groups" ?<UserToGroupChatDashboard/> : null
+                }
+                {
+                    selector == "NewGroup" ?<NewGroup/> : null
                 }
                 {
                     selector == "Notification" ?<NotificationDashboard/> : null

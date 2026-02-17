@@ -109,7 +109,7 @@ const UsersGroup: Usersgroup[] = [{
     },{
         MemberName : "Bhavesh Joshi", 
         OnlineOrNot : true , 
-        CreatorOrNot : true , 
+        CreatorOrNot : false , 
         ProfilePhoto : Profile,
         UniqueId:"sjkhlkfihaiofhjdsabfb"
     },{

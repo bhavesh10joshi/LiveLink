@@ -5,6 +5,7 @@ import { MainSettingsIcon } from "../Icons/Settings"
 import { Button } from "../Buttons/Button"
 import { SideBarProfile } from "../SideBarProfile/SideBarProfile"
 import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
+import { FormNewGroup } from "../Icons/FormNewGroup"
 
 interface SideBarStyles{
     Selector : String ,
@@ -40,7 +41,14 @@ export function SideBar(props:SideBarStyles)
                     }
                 </div>
             </div>
-            <div className="flex justify-center items-center mt-[19rem]">
+            <div className="flex justify-center items-center mt-[15rem]">
+                <div className="w-full flex justify-center items-center">
+                    {
+                        props.Selector == "NewGroup" ?<Button size="HomeSize" text="Settings" FrontIcon={<MainSettingsIcon type="light"/>} color="Blue" onClick={() => props.OnClick("NewGroup")}/>:<Button size="HomeSize" text="New Group" FrontIcon={<FormNewGroup/>} color="Black" onClick={() => props.OnClick("NewGroup")}/>
+                    }
+                </div>
+            </div>
+            <div className="flex justify-center items-center mt-[1rem]">
                 <div className="w-full flex justify-center items-center">
                     {
                         props.Selector == "Settings" ?<Button size="HomeSize" text="Settings" FrontIcon={<MainSettingsIcon type="light"/>} color="Blue" onClick={() => props.OnClick("Settings")}/>:<Button size="HomeSize" text="Settings" FrontIcon={<MainSettingsIcon type="dark"/>} color="Black" onClick={() => props.OnClick("Settings")}/>
