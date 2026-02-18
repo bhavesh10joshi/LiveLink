@@ -1,4 +1,4 @@
-##LeftOvers and improvements in frontend:-
+# LeftOvers and improvements in frontend:-
 
 - 1 :- When we add a user to a group , a confirmation to the Member has to be made the request for the Invitation to the user is made . 
 
