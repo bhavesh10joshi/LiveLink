@@ -1,5 +1,7 @@
 import { CloseIcon } from "../Components/Icons/CloseIcon"
 import { SaveChanges } from "../Components/Icons/SaveChanges"
+import { useState } from "react"
+import { EmailAuthChangePassword } from "./AuthenticationChangePassword"
 
 interface EditStyle
 {
@@ -11,9 +13,17 @@ interface EditStyle
 
 export function EditUserProfile(props:EditStyle)
 {
+    const [ChangePassword , SetChangePassword] = useState(false);
+
+    function SetChangePasswordFunction()
+    {
+        SetChangePassword(!ChangePassword);
+    }
+
     return<>{
-    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-            <div className=" bg-black-500 w-[30rem] h-[42rem] rounded-xl border-slate-300 border flex flex-col">
+    !ChangePassword    
+        ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
+            <div className=" bg-black-500 w-[30rem] h-[45rem] rounded-xl border-slate-300 border flex flex-col">
                 <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
                     <div className=" font-bold text-[1.3rem] text-white-800 flex justify-center items-center"><div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold"><div>!</div></div><div className="ml-[0.6rem] text-[1rem]">Edit Profile Info</div></div>
                     <div className="flex justify-center items-center w-[2rem] h-[2rem] bg-black-800 rounded-xl"><button type="button" aria-label="Name" onClick={()=>props.SetEditUserProfileSelector()}><div><CloseIcon/></div></button></div>
@@ -37,7 +47,12 @@ export function EditUserProfile(props:EditStyle)
                 <div className="w-full h-[3rem] pl-[2rem] pr-[2rem] mt-[0.5rem]">
                     <input type="text" className="w-full h-full rounded-md bg-slate-500 text-black-900 placeholder:text-white text-[0.9rem] pl-[1rem] pr-[1rem]" placeholder={props.About} aria-label="Name"/>
                 </div>
-                <div className="w-full h-[3rem] pl-[2rem] pr-[2rem] mt-[0.5rem]">
+                <div className="w-full pl-[2rem] pr-[2rem] pt-[0.5rem] mt-[0.5rem]">
+                    <button type="button" className="flex justify-center items-center h-[3rem] w-full rounded-md bg-blue-900 text-slate-300 font-bold border border-slate-500" onClick={()=>SetChangePasswordFunction()}>
+                        Change Password
+                    </button>
+                </div>
+                <div className="w-full h-[3rem] pl-[2rem] pr-[2rem]">
                     <div className="flex justify-center items-center bg-blue-950 h-[3rem] rounded-md mt-[1rem] pl-[1rem] pr-[1rem]">
                         <div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold mr-[0.5rem]"><div>!</div></div>
                         <div className="text-[0.7rem] text-slate-300 font-bold">Changing your Name or Profile Photo will be visible to your Friends Instantly.</div>
@@ -52,6 +67,9 @@ export function EditUserProfile(props:EditStyle)
                     <button type="button" aria-label="Name" className="flex justify-center items-center w-2/6 bg-slate-900 border-slate-300 border rounded-md h-[3rem] ml-[0.7rem]" onClick={()=>props.SetEditUserProfileSelector()}>Cancel</button>
                 </div>            
             </div>
+        </div>
+        :<div>
+            <EmailAuthChangePassword SetChangePasswordFunction={()=>SetChangePasswordFunction()}/>
         </div>
         }
     </>

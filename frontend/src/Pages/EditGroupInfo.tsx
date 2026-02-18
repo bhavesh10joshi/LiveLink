@@ -3,6 +3,7 @@ import { SaveChanges } from "../Components/Icons/SaveChanges"
 import { useState } from "react"
 import { ConfirmDeleteGroup } from "./DeleteGroupConfirm"
 
+
 interface EditStyle
 {
     SetEditGroupSelector : ()=>void , 
@@ -52,7 +53,11 @@ export function EditGroupInfo(props:EditStyle)
                         <div className="text-[0.7rem] text-slate-300 font-bold">Changing the Group Name or Avatar will be visible to all members of this Group Instantly.</div>
                     </div>
                 </div>
-                <div className="h-[2px] w-full bg-slate-700 mt-[2rem]"></div>
+                <div className="flex justify-center items-center pr-[2rem] pl-[2rem]">
+                    <button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-red-600 border-slate-300 text-white border rounded-md h-[3rem] font-bold mt-[2rem]" onClick={()=>SetDeleteGroupFunction()}>Delete Group</button>
+                    <button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-green-800 border-slate-300 text-white border rounded-md h-[3rem] font-bold mt-[2rem] ml-[0.5rem]" onClick={()=>SetDeleteGroupFunction()}>Leave Group</button>
+                </div>
+                <div className="h-[2px] w-full bg-slate-700 mt-[1rem]"></div>
                 <div className="flex justify-center items-center w-full pl-[2rem] pr-[2rem] pt-[1rem] pb-[1rem]">
                     <button type="button" aria-label="Name" className="flex justify-center items-center w-4/6 bg-blue-950 border-blue-800 border rounded-md h-[3rem]">
                         <div><SaveChanges/></div>
@@ -60,7 +65,6 @@ export function EditGroupInfo(props:EditStyle)
                     </button>
                     <button type="button" aria-label="Name" className="flex justify-center items-center w-2/6 bg-slate-900 border-slate-300 border rounded-md h-[3rem] ml-[0.7rem]" onClick={()=>props.SetEditGroupSelector()}>Cancel</button>
                 </div>
-                <div className="flex justify-center items-center"><button type="button" aria-label="Name" className="flex justify-center items-center w-2/6 bg-red-300 border-slate-300 border rounded-md h-[3rem] ml-[0.7rem] text-red-900 font-bold" onClick={()=>SetDeleteGroupFunction()}>Delete Group</button></div>
             </div>
         </div>
         :<div><ConfirmDeleteGroup Name={props.Name}  SetDeleteGroupFunction={()=>SetDeleteGroupFunction()}/></div>

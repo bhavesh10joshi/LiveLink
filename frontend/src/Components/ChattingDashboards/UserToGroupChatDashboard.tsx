@@ -6,6 +6,10 @@ import { TypeTheMessage } from "../Chatting/TypeMessageSend"
 import { GroupInfo } from "../../Pages/GroupInfo";
 import { useState } from "react"
 
+interface GeneralStyle{
+    SetSelectorFunction : (val:string)=>void
+}
+
 interface messagestyle{
     typeofMessage : "Sent" | "Recieved" | "Date",
     typeOfContent : "text" | "Image",
@@ -122,7 +126,7 @@ const UsersGroup: Usersgroup[] = [{
     CreationDate : "14-02-2026"
 }];
 
-export function UserToGroupChatDashboard() {
+export function UserToGroupChatDashboard(props:GeneralStyle) {
     const[GroupInfoStatus , SetGroupInfo] = useState(false);
     const [selectedId, setSelectedId] = useState<string>("kskjfhdks45646_shdjagjhj");
 

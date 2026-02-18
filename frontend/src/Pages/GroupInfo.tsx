@@ -5,6 +5,7 @@ import { AddMembersToGroup } from "../Components/Icons/AddMembers"
 import { AddMembers } from "./AddMemberstoGroup"
 import { useState } from "react"
 import { EditGroupInfo } from "./EditGroupInfo"
+import { SuccessLeaveGroup } from "./SuccessLeftGroup"
 
 interface GroupMember{
     MemberName : string , 
@@ -30,9 +31,10 @@ interface GroupInfoStyle{
 
 export function GroupInfo(props:GroupInfoStyle)
 {
-    const[Addmembers,SetAddMembers] = useState(false);
+    const[Addmembers,SetAddMembers] = useState(true);
     const[EditGroupinfo , SetEditGroupInfo] = useState(false);
-    
+    const[LeaveGroup , SetLeaveGroup] = useState(false);
+
     function SetAddMembersfunction()
     {       
         SetAddMembers(!Addmembers);
@@ -41,10 +43,15 @@ export function GroupInfo(props:GroupInfoStyle)
     {       
         SetEditGroupInfo(!EditGroupinfo);
     }
+    function SetLeaveGroupfunction()
+    {
+        SetLeaveGroup(!LeaveGroup);
+    }
+
     return<>{
         Addmembers
         ?<div><AddMembers SetAddMembersFunction={()=>SetAddMembersfunction()} GroupMembersList={props.Members} FriendsUser={props.FriendsUser}/></div>
-        : !EditGroupinfo ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
+        : !EditGroupinfo ? !LeaveGroup ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
             <div className=" bg-black-500 w-[30rem] h-[42rem] rounded-xl border-slate-300 border flex flex-col">
                 <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
                     <div className=" font-bold text-[1.3rem] text-white-800 flex justify-center items-center"><div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold"><div>!</div></div><div className="ml-[0.6rem] text-[1rem]">Group Info</div></div>
@@ -62,10 +69,10 @@ export function GroupInfo(props:GroupInfoStyle)
                 <div className="flex place-content-between pl-[2rem] pr-[2rem] mt-[2rem]">
                     <div className="text-slate-200 border border-slate-500 rounded-md font-bold flex justify-center items-center pl-[1rem] pr-[1rem] bg-blue-800  text-[0.8rem]"><div>MEMBERS</div></div>
                     <div>
-                        <button type="button" aria-label="Name" className="text-blue-800 flex justify-center items-center text-[0.8rem] border border-blue-800 rounded-md pl-[1rem] pr-[1rem]" onClick={()=>SetAddMembersfunction()}><div className="mr-[0.4rem]"><AddMembersToGroup/></div>Add Members</button>
+                        <button type="button" aria-label="Name" className="bg-green-800 flex justify-center items-center text-[0.9rem] text-white rounded-md pl-[1rem] pr-[1rem]" onClick={()=>SetAddMembersfunction()}><div className="mr-[0.4rem]"></div>Add Members</button>
                     </div>
                     <div>
-                        <button type="button" aria-label="Name" className="text-red-800 flex justify-center items-center text-[1rem] border border-red-800 rounded-md pl-[1rem] pr-[1rem] font-bold bg-red-200">Leave Group</button>
+                        <button type="button" aria-label="Name" className="bg-red-600 flex justify-center items-center text-[0.9rem] border border-red-800 rounded-md pl-[1rem] pr-[1rem] font-bold text-white" onClick={()=>SetLeaveGroupfunction()}>Leave Group</button>
                     </div>
                 </div>
                 <div className="flex justify-center items-center pl-[2rem] pr-[2rem] mt-[1rem]"><input className="h-[3rem] w-full pl-[1rem] pr-[1rem] bg-slate-800 rounded-xl border border-slate-500 text-[0.8rem]" type="text" placeholder="Find Members ...."/></div>
@@ -94,7 +101,7 @@ export function GroupInfo(props:GroupInfoStyle)
                     </div>))}
                 </div>
             </div>
-        </div> : <div><EditGroupInfo SetEditGroupSelector={()=>SetEditGroupInfofunction()} ProfileImage={props.GroupProfilePhoto} Name={props.GroupName} About={props.GroupInfo} /></div>
+        </div>:<SuccessLeaveGroup Name={props.GroupName} SetLeaveGroupFunction={()=>SetLeaveGroupfunction()}/> : <div><EditGroupInfo SetEditGroupSelector={()=>SetEditGroupInfofunction()} ProfileImage={props.GroupProfilePhoto} Name={props.GroupName} About={props.GroupInfo} /></div>
         }
     </>
 }
