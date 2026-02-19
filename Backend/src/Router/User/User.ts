@@ -202,7 +202,7 @@ UserRouter.post("/change/password" , async function(req,res)
             msg : "Internal Server Error Occured !"
         });
     }
-}) 
+}) ;
 //Everything after this needs token Authorization !
 //Endpoint for changing the password of the user from profile while logged in 
 UserRouter.post("/change/Password/otp-Generate" , usermiddleware , async function(req : any , res)

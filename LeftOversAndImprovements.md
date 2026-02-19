@@ -22,5 +22,8 @@
 
 - 11 :- Inside the navbar of the UserToUserChatDashboard the "add to group" btn is not styled properly and it has no working currently.
 
+- 12 :- LogOut Functionality have also be added in the frontend !
 
 Impropvements and corrections in the backend:-
+
+- 1 :- Socket.io implemented with https and express.js
