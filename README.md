@@ -33,6 +33,8 @@ The project is actively evolving, with new features and optimizations being adde
 ## 🚀 Images
 <img width="1900" height="929" alt="image" src="https://github.com/user-attachments/assets/015e41b7-f05e-499a-90d5-b36fcc66aa24" />
 <img width="1901" height="925" alt="image" src="https://github.com/user-attachments/assets/1762fcf5-a209-421a-95b4-be188bec5d8d" />
+<img width="1915" height="923" alt="Screenshot 2026-02-18 204445" src="https://github.com/user-attachments/assets/329beab4-0bb5-44cd-b3d6-b983e3c29fa3" />
+<img width="1912" height="925" alt="Screenshot 2026-02-18 204502" src="https://github.com/user-attachments/assets/113447fb-b2a7-4dfe-a575-1a9bfccab61e" />
 
 
 ## 🛠️ Tech Stack
