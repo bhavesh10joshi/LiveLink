@@ -7,9 +7,42 @@ import { Button } from "../Components/Buttons/Button";
 import { Google } from "../Components/Icons/Google";
 import { GitHub } from "../Components/Icons/GitHub";
 import { Footer } from "../Components/Footer/Footer";
+import { useEffect, useState } from "react";
+import { useRef } from "react";
+import { Validations } from "../ZodVaalidations/Zod";
+import axios from "axios";
 
 export function CreateAccount()
 {
+    const NameRef = useRef(null);
+    const EmailRef = useRef(null);
+    const PasswordRef = useRef(null);
+    const ConfirmPasswordRef = useRef(null);
+    const[CurrentPassword , SetCurrentPassword] = useState("");
+    const[ConfirmPassword , SetConfirmPassword] = useState("");
+    const[ZodError , SetZodErrors] = useState(false);
+
+    const[CurrentParameters , SetCurrentParameters] = useState({
+        Email : "" ,
+        Password : "" 
+    });
+
+    function HitBackend()
+    {
+
+    }
+
+    function ZodValidationsfortheInput()
+    {
+        const result = Validations.safeParse(CurrentParameters);
+        if(!result.success)
+        {
+            SetZodErrors(true);
+            return false;
+        }
+        HitBackend();
+    }
+
     return<>
     <div className="min-h-screen bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)]">
         <Navbar/>
@@ -22,13 +55,28 @@ export function CreateAccount()
         <div className="w-full flex justify-center items-center mt-[2rem]">
             <div className="bg-slate-800 w-[17rem] h-[46rem] lg:h-[40rem] lg:w-[30rem] rounded border-slate-600 border pl-[2rem] pr-[2rem]">
                 <div className="text-slate-300 font-bold text-[0.9rem] mt-[2rem]">Full Name</div>
-                <div className="mt-[0.4rem]"><Input Inputtype="text" placeholder="John Doe" EndIcon={<Contact/>}/></div>
-                <div className="text-slate-300 font-bold text-[0.9rem] mt-[1rem]">Email</div>
-                <div className="mt-[0.4rem]"><Input Inputtype="text" placeholder="name@company.com" EndIcon={<Mail/>}/></div>
-                <div className="text-slate-300 font-bold text-[0.9rem] mt-[1rem]">Password</div>
-                <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="........." EndIcon={<Key/>}/></div>
-                <div className="text-slate-300 font-bold text-[0.9rem] mt-[1rem]">Confirm Password</div>
-                <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="........." EndIcon={<Key/>}/></div>
+                <div className="mt-[0.4rem]"><Input Inputtype="text" placeholder="John Doe" EndIcon={<Contact/>} Reference={NameRef}/></div>
+                <div className="text-slate-300 mt-[1rem] flex justify-between items-center">
+                    <div className="font-bold text-[0.9rem]">Email</div>
+                    <div className="text-[0.7rem] font-bold text-green-700">Valid Email is Required</div>
+                </div>
+                <div className="mt-[0.4rem]"><Input Inputtype="text" placeholder="name@company.com" EndIcon={<Mail/>} Reference={EmailRef}/></div>
+                <div className="text-slate-300 mt-[1rem] flex justify-between items-center">
+                    <div className="font-bold text-[0.9rem]">Password</div>
+                    <div className="text-[0.7rem] font-bold text-green-700">Must be at least 10 characters with 1 letter and 1 number</div>
+                </div>
+                <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="........." EndIcon={<Key/>} Reference={PasswordRef} OnChange={(e:any) => SetCurrentPassword(e.target.value)}/></div>
+                {
+                    CurrentPassword != ConfirmPassword    
+                    ?
+                    <div className="text-slate-300 mt-[1rem] flex justify-between items-center">
+                        <div className="font-bold text-[0.9rem]">Confirm Password</div><div className="text-red-600 text-[0.9rem]">Both Passwords should be Same</div>
+                    </div>
+                    :<div className="text-slate-300 font-bold text-[0.9rem] mt-[1rem]">
+                        Confirm Password
+                    </div>
+                }
+                <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="........." EndIcon={<Key/>} Reference={ConfirmPasswordRef} OnChange={(e:any) => SetConfirmPassword(e.target.value)}/></div>
                 <div className="flex justify-center items-center w-full mt-[2rem]">
                     <Button size="extrasized" color="Blue" text="Create Account"/>
                 </div>

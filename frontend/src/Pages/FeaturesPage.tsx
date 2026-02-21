@@ -1,13 +1,23 @@
 import { Button } from "../Components/Buttons/Button"
-import Mainpagedesign from "../Components/ui/Image/IntropageImage/Mainpagedesign.png"
-import { FrontArrow } from "../Components/Icons/RightArrow"
 import { Features } from "../Components/Features/features"
 import { Navbar } from "../Components/NavBar/Navbar"
 import { Footer } from "../Components/Footer/Footer"
 import PersonChatting from "../Components/ui/Image/PersonChatting/PersonChatting.png"
+import { useNavigate } from "react-router-dom"
 
 export function FeaturesPage()
 {
+    const Navigate = useNavigate();
+
+    function NavigatetosignIn()
+    {   
+        Navigate("/LiveLink/User/SignIn");
+    }   
+    function NavigatetoSignUp()
+    {
+        Navigate("/LiveLink/User/Create/Account");
+    }
+
     return<>
     <div className="min-h-screen bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)]">
         <Navbar/>
@@ -50,10 +60,10 @@ export function FeaturesPage()
                     </div>
                     <div className=" w-full justify-center items-center mt-16 pb-[5rem] gap-8 lg:flex">
                         <div className="flex justify-center items-center">
-                            <Button size="tertiary"  text="Create Free Account" color="Blue"/>
+                            <Button size="tertiary"  text="Create Free Account" color="Blue" onClick={() => NavigatetosignIn()}/>
                         </div>
                         <div className="flex justify-center items-center mt-2 lg:mt-0">
-                            <Button size="tertiary"  text="Account Exists" color="Grey"/>
+                            <Button size="tertiary"  text="Account Exists" color="Grey" onClick={() => NavigatetoSignUp()}/>
                         </div>
                     </div>
                     <div></div>

@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Router } from "express";
-import { UserModel, GroupModel , MessageModel ,GroupInvitationsModel , PersonalInvitationsModel } from "../../db";
+import { UserModel, GroupModel ,GroupInvitationsModel , PersonalInvitationsModel } from "../../db";
 import { SuccessStatusCodes, ClientErrorStatusCodes , ServerErrors } from "../../StatusCodes";
 import { sendOTP } from "../../Nodemailer/emailvianode";
 import { generateOTP } from "../../otp/otp";

@@ -3,9 +3,41 @@ import { Button } from "../Buttons/Button";
 import { useState } from "react";
 import { Drop } from "../Icons/DropDownIcon";
 import { DropDown } from "../DropDown/DropDown";
+import { useNavigate } from "react-router-dom";
 
 export function Navbar()
 {
+    const navigate = useNavigate();
+
+    
+    function NavigatetoPages(val:String)
+    {
+        if(val == "CreateAccount")
+        {
+            navigate("/LiveLink/User/Create/Account");
+        }
+        else if(val == "Features")
+        {
+            navigate("/LiveLink/Features");
+        }
+        else if(val == "Security")
+        {
+            navigate("/LiveLink/Application/Security");
+        }
+        else if(val == "Pricing")
+        {
+            navigate("/LiveLink/Application/Pricing");
+        }
+        else if(val == "Home")
+        {
+            navigate("/LiveLink/Application/Pricing");
+        }
+        else
+        {
+            navigate("/LiveLink/User/SignIn");
+        }
+    }
+
     function SetOpenDropDown()
     {
         SetDropDown(function(dropDown)
@@ -17,21 +49,25 @@ export function Navbar()
     {
         e.preventDefault();
         SetSelector("Home");
+        NavigatetoPages("Home");
     }
     function SetSecurity(e:any)
     {
          e.preventDefault();
         SetSelector("Security");
+        NavigatetoPages("Security");
     }
     function SetPricing(e:any)
     {
          e.preventDefault();
         SetSelector("Pricing");
+        NavigatetoPages("Pricing");
     }
     function SetFeatures(e:any)
     {
          e.preventDefault();
         SetSelector("Features");
+        NavigatetoPages("Features");
     }
     
     const [dropDown , SetDropDown] = useState(true);
@@ -71,10 +107,10 @@ export function Navbar()
                     }
                 </div>
                 <div>
-                    <Button size="secondry" text="Sign In" color="Blue"/>
+                    <Button size="secondry" text="Sign In" color="Blue" onClick={()=>NavigatetoPages("SignIn")}/>
                 </div>
                 <div>
-                    <Button size="primary" text="Create Account" color="Blue"/>
+                    <Button size="primary" text="Create Account" color="Blue" onClick={()=>NavigatetoPages("CreateAccount")}/>
                 </div>
             </div>
             <div className="md:hidden flex justify-center items-center">

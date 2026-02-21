@@ -9,9 +9,8 @@ import { CheckFortheFriend } from "../../../CheckForAFriend/CheckForaFriend";
 const UserToUserMessageRouter = Router();
 
 
-
 //for sending the Message from one user to another
-UserToUserMessageRouter.post("/Send/Message" , usermiddleware , async function(req:any , res)
+UserToUserMessageRouter.post("/Send" , usermiddleware , async function(req:any , res)
 {
     const RecieverId : String = req.body.RecieverId;
     // can be either be a text or image
@@ -67,7 +66,7 @@ UserToUserMessageRouter.post("/Send/Message" , usermiddleware , async function(r
         return;
     }
 });
-UserToUserMessageRouter.post("/Access/All/Messages" , usermiddleware , async function(req:any , res)
+UserToUserMessageRouter.get("/Access/All" , usermiddleware , async function(req:any , res)
 {
     const RecieverId : any = req.body.RecieverId;
     

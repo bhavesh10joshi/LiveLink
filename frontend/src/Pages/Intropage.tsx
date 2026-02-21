@@ -4,9 +4,18 @@ import { FrontArrow } from "../Components/Icons/RightArrow"
 import { Features } from "../Components/Features/features"
 import { Navbar } from "../Components/NavBar/Navbar"
 import { Footer } from "../Components/Footer/Footer"
+import { useNavigate } from "react-router-dom"
 
 export function IntroPage()
 {
+    const navigate = useNavigate();
+
+    
+    function NavigateSignUpPage()
+    {
+        navigate("/LiveLink/User/SignIn");
+    }
+
     return<>
     <div className="min-h-screen bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)]">
         <Navbar/>
@@ -28,7 +37,7 @@ export function IntroPage()
             </div>
             <div className=" w-full justify-center items-center mt-16 gap-8 lg:flex">
                 <div className="flex justify-center items-center">
-                    <Button size="tertiary" BackIcon={<FrontArrow/>} text="Get Started Free" color="Blue"/>
+                    <Button size="tertiary" BackIcon={<FrontArrow/>} text="Get Started Free" color="Blue" onClick={()=>NavigateSignUpPage()}/>
                 </div>
                 <div className="flex justify-center items-center mt-2 lg:mt-0">
                     <Button size="tertiary"  text="Learn More" color="Grey"/>

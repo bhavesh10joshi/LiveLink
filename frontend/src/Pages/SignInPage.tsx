@@ -4,9 +4,17 @@ import { Button } from "../Components/Buttons/Button";
 import { Google } from "../Components/Icons/Google";
 import { GitHub } from "../Components/Icons/GitHub";
 import { Footer } from "../Components/Footer/Footer";
+import { useNavigate } from "react-router-dom";
 
 export function SignInPage()
 {
+    const Navigate = useNavigate();
+
+    function Navigatetosignin()
+    {
+        Navigate("/LiveLink/User/Create/Account")
+    }
+
     return<>
     <div className="min-h-screen bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)]">
         <Navbar/>
@@ -53,7 +61,7 @@ export function SignInPage()
                 </div>
                 <div className="flex justify-center items-center mt-[2rem] lg:pb-[10rem] pb-[5rem]">
                     <div className="flex">
-                        <div className="text-slate-300 text-[0.6rem] lg:text-[0.8rem] font-bold">Don't have an Account ?</div>
+                        <div className="text-slate-300 text-[0.6rem] lg:text-[0.8rem] font-bold" onClick={()=>Navigatetosignin()}>Don't have an Account ?</div>
                         <button type="button" className="text-blue-800 hover:text-slate-500 text-[0.6rem] lg:text-[0.8rem] font-bold ml-[0.2rem]">Create Account</button>
                     </div>
                 </div>

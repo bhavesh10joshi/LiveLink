@@ -70,8 +70,8 @@ const PersonalInvitations = new Schema({
     ReadOrNot : {type : Boolean}    
 });
 
-export const UserToUserMessageModel = model("Message" , UserToUserMessage) ;
-export const UserToGroupMessageModel = model("Message" , UserToGroupMessage) ;
+export const UserToUserMessageModel = model("UserToUserMessage" , UserToUserMessage) ;
+export const UserToGroupMessageModel = model("UserToGroupMessage" , UserToGroupMessage) ;
 export const GroupModel = model("Group" , group) ;
 export const UserModel = model("User" , user);  
 export const GroupInvitationsModel = model("GroupInvitations" , GroupInvitations);
