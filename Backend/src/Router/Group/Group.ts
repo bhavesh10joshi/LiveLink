@@ -1,9 +1,8 @@
 import { Router } from "express";
-import { UserModel, GroupModel , MessageModel ,GroupInvitationsModel , PersonalInvitationsModel } from "../../db";
+import { UserModel, GroupModel , GroupInvitationsModel} from "../../db";
 import { SuccessStatusCodes, ClientErrorStatusCodes , ServerErrors } from "../../StatusCodes";
 import { usermiddleware } from "../../Middleware/Index";
 import { UniqueId } from "../../uuid";
-import { server } from "typescript";
 
 const GroupRouter = Router();
 
@@ -310,7 +309,6 @@ GroupRouter.post("/Remove/Group-Member" , usermiddleware , async function(req:an
         }
     }
 });
-// Endpoint For Editing the Group Profile Info of the Group
-GroupRouter.post()
+
 
 export default GroupRouter;

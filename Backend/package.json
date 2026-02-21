@@ -20,6 +20,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mongoose": "^5.11.96",
     "@types/nodemailer": "^7.0.9",
+    "@types/socket.io": "^3.0.1",
     "@types/uuid": "^10.0.0",
     "cors": "^2.8.6",
     "typescript": "^5.9.3",

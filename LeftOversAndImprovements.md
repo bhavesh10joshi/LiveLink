@@ -24,6 +24,11 @@
 
 - 12 :- LogOut Functionality have also be added in the frontend !
 
+- 13 :- Payment integration page
+
+
 Impropvements and corrections in the backend:-
 
 - 1 :- Socket.io implemented with https and express.js
+
+- 2 :- payment integration

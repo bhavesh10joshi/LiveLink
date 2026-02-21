@@ -7,7 +7,7 @@ mongoose.connect(DB_LINK);
 
 // contains some necessary details of the users 
 const user = new Schema({
-    email : {type : String , requied : true , unique : true} ,
+    email : {type : String , required : true , unique : true} ,
     password : {type : String , required : true , unique: true} , 
     name : {type : String} , 
     // image that the use will be uploading as per his/her preference has to be implemented 
@@ -23,12 +23,23 @@ const user = new Schema({
 });
 
 // contains messages related information of that particular user 
-const message = new Schema({
+const UserToUserMessage = new Schema({
+    ContentType : {type : String } ,
+    // can be either a image or a text 
     time :  { type : String} , 
     reciever : {type : ObjectId},
     sender : {type : ObjectId},
     message : {type : String}   
 }); 
+
+const UserToGroupMessage = new Schema({
+    ContentType :{type : String} ,  
+    time : { type : String},
+    //the reciever ObjectId will always a Group ObjectId
+    reciever : {type : ObjectId} , 
+    sender : {type : ObjectId} , 
+    Message : { type : String}
+});
 
 // contains all the information related the groups 
 const group = new Schema({
@@ -59,7 +70,8 @@ const PersonalInvitations = new Schema({
     ReadOrNot : {type : Boolean}    
 });
 
-export const MessageModel = model("Message" , message) ;
+export const UserToUserMessageModel = model("Message" , UserToUserMessage) ;
+export const UserToGroupMessageModel = model("Message" , UserToGroupMessage) ;
 export const GroupModel = model("Group" , group) ;
 export const UserModel = model("User" , user);  
 export const GroupInvitationsModel = model("GroupInvitations" , GroupInvitations);
