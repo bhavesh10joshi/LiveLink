@@ -9,6 +9,9 @@ import { SuccessCreatedAccount } from './Pages/SuccessCreatedAccount'
 import { UserToGroupChatDashboard } from './Components/ChattingDashboards/UserToGroupChatDashboard'
 import { MainDashboard } from './Pages/MainDashboard'
 import {BrowserRouter , Routes , Route , Link , useNavigate} from "react-router-dom"
+import { ForgotPassword } from './Pages/ForgotPassEmailVerify'
+import { VerifyEmailOTP } from './Pages/ForgotPassOTP'
+import { ChangePass } from './Pages/ChangePass'
 
 function App() {
   return <>
@@ -22,6 +25,9 @@ function App() {
         <Route path="/LiveLink/User/SignIn" element={<SignInPage/>}/>
         <Route path="/LiveLink/User/Dashboard/Chat" element={<MainDashboard/>}/>
         <Route path="/LiveLink/Created/Account/Success" element={<SuccessCreatedAccount/>}/>
+        <Route path="/LiveLink/User/SignIn/Forgot/Password" element={<ForgotPassword/>}/>
+        <Route path="/LiveLink/User/SignIn/Forgot/Password/Email/Verification" element={<VerifyEmailOTP/>}/>
+        <Route path="/LiveLink/User/Change/Password" element={<ChangePass/>}/>
       </Routes>
     </BrowserRouter>
   </>

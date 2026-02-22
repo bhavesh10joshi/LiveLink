@@ -1,9 +1,6 @@
 import mongoose from "mongoose";
 import {Schema , model} from "mongoose"
-const DB_LINK : string = "mongodb+srv://josh10bhavesh:zp6aCDbTSZOd1ydK@cluster0.nd6zk.mongodb.net/LiveLink?retryWrites=true&w=majority&appName=Cluster0";
-
 const ObjectId = mongoose.Types.ObjectId;
-mongoose.connect(DB_LINK);
 
 // contains some necessary details of the users 
 const user = new Schema({

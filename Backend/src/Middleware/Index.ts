@@ -23,5 +23,6 @@ export function usermiddleware(req:any , res:Response , next:NextFunction)
         res.status(ClientErrorStatusCodes.Unathorized).json({
             msg : "Wrong Authorization Token Recieved !"
         });
+        return ;
     } 
 }

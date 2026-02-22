@@ -7,16 +7,19 @@ import { Button } from "../Components/Buttons/Button";
 import { Google } from "../Components/Icons/Google";
 import { GitHub } from "../Components/Icons/GitHub";
 import { Footer } from "../Components/Footer/Footer";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import { Validations } from "../ZodVaalidations/Zod";
 import axios from "axios";
 
+
 export function CreateAccount()
 {
-    const NameRef = useRef(null);
-    const EmailRef = useRef(null);
-    const PasswordRef = useRef(null);
+    const Navigate = useNavigate(); 
+    const NameRef:any = useRef(null);
+    const EmailRef:any = useRef(null);
+    const PasswordRef:any = useRef(null);
     const ConfirmPasswordRef = useRef(null);
     const[CurrentPassword , SetCurrentPassword] = useState("");
     const[ConfirmPassword , SetConfirmPassword] = useState("");
@@ -27,22 +30,55 @@ export function CreateAccount()
         Password : "" 
     });
 
-    function HitBackend()
+    async function HitBackend()
     {
+        const currentname = NameRef.current.value;
+        const currentEmail = EmailRef.current.value;
+        const currentpassword = PasswordRef.current.value;
+        const payload = {
+            email : currentEmail , 
+            password : currentpassword ,
+            name : currentname
+        };
 
+        try{
+            const result = await axios.post("http://localhost:5000/LiveLink/Users/SignUp" , payload);
+            
+            if(result)
+            {
+                Navigate("/LiveLink/Created/Account/Success");
+            }
+            else
+            {
+                console.log(result);
+                alert("Failed to create an account , Please try again later !");
+            }
+        }
+        catch(e)
+        {
+            alert("Failed to create an account , Please try again later !");
+        }
     }
-
     function ZodValidationsfortheInput()
     {
-        const result = Validations.safeParse(CurrentParameters);
+        const currentEmail = EmailRef.current.value;
+        const currentpassword = PasswordRef.current.value;
+        console.log(currentEmail , currentpassword);
+        const currentpara = {
+            Email : currentEmail , 
+            Password : currentpassword
+        };
+        const result = Validations.safeParse(currentpara);
         if(!result.success)
         {
+            console.log(result.error);
             SetZodErrors(true);
-            return false;
+            return;
         }
+        SetCurrentParameters(currentpara);
+        SetZodErrors(false);
         HitBackend();
     }
-
     return<>
     <div className="min-h-screen bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)]">
         <Navbar/>
@@ -58,12 +94,18 @@ export function CreateAccount()
                 <div className="mt-[0.4rem]"><Input Inputtype="text" placeholder="John Doe" EndIcon={<Contact/>} Reference={NameRef}/></div>
                 <div className="text-slate-300 mt-[1rem] flex justify-between items-center">
                     <div className="font-bold text-[0.9rem]">Email</div>
-                    <div className="text-[0.7rem] font-bold text-green-700">Valid Email is Required</div>
+                    {ZodError
+                        ?<div className="text-[0.7rem] font-bold text-red-600">Valid Email is Required</div>
+                        :null
+                    }
                 </div>
                 <div className="mt-[0.4rem]"><Input Inputtype="text" placeholder="name@company.com" EndIcon={<Mail/>} Reference={EmailRef}/></div>
                 <div className="text-slate-300 mt-[1rem] flex justify-between items-center">
                     <div className="font-bold text-[0.9rem]">Password</div>
-                    <div className="text-[0.7rem] font-bold text-green-700">Must be at least 10 characters with 1 letter and 1 number</div>
+                    {ZodError
+                        ?<div className="text-[0.7rem] font-bold text-green-700">Must be at least 10 characters with 1 letter and 1 number</div>
+                        :null
+                    }
                 </div>
                 <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="........." EndIcon={<Key/>} Reference={PasswordRef} OnChange={(e:any) => SetCurrentPassword(e.target.value)}/></div>
                 {
@@ -78,7 +120,7 @@ export function CreateAccount()
                 }
                 <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="........." EndIcon={<Key/>} Reference={ConfirmPasswordRef} OnChange={(e:any) => SetConfirmPassword(e.target.value)}/></div>
                 <div className="flex justify-center items-center w-full mt-[2rem]">
-                    <Button size="extrasized" color="Blue" text="Create Account"/>
+                    <Button size="extrasized" color="Blue" text="Create Account" onClick={() => ZodValidationsfortheInput()}/>
                 </div>
                 <div className="flex justify-between mt-[3rem]">
                     <div className="h-[0.1rem] w-[12rem] bg-slate-500"></div>

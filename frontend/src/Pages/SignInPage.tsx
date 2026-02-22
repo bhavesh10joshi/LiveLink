@@ -5,10 +5,43 @@ import { Google } from "../Components/Icons/Google";
 import { GitHub } from "../Components/Icons/GitHub";
 import { Footer } from "../Components/Footer/Footer";
 import { useNavigate } from "react-router-dom";
+import { useRef , useState } from "react";
+import axios from "axios";
+
 
 export function SignInPage()
 {
     const Navigate = useNavigate();
+    const EmailRef:any = useRef(null);
+    const PasswordRef:any = useRef(null);
+
+    async function HitBackend()
+    {
+        const payload:any  = {
+            email : EmailRef.current.value , 
+            password : PasswordRef.current.value
+        };
+
+        try
+        {
+            const result = await axios.post("http://localhost:5000/LiveLink/Users/Login" , payload);
+
+            if(result)
+            {
+                localStorage.setItem("token" , result.data.token);
+                Navigate("/LiveLink/User/Dashboard/Chat");
+            }   
+            else
+            {
+                alert("Error while Logging Up , Please Try Again later !");
+            }
+        }
+        catch(e)
+        {
+            alert("Error while Logging Up , Please Try Again later !");
+        }
+    }
+
 
     function Navigatetosignin()
     {
@@ -27,16 +60,16 @@ export function SignInPage()
         <div className="w-full flex justify-center items-center mt-[2rem]">
             <div className="bg-slate-800 w-[17rem] h-[35rem] lg:h-[37rem] lg:w-[30rem] rounded border-slate-600 border pl-[2rem] pr-[2rem] mb-[5rem]">
                 <div className="text-slate-300 font-bold text-[0.9rem] mt-[2rem]">Email</div>
-                <div className="mt-[0.4rem]"><Input Inputtype="text" placeholder="Enter Your Email"/></div>
+                <div className="mt-[0.4rem]"><Input Inputtype="text" placeholder="Enter Your Email" Reference={EmailRef}/></div>
                 <div className="text-slate-300 font-bold text-[0.9rem] mt-[1rem] flex">
                     <div>Password</div>
                     <div className="w-full flex justify-end">
                         <button type="button" className="text-blue-800 hover:text-slate-500">Forgot Password</button>
                     </div>
                 </div>
-                <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="Enter Your Password"/></div>
+                <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="Enter Your Password" Reference={PasswordRef}/></div>
                 <div className="flex justify-center items-center w-full mt-[2rem]">
-                    <Button size="extrasized" color="Blue" text="Sign In"/>
+                    <Button size="extrasized" color="Blue" text="Sign In" onClick={() => HitBackend()}/>
                 </div>
                 <div className="flex justify-between mt-[3rem]">
                     <div className="h-[0.1rem] w-[12rem] bg-slate-500"></div>

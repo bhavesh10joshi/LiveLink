@@ -17,6 +17,7 @@ const UserRouter = Router();
 UserRouter.post("/SignUp" , async function(req,res)
 {
     // const SignUp : SignUpInput = req.body;
+    const name:any = req.body.name;
     const zodsafeObject = UserObject.safeParse(req.body);
 
     if(!zodsafeObject.success)
@@ -34,20 +35,33 @@ UserRouter.post("/SignUp" , async function(req,res)
 
     if(hashedpassword)
     {
-        UserModel.create({
-            email : SignUp.email , 
-            password : hashedpassword ,
-            UniqueId : Id
-        });
-        res.status(SuccessStatusCodes.ResourceCreated).json({
-            msg : "Successfully Created User !"
-        });
+        try
+        {
+            UserModel.create({
+                name : name,
+                email : SignUp.email , 
+                password : hashedpassword ,
+                UniqueId : Id
+            });
+            res.status(SuccessStatusCodes.ResourceCreated).json({
+                msg : "Successfully Created User !"
+            });
+            return;
+        }
+        catch(e)
+        {
+            res.status(ServerErrors.InternalServerError).json({
+                msg : "Internal Server Error !" 
+            });
+            return ;
+        }
     }
     else
     {
         res.status(ServerErrors.InternalServerError).json({
             msg : "Internal Server Error !" 
         });
+        return ;
     }
 });
 // Endpoint for Signing In into the Application 
@@ -56,34 +70,52 @@ UserRouter.post("/Login" , async function(req,res)
     const email : string = req.body.email ;
     const password : string = req.body.password ; 
     
-    const FindUser = await UserModel.findOne({
-        email : email
-    });
+    try{
+        const FindUser = await UserModel.findOne({
+            email : email
+        });
 
-    if(FindUser)
-    {
-        const Checkpass = await bcrypt.compare(password , FindUser.password); 
-        if(Checkpass)
+        if(FindUser)
         {
-            const token = jwt.sign({
-                id : FindUser._id 
-            } , USER_SECRET);
+            try
+            {
+                const Checkpass = await bcrypt.compare(password , FindUser.password);
+                if(Checkpass)
+                {
+                    const token = jwt.sign({
+                        id : FindUser._id 
+                    } , USER_SECRET);
 
-            res.status(SuccessStatusCodes.Success).json({
-                token : token
-            });
+                    res.status(SuccessStatusCodes.Success).json({
+                        token : token
+                    });
+                }
+                else
+                {
+                    res.status(ServerErrors.InternalServerError).json({
+                        msg : "Error while comparing the passwords using bcrypt "
+                    });
+                }
+            } 
+            catch(e)
+            {
+                res.status(ServerErrors.InternalServerError).json({
+                    msg : "Error while comparing the passwords using bcrypt " + e
+                });
+            }
         }
         else
         {
             res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "Incorrect Password Given by the user !"
+                msg : "The Email given was not found !"
             });
         }
     }
-    else{
+    catch(e)
+    {
         res.status(ClientErrorStatusCodes.ResourceNotFound).json({
             msg : "The Email given was not found !"
-        });
+        });  
     }
 });
 // Endpoint for genrating the otp while changing the password of the email during the Login and sending it to the client Registered Email

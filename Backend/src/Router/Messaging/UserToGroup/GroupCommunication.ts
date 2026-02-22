@@ -3,10 +3,17 @@ import { usermiddleware } from "../../../Middleware/Index";
 import { SuccessStatusCodes , ClientErrorStatusCodes ,ServerErrors } from "../../../StatusCodes";
 import { Router } from "express";
 import { getCurrentDate } from "../../../CurrentDate/Date";
+import { v2 as cloudinary } from 'cloudinary'
+
+cloudinary.config({ 
+  cloud_name: 'dumtrt8jf', 
+  api_key: '919417617148188', 
+  api_secret: 'exM0shy1nX8lXhbufEfdGlayyAQ'
+});
 
 const UserToGroupMessageRouter = Router();
 
-UserToGroupMessageRouter.post("/Send/toAll" , usermiddleware , async function(req:any , res)
+UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async function(req:any , res)
 {
     const GroupId : String = req.body.GroupId; 
     const ContentType : any = req.body.ContentType;
@@ -32,9 +39,40 @@ UserToGroupMessageRouter.post("/Send/toAll" , usermiddleware , async function(re
         });
         return;
     }
+});
+UserToGroupMessageRouter.post("/Image/Send/ToAll" , async function(req:any,res)
+{
+    const GroupId : String = req.body.RecieverId;
+    const ContentType : any = "image";
+    const file = req.files.photo;
+
+    try
+    {
+        await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any)
+        {
+            await UserToGroupMessageModel.create({
+                reciever : GroupId , 
+                ContentType:ContentType , 
+                sender : req.UserId , 
+                Message : result.url , 
+                time : getCurrentDate()  
+            });
+        });
+        res.status(SuccessStatusCodes.Success).json({
+            msg : "The Message was sent successfully !"
+        });
+        return ;
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Cloudinary File Uploader is not responding !"+e
+        });
+        return;
+    }
 })
 
-UserToGroupMessageRouter.get("Access/All" , usermiddleware , async function(req , res)
+UserToGroupMessageRouter.get("/Access/All" , usermiddleware , async function(req , res)
 {
     const GroupId:String = req.body.GroupId;
 
