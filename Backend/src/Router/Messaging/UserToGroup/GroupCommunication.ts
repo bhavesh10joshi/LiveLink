@@ -5,11 +5,6 @@ import { Router } from "express";
 import { getCurrentDate } from "../../../CurrentDate/Date";
 import { v2 as cloudinary } from 'cloudinary'
 
-cloudinary.config({ 
-  cloud_name: 'dumtrt8jf', 
-  api_key: '919417617148188', 
-  api_secret: 'exM0shy1nX8lXhbufEfdGlayyAQ'
-});
 
 const UserToGroupMessageRouter = Router();
 

@@ -6,11 +6,6 @@ import { getCurrentDate } from "../../../CurrentDate/Date";
 import { CheckFortheFriend } from "../../../CheckForAFriend/CheckForaFriend";
 import { v2 as cloudinary } from 'cloudinary'
 
-cloudinary.config({ 
-  cloud_name: 'dumtrt8jf', 
-  api_key: '919417617148188', 
-  api_secret: 'exM0shy1nX8lXhbufEfdGlayyAQ'
-});
 
 const UserToUserMessageRouter = Router();
 
