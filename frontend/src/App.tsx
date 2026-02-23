@@ -6,12 +6,14 @@ import { FeaturesPage } from './Pages/FeaturesPage'
 import { CreateAccount } from './Pages/CreateAnAccount'
 import { SignInPage } from './Pages/SignInPage'
 import { SuccessCreatedAccount } from './Pages/SuccessCreatedAccount'
-import { UserToGroupChatDashboard } from './Components/ChattingDashboards/UserToGroupChatDashboard'
 import { MainDashboard } from './Pages/MainDashboard'
 import {BrowserRouter , Routes , Route , Link , useNavigate} from "react-router-dom"
 import { ForgotPassword } from './Pages/ForgotPassEmailVerify'
 import { VerifyEmailOTP } from './Pages/ForgotPassOTP'
 import { ChangePass } from './Pages/ChangePass'
+import { SuccessChangePass } from './Pages/Successchangepass'
+import { UploadProfileImage } from './Pages/UploadProfileImage'
+import { Editsuccess } from './Components/SuccessPage/EditSuccess'
 
 function App() {
   return <>
@@ -28,6 +30,9 @@ function App() {
         <Route path="/LiveLink/User/SignIn/Forgot/Password" element={<ForgotPassword/>}/>
         <Route path="/LiveLink/User/SignIn/Forgot/Password/Email/Verification" element={<VerifyEmailOTP/>}/>
         <Route path="/LiveLink/User/Change/Password" element={<ChangePass/>}/>
+        <Route path="/LiveLink/User/Success/Changed/Password" element={<SuccessChangePass/>}/>
+        <Route path="/LiveLink/User/Edit/Profile/Upload/Image" element={<UploadProfileImage/>}/>
+        <Route path="/LiveLink/User/Edit/Success" element={<Editsuccess/>}/>
       </Routes>
     </BrowserRouter>
   </>

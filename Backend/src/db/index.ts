@@ -7,16 +7,14 @@ const user = new Schema({
     email : {type : String , required : true , unique : true} ,
     password : {type : String , required : true , unique: true} , 
     name : {type : String} , 
+    about : {type : String} , 
+    ProfilePhoto : {type : String , default : "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740&q=80"} , 
     // image that the use will be uploading as per his/her preference has to be implemented 
     UniqueId : {type : String , unique : true , required:true}   ,
     ResetOTP : {type : String} , 
-    ResetOTPExpiry : {type : String} , 
-    RecieversList : [{type : ObjectId}] ,
+    ResetOTPExpiry : {type : String} ,
     GroupList : [{type : ObjectId}] ,
     PersonalMessagingList : [{type : ObjectId}] ,
-    // It tells us whether the given account is Activated or Deactivated as per Users Request
-    // If the Status id true it means the Account is in Active Condition and if false then it means that the Account is in Deactive condition 
-    Status : {type : Boolean , default : true}
 });
 
 // contains messages related information of that particular user 
@@ -43,6 +41,7 @@ const group = new Schema({
     creatorId : {type : ObjectId , required : true} ,
     UniqueId : {type : String},
     name : {type : String},  
+    GroupProfileImage : {type : String , default : "https://res.cloudinary.com/dumtrt8jf/image/upload/v1771816036/GroupAvatar_qvbz2x.jpg"} ,
     // contains the image of the group that user set up
     bio : {type : String} ,
     UsersList : [{type : ObjectId}]  

@@ -3,6 +3,14 @@ import { UserModel, GroupModel , GroupInvitationsModel} from "../../db";
 import { SuccessStatusCodes, ClientErrorStatusCodes , ServerErrors } from "../../StatusCodes";
 import { usermiddleware } from "../../Middleware/Index";
 import { UniqueId } from "../../uuid";
+import { CheckForaGroupMember } from "../../CheckforaGroupMember/CheckGroupMember";
+import { v2 as cloudinary } from 'cloudinary'
+
+cloudinary.config({ 
+  cloud_name: process.env.CLOUD_NAME as string , 
+  api_key: process.env.CLOUD_API_KEY as string , 
+  api_secret: process.env.CLOUD_API_SECRET as string
+});
 
 const GroupRouter = Router();
 
@@ -292,7 +300,7 @@ GroupRouter.post("/Remove/Group-Member" , usermiddleware , async function(req:an
                     }
             );
             await GroupModel.updateOne(
-                    { _id: User._id },
+                    { _id: Group._id },
                     { 
                         $pull: { UsersList: User._id } 
                     }
@@ -309,6 +317,126 @@ GroupRouter.post("/Remove/Group-Member" , usermiddleware , async function(req:an
         }
     }
 });
-
+GroupRouter.post("/Edit/Group/Profile" , usermiddleware , async function(req:any,res)
+{
+    const name = req.body.name;
+    const bio = req.body.bio;
+    const UniqueGroupId = req.body.GroupId ;
+    const UserId:String = req.UserId;
+    //Checking if the user is the member of the group and if he/she is the creator of the group
+    try
+    {
+        const data:any = await GroupModel.findOne({
+            UniqueId : UniqueGroupId
+        });
+        if(data)
+        {
+            // Checking if the User Belongs to this group and if he is the creator or not ??
+            if(CheckForaGroupMember(data.UsersList , UserId , data.creatorId))
+            {
+                await GroupModel.updateOne(
+                    { _id: data._id },
+                    { $set: {name : name , bio : bio}} 
+                );
+                res.status(SuccessStatusCodes.Success).json({
+                    msg : "Profile Edited Successfully !"
+                });
+                return;
+            }
+            else
+            {
+                res.status(ClientErrorStatusCodes.FailedValidation).json({
+                    msg : "You're not an Admin !"
+                })
+            }
+        }
+        else
+        {
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "The Given Group Does not exists !"
+            });
+            return ;
+        }
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occured !"
+        });
+        return ;
+    }  
+});
+// Endpoint for Updating the Group Profile Image
+GroupRouter.post("/Edit/Group/Profile/Image" , usermiddleware , async function(req:any,res)
+{
+    const file = req.files.photo;
+    const UniqueGroupId = req.body.GroupId ;
+    const UserId:String = req.UserId;
+    //Checking if the user is the member of the group and if he/she is the creator of the group
+    try
+    {
+        const data:any = await GroupModel.findOne({
+            UniqueId : UniqueGroupId
+        });
+        if(data)
+        {
+            // Checking if the User Belongs to this group and if he is the creator or not ??
+            if(CheckForaGroupMember(data.UsersList , UserId , data.creatorId))
+            {
+                try
+                {
+                    await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any)
+                    {
+                        try
+                        {
+                            await GroupModel.updateOne(
+                                {_id : data._id},
+                                { $set : {GroupProfileImage :result.url}}
+                            );
+                        }
+                        catch(e)
+                        {
+                            res.status(ServerErrors.InternalServerError).json({
+                                msg : "Internal Server Error !"
+                            });
+                            return ;
+                        }
+                    });
+                    res.status(SuccessStatusCodes.Success).json({
+                        msg : "Profile Updated Successfully !"
+                    });
+                    return;
+                }
+                catch(e)
+                {
+                    res.status(ServerErrors.InternalServerError).json({
+                        msg : "Cloudinary Server is not responding !"
+                    });
+                    return ;
+                }
+            }
+            else
+            {
+                res.status(ClientErrorStatusCodes.FailedValidation).json({
+                    msg : "You're not an Admin !"
+                })
+            }
+        }
+        else
+        {
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "The Given Group Does not exists !"
+            });
+            return ;
+        }
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occured !"
+        });
+        return ;
+    }    
+});
 
 export default GroupRouter;

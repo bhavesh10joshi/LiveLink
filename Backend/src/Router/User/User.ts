@@ -1,15 +1,22 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Router } from "express";
-import { UserModel, GroupModel ,GroupInvitationsModel , PersonalInvitationsModel } from "../../db";
+import { UserModel, GroupModel ,GroupInvitationsModel , PersonalInvitationsModel, UserToUserMessageModel } from "../../db";
 import { SuccessStatusCodes, ClientErrorStatusCodes , ServerErrors } from "../../StatusCodes";
 import { sendOTP } from "../../Nodemailer/emailvianode";
 import { generateOTP } from "../../otp/otp";
 import { usermiddleware } from "../../Middleware/Index";
 import { UserObject , SignUpInput , passInput , passwordObject } from "../../ZodValidations";
 import { UniqueId } from "../../uuid";
+import { v2 as cloudinary } from 'cloudinary'
+import { Server } from "http";
 
-const USER_SECRET : string = "tokengenerationsecretforjwtusers";
+cloudinary.config({ 
+  cloud_name: process.env.CLOUD_NAME as string , 
+  api_key: process.env.CLOUD_API_KEY as string , 
+  api_secret: process.env.CLOUD_API_SECRET as string
+});
+
 const UserRouter = Router();
 
 // express endpoints
@@ -84,24 +91,30 @@ UserRouter.post("/Login" , async function(req,res)
                 {
                     const token = jwt.sign({
                         id : FindUser._id 
-                    } , USER_SECRET);
+                    } , process.env.USER_SECRET as string);
 
                     res.status(SuccessStatusCodes.Success).json({
                         token : token
                     });
+                    return;
                 }
                 else
                 {
+                    console.log("Error aaya");
                     res.status(ServerErrors.InternalServerError).json({
                         msg : "Error while comparing the passwords using bcrypt "
                     });
+                    return;
                 }
             } 
             catch(e)
             {
+                console.log(process.env.USER_SECRET);
+                console.log("yeyyeye "+e);
                 res.status(ServerErrors.InternalServerError).json({
                     msg : "Error while comparing the passwords using bcrypt " + e
                 });
+                return;
             }
         }
         else
@@ -109,6 +122,7 @@ UserRouter.post("/Login" , async function(req,res)
             res.status(ClientErrorStatusCodes.ResourceNotFound).json({
                 msg : "The Email given was not found !"
             });
+            return;
         }
     }
     catch(e)
@@ -116,6 +130,7 @@ UserRouter.post("/Login" , async function(req,res)
         res.status(ClientErrorStatusCodes.ResourceNotFound).json({
             msg : "The Email given was not found !"
         });  
+        return;
     }
 });
 // Endpoint for genrating the otp while changing the password of the email during the Login and sending it to the client Registered Email
@@ -195,7 +210,7 @@ UserRouter.post("/Otp/Authentication" , async function(req , res)
     });
 }) ;
 //Endpoint for updating the password !
-UserRouter.post("/change/password" , async function(req,res)
+UserRouter.post("/Change/password" , async function(req,res)
 {
     const email = req.body.email;
     const zodsafeObject = passwordObject.safeParse(req.body);
@@ -237,7 +252,7 @@ UserRouter.post("/change/password" , async function(req,res)
 }) ;
 //Everything after this needs token Authorization !
 //Endpoint for changing the password of the user from profile while logged in 
-UserRouter.post("/change/Password/otp-Generate" , usermiddleware , async function(req : any , res)
+UserRouter.post("/Change/Password/otp-Generate" , usermiddleware , async function(req : any , res)
 {
     const otp = generateOTP();
     const hashedOtp = await bcrypt.hash(otp , 5);
@@ -286,15 +301,13 @@ UserRouter.delete("/Delete/Account" ,usermiddleware, async function(req:any , re
 // Endpoints for making some changes in Profile of User
 UserRouter.post("/Profile/Edit" , usermiddleware , async function(req:any , res)
 {
-    const Choice:string = req.body.choice;
-    
     const name = req.body.name;
-    const email = req.body.email;
+    const about = req.body.about;
         try
         {
             await UserModel.updateOne(
                 { _id : req.UserId }, 
-                { $set: {name : name , email : email}} 
+                { $set: {name : name , about : about}} 
             ); 
             res.status(SuccessStatusCodes.Success).json({
                 msg : "Profile updated Successfully !"   
@@ -306,6 +319,41 @@ UserRouter.post("/Profile/Edit" , usermiddleware , async function(req:any , res)
                 msg : "Internal Server Error !"
             });
         }
+});
+// Endpoint for changing the profile image of the user
+UserRouter.post("/Profile/Edit/Image" , usermiddleware , async function(req:any,res)
+{
+    const file = req.files.photo;
+    try
+    {
+        await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any)
+        {
+            try{
+                await UserModel.updateOne(
+                    { _id : req.UserId }, 
+                    { $set: { ProfilePhoto : result.url} }
+                );
+            }
+            catch(e)
+            {
+                res.status(ServerErrors.InternalServerError).json({
+                    msg : "Internal Server Error !"
+                });
+                return ;
+            }            
+        });
+        res.status(SuccessStatusCodes.Success).json({
+            msg : "Profile Photo Updated Successfully !"
+        });
+        return;
+    }
+    catch(e)
+    {   
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Cloudinary Server is Not responding !"
+        });
+        return ;
+    }
 });
 // Endpoint for sending a personal invite for start messaging from a user to a user
 UserRouter.post("/Personal/Start-messaging/Send-Invite" ,usermiddleware,async function(req:any , res)
@@ -433,6 +481,102 @@ UserRouter.post("/Invitation/Personal/Message-Invite" , usermiddleware , async f
 
         res.status(SuccessStatusCodes.Success).json({
             msg : "Invitation Rejected Successfully !"
+        });
+        return;
+    }
+});
+// Endpoint for accessing all the Notifications that are related to personal Invitations(Only One that are unread)
+UserRouter.get("/Access/Personal/Notifications" ,usermiddleware, async function(req:any,res)
+{
+    try
+    {
+        const data = await PersonalInvitationsModel.find({
+            RecieverId : req.UserId , 
+            ReadOrNot : false
+        });
+        if(data)
+        {
+            res.status(SuccessStatusCodes.Success).json({
+                msg : data
+            });
+            return;
+        }
+        else
+        {
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "No Personal Invitations found !"
+            });
+            return;
+        }
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occurred !"
+        });
+        return;
+    }
+});
+// Endpoint that gives us all the notifications that are related to group Invitations(Only one that are unread)
+UserRouter.get("/Access/Group/Notifications" , usermiddleware , async function(req:any,res)
+{
+    try
+    {
+        const data = await GroupInvitationsModel.find({
+            RecieverId : req.UserId , 
+            ReadOrNot : false
+        });
+        if(data)
+        {
+            res.status(SuccessStatusCodes.Success).json({
+                msg : data
+            });
+            return;
+        }
+        else
+        {
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "No Personal Invitations found !"
+            });
+            return;
+        }
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occurred !"
+        });
+        return;
+    }
+});
+// Endpoint for Getting all the profile details of the user 
+UserRouter.get("/Profile/Details" , usermiddleware , async function(req:any,res)
+{
+    try
+    {
+        const data = await UserModel.findOne({
+            _id : req.UserId  
+        });
+        if(data)
+        {
+            res.status(SuccessStatusCodes.Success).json({
+                msg : data
+            });
+            return;
+        }
+        else
+        {
+            console.log(data);
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "This User Does Not Exists !"
+            });
+            return ;
+        }
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error !"
         });
         return;
     }

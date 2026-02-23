@@ -2,6 +2,9 @@ import { CloseIcon } from "../Components/Icons/CloseIcon"
 import { SaveChanges } from "../Components/Icons/SaveChanges"
 import { useState } from "react"
 import { EmailAuthChangePassword } from "./AuthenticationChangePassword"
+import { useRef } from "react"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 interface EditStyle
 {
@@ -13,6 +16,36 @@ interface EditStyle
 
 export function EditUserProfile(props:EditStyle)
 {
+    const Navigate = useNavigate();
+    async function HitBackend()
+    {
+        // it is a safety net suppose if the user leaves the input box empty!
+        const CurrentName = NameRef.current?.value||props.Name;
+        const CurrentAbout = AboutRef.current.value||props.About;
+
+        const token = localStorage.getItem("token");
+        const config:any = {
+            headers: {
+                "authorization": token
+            } 
+        };
+        const payload:any = {
+            name : CurrentName , 
+            about : CurrentAbout
+        } 
+        try{
+            await axios.post("http://localhost:5000/LiveLink/Users/Profile/Edit" , payload , config);
+            Navigate("/LiveLink/User/Edit/Success");
+        }
+        catch(e)
+        {
+            console.log(e);
+            alert("Error while Saving the Changes !");
+        }
+    }
+    const NameRef:any = useRef(null);
+    const AboutRef:any = useRef(null);
+
     const [ChangePassword , SetChangePassword] = useState(false);
 
     function SetChangePasswordFunction()
@@ -39,13 +72,13 @@ export function EditUserProfile(props:EditStyle)
                     Name
                 </div>
                 <div className="w-full h-[3rem] pl-[2rem] pr-[2rem] mt-[0.5rem]">
-                    <input type="text" className="w-full h-full rounded-md bg-slate-500 text-black-900 placeholder:text-white text-[0.9rem] pl-[1rem] pr-[1rem]" placeholder={props.Name} aria-label="Name"/>
+                    <input type="text" className="w-full h-full rounded-md bg-slate-500 text-black-900 placeholder:text-white text-[0.9rem] pl-[1rem] pr-[1rem]" placeholder="Enter the New Name...." aria-label="Name" ref={NameRef}/>
                 </div>
                 <div className="flex justify-start items-center pl-[2rem] pr-[2rem] text-[0.8rem] text-slate-300 mt-[1rem]">
                     About / Description 
                 </div>
                 <div className="w-full h-[3rem] pl-[2rem] pr-[2rem] mt-[0.5rem]">
-                    <input type="text" className="w-full h-full rounded-md bg-slate-500 text-black-900 placeholder:text-white text-[0.9rem] pl-[1rem] pr-[1rem]" placeholder={props.About} aria-label="Name"/>
+                    <input type="text" className="w-full h-full rounded-md bg-slate-500 text-black-900 placeholder:text-white text-[0.9rem] pl-[1rem] pr-[1rem]" placeholder="Enter a new About/Description...." aria-label="Name" ref={AboutRef}/>
                 </div>
                 <div className="w-full pl-[2rem] pr-[2rem] pt-[0.5rem] mt-[0.5rem]">
                     <button type="button" className="flex justify-center items-center h-[3rem] w-full rounded-md bg-blue-900 text-slate-300 font-bold border border-slate-500" onClick={()=>SetChangePasswordFunction()}>
@@ -60,7 +93,7 @@ export function EditUserProfile(props:EditStyle)
                 </div>
                 <div className="h-[2px] w-full bg-slate-700 mt-[2rem]"></div>
                 <div className="flex justify-center items-center w-full pl-[2rem] pr-[2rem] pt-[1rem] pb-[1rem]">
-                    <button type="button" aria-label="Name" className="flex justify-center items-center w-4/6 bg-blue-950 border-blue-800 border rounded-md h-[3rem]">
+                    <button type="button" aria-label="Name" className="flex justify-center items-center w-4/6 bg-blue-950 border-blue-800 border rounded-md h-[3rem]" onClick={() => HitBackend()}>
                         <div><SaveChanges/></div>
                         <div className="ml-[0.2rem] text-[1rem] text-slate-300">Save Changes</div>
                     </button>
