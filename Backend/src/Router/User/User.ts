@@ -8,14 +8,7 @@ import { generateOTP } from "../../otp/otp";
 import { usermiddleware } from "../../Middleware/Index";
 import { UserObject , SignUpInput , passInput , passwordObject } from "../../ZodValidations";
 import { UniqueId } from "../../uuid";
-import { v2 as cloudinary } from 'cloudinary'
-import { Server } from "http";
-
-cloudinary.config({ 
-  cloud_name: process.env.CLOUD_NAME as string , 
-  api_key: process.env.CLOUD_API_KEY as string , 
-  api_secret: process.env.CLOUD_API_SECRET as string
-});
+import cloudinary from "../../CloudinaryConfig/Cloudinary";
 
 const UserRouter = Router();
 
@@ -324,6 +317,7 @@ UserRouter.post("/Profile/Edit" , usermiddleware , async function(req:any , res)
 UserRouter.post("/Profile/Edit/Image" , usermiddleware , async function(req:any,res)
 {
     const file = req.files.photo;
+
     try
     {
         await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any)
@@ -348,7 +342,7 @@ UserRouter.post("/Profile/Edit/Image" , usermiddleware , async function(req:any,
         return;
     }
     catch(e)
-    {   
+    {
         res.status(ServerErrors.InternalServerError).json({
             msg : "Cloudinary Server is Not responding !"
         });
@@ -360,48 +354,43 @@ UserRouter.post("/Personal/Start-messaging/Send-Invite" ,usermiddleware,async fu
 {
     const UserUniqueId = req.body.UserUniqueId;
 
-    // checking whether the User Exsts or not !
-    const RecieverId = await UserModel.findOne({
-        UniqueId : UserUniqueId
-    });
-
-    if(!RecieverId)
-    {
-        res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-            msg : "Invalid Reciever For the Invitation !"
-        });
-        return;
-    }
-
-    // Checking whether there is already a request pending or not !
-    const CheckInvitation = await PersonalInvitationsModel.findOne({
-        SenderId : req.UserId , 
-        RecieverId : RecieverId._id 
-    }); 
-
-    if(CheckInvitation)
-    {
-        res.status(ClientErrorStatusCodes.Conflicts).json({
-            msg : "Invitation Already Exists !"
-        });
-        return;
-    }   
-
     try{
-        await PersonalInvitationsModel.create({
-            SenderId : req.UserId , 
-            RecieverId : RecieverId._id ,
-            Status : false ,
-            ReadOrNot : false 
+        // checking whether the User Exsts or not !
+        const RecieverId = await UserModel.findOne({
+            UniqueId : UserUniqueId
         });
-        res.status(SuccessStatusCodes.ResourceCreated).json({
-            msg : "Invitation Sent Successfully !"
-        });
+
+        if(!RecieverId)
+        {
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "Invalid Reciever For the Invitation !"
+            });
+            return;
+        }
+        try{
+            await PersonalInvitationsModel.create({
+                SenderId : req.UserId , 
+                RecieverId : RecieverId._id ,
+                Status : false ,
+                ReadOrNot : false 
+            });
+            res.status(SuccessStatusCodes.ResourceCreated).json({
+                msg : "Invitation Sent Successfully !"
+            });
+            return;
+        }
+        catch(e)
+        {
+            res.status(ServerErrors.InternalServerError).json({
+                msg : "Internal Server Error Encountered !"
+            });
+            return;
+        }
     }
     catch(e)
     {
         res.status(ServerErrors.InternalServerError).json({
-            msg : "Internal Server Error Encountered !"
+                msg : "Internal Server Error Encountered !"
         });
         return;
     }
@@ -409,78 +398,91 @@ UserRouter.post("/Personal/Start-messaging/Send-Invite" ,usermiddleware,async fu
 // Endpoints For Accepting or Rejecting the Invitation For Joining the Personal Chat
 UserRouter.post("/Invitation/Personal/Message-Invite" , usermiddleware , async function(req:any , res)
 {
+    const PersonalInvitationId = req.body.PersonalInvitationId;
     const SenderUniqueId = req.body.SenderUniqueId;
     const Decision:boolean = req.body.Decision;
 
-    //Finding if the Sender Still exists
-    const FindSender:any = await UserModel.findOne({
-        UniqueId : SenderUniqueId
-    });
-
-    if(!FindSender)
-    {
-        res.status(ClientErrorStatusCodes.Conflicts).json({
-            msg : "The Sender of the Invite Does not exists !"
+    // Checking if the Sender still exists 
+    try{
+        const FindSender = await UserModel.findOne({
+            UniqueId : SenderUniqueId
         });
-        return;
+        if(!FindSender || !Decision)
+        {
+            // if find sender does not exists then simply delete the invitation !
+            try
+            {
+                await PersonalInvitationsModel.deleteOne({
+                    _id : PersonalInvitationId
+                });
+                res.status(SuccessStatusCodes.Success).json({
+                    msg : "No such Invitation exists !"
+                });
+                return;
+            }
+            catch(e)
+            {
+                res.status(ServerErrors.InternalServerError).json({
+                    msg : "Internal Server Error occurred !"
+                });
+                return;
+            }
+        }
+        else
+        {
+            try
+            {
+                const Findreciever = await UserModel.findOne({
+                    _id : req.UserId
+                });
+                if(!Findreciever)
+                {
+                    res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                        msg : "User does not exists !"
+                    });
+                    return;
+                }
+                const RecieverPayload = {
+                    name : Findreciever.name , 
+                    profilephoto : Findreciever.ProfilePhoto , 
+                    uniqueid : Findreciever.UniqueId
+                };
+                const SenderPayload = {
+                    name : FindSender.name , 
+                    profilephoto : FindSender.ProfilePhoto , 
+                    uniqueid : FindSender.UniqueId
+                };
+                // adding sender to the friendlist of reciever
+                await UserModel.updateOne(
+                    { _id : req.UserId}, 
+                    { $push: {PersonalMessagingList : SenderPayload}} 
+                );
+                // adding reciever to the friendlist of sender
+                await UserModel.updateOne(
+                    { _id : FindSender._id}, 
+                    { $push: {PersonalMessagingList : RecieverPayload}} 
+                );
+                await PersonalInvitationsModel.deleteOne({
+                    _id : PersonalInvitationId
+                }); 
+                res.status(SuccessStatusCodes.ResourceCreated).json({
+                    msg : "Invitation accepted Successfully !"
+                });
+                return;
+            }
+            catch(e)
+            {   
+                res.status(ServerErrors.InternalServerError).json({
+                    msg : "Internal Server Occurred !"
+                });
+                return;
+            }
+        }
     }
-
-    if(Decision)
+    catch(e)
     {
-        // Accepted the Invitation of the sender
-        const Invite = await PersonalInvitationsModel.updateOne(
-                { SenderId : FindSender._id , RecieverId : req.UserId }, 
-                { $set: {Status : true , ReadOrNot : true}} 
-        );
-
-        if(!Invite)
-        {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "The Invitation does not Exists"
-            });
-            return;
-        }
-        
-        try{
-            await UserModel.updateOne(
-                { _id : req.UserId}, 
-                { $push: {PersonalMessagingList : FindSender._id}} 
-            );
-            await UserModel.updateOne(
-                { _id : FindSender._id}, 
-                { $push: {PersonalMessagingList : req.UserId}} 
-            );
-            res.status(SuccessStatusCodes.Success).json({
-                msg : "Invitation Accepted Successfully !"
-            });
-        }
-        catch(e)
-        {
-            res.status(ServerErrors.InternalServerError).json({
-                msg : "Internal Server Error Occurred !"  
-            });
-            return;
-        }
-        return;
-    } 
-    else
-    {
-        // Rejected the Invitation of the sender
-        const Invite = await PersonalInvitationsModel.updateOne(
-                { SenderId : FindSender._id , RecieverId : req.UserId }, 
-                { $set: {Status : false , ReadOrNot : true}} 
-        );
-
-        if(!Invite)
-        {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "The Invitation does not Exists"
-            });
-            return;
-        }
-
-        res.status(SuccessStatusCodes.Success).json({
-            msg : "Invitation Rejected Successfully !"
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Occurred !"
         });
         return;
     }

@@ -31,7 +31,6 @@ function App() {
         <Route path="/LiveLink/User/SignIn/Forgot/Password/Email/Verification" element={<VerifyEmailOTP/>}/>
         <Route path="/LiveLink/User/Change/Password" element={<ChangePass/>}/>
         <Route path="/LiveLink/User/Success/Changed/Password" element={<SuccessChangePass/>}/>
-        <Route path="/LiveLink/User/Edit/Profile/Upload/Image" element={<UploadProfileImage/>}/>
         <Route path="/LiveLink/User/Edit/Success" element={<Editsuccess/>}/>
       </Routes>
     </BrowserRouter>

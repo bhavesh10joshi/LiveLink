@@ -4,13 +4,7 @@ import { SuccessStatusCodes, ClientErrorStatusCodes , ServerErrors } from "../..
 import { usermiddleware } from "../../Middleware/Index";
 import { UniqueId } from "../../uuid";
 import { CheckForaGroupMember } from "../../CheckforaGroupMember/CheckGroupMember";
-import { v2 as cloudinary } from 'cloudinary'
-
-cloudinary.config({ 
-  cloud_name: process.env.CLOUD_NAME as string , 
-  api_key: process.env.CLOUD_API_KEY as string , 
-  api_secret: process.env.CLOUD_API_SECRET as string
-});
+import cloudinary from "../../CloudinaryConfig/Cloudinary";
 
 const GroupRouter = Router();
 
@@ -20,23 +14,38 @@ GroupRouter.post("/Create" ,usermiddleware, async function(req:any , res)
     const name = req.body.name;
     const bio = req.body.bio;
     const Id = UniqueId();
+    const file = req.files.photo;
     
     try{
-        await GroupModel.create({
-            creatorId : req.UserId ,
-            UniqueId : Id, 
-            name : name , 
-            bio : bio
+        await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any){
+            try{
+                await GroupModel.create({
+                    name : name , 
+                    UniqueId : Id , 
+                    GroupProfileImage : result.url , 
+                    bio : bio , 
+                    creatorId : req.UserId
+                });
+                res.status(SuccessStatusCodes.Success).json({
+                    msg : "Successfully created the group !"
+                });
+                return;
+            }   
+            catch(e)
+            {
+                res.status(ServerErrors.InternalServerError).json({
+                    msg : "Internal Server Error Occurred !"
+                });
+                return;
+            }
         });
-        res.status(SuccessStatusCodes.ResourceCreated).json({
-            msg : "Group Created Successfully !"
-        }); 
     }
     catch(e)
     {
-        req.status(ServerErrors.InternalServerError).json({
+        res.status(ServerErrors.InternalServerError).json({
             msg:"Internal Server Error !"
         });
+        return;
     }
 });
 // Making the Changes into the Group info

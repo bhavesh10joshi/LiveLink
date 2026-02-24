@@ -8,9 +8,14 @@ import mongoose from "mongoose";
 import fileUpload from "express-fileupload";
 import dotenv from "dotenv";
 import path from "path";
-dotenv.config({
-  path: path.resolve(__dirname, "../.env")
-})
+const envPath = path.resolve(process.cwd(), ".env");
+dotenv.config({ path: envPath });
+
+const Mongo_url = process.env.MONGO_DB_URL;
+
+if (!Mongo_url) {
+  throw new Error("Cloudinary environment variables are missing from .env!");
+}
 
 const app = express();
 app.use(express.json());
@@ -29,7 +34,7 @@ main();
 async function main()
 {
     try{
-        await mongoose.connect(process.env.MONGO_DB_URL as string);
+        await mongoose.connect(Mongo_url as string);
         app.listen(5000);
         console.log("Connected to Server !");
     }
