@@ -3,32 +3,45 @@ import { usermiddleware } from "../../../Middleware/Index";
 import { SuccessStatusCodes , ClientErrorStatusCodes ,ServerErrors } from "../../../StatusCodes";
 import { Router } from "express";
 import { getCurrentDate } from "../../../CurrentDate/Date";
-import { v2 as cloudinary } from 'cloudinary'
-
-cloudinary.config({ 
-  cloud_name: process.env.CLOUD_NAME as string , 
-  api_key: process.env.CLOUD_API_KEY as string , 
-  api_secret: process.env.CLOUD_API_SECRET as string
-});
+import cloudinary from "../../../CloudinaryConfig/Cloudinary";
 
 const UserToGroupMessageRouter = Router();
 
 UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async function(req:any , res)
 {
     const GroupId : String = req.body.GroupId; 
-    const ContentType : any = req.body.ContentType;
+    const ContentType : any = "text";
     const Message:any = req.body.Message;
 
     try{
-        await UserToGroupMessageModel.create({
-            sender : req.UserId , 
-            reciever : GroupId , 
-            Message : Message , 
-            time : getCurrentDate() , 
-            ContentType : ContentType
-        });
-        res.status(SuccessStatusCodes.Success).json({
-            msg : "Message was sent !"
+        const sendChatMessage = async (senderId:any, groupId:any, messageContent:any) => {
+        try {
+            await UserToGroupMessageModel.findOneAndUpdate(
+                // 1. Find a thread where these two are the sender/receiver
+                {groupId: groupId }, 
+                
+                // 2. Push the new message into the array
+                { 
+                    $push: { 
+                        messages: {
+                            ContentType: ContentType ,
+                            time: getCurrentDate(),
+                            Content: Message,
+                            sender: senderId
+                        }
+                    } 
+                },
+                
+                // 3. Options: upsert will CREATE the document using the query + update data if it fails to find one!
+                { new: true, upsert: true } 
+            );
+            } catch (error) {
+                console.error("Error sending message:", error);
+            }
+        };
+        sendChatMessage(req.UserId , GroupId , Message);
+        res.status(SuccessStatusCodes.ResourceCreated).json({
+            msg : "Message Sent !"
         });
         return;
     }
@@ -50,47 +63,67 @@ UserToGroupMessageRouter.post("/Image/Send/ToAll" , async function(req:any,res)
     {
         await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any)
         {
-            await UserToGroupMessageModel.create({
-                reciever : GroupId , 
-                ContentType:ContentType , 
-                sender : req.UserId , 
-                Message : result.url , 
-                time : getCurrentDate()  
+            const sendChatMessage = async (senderId:any, groupId:any, messageContent:any) => {
+            try {
+                await UserToGroupMessageModel.findOneAndUpdate(
+                    // 1. Find a thread where these two are the sender/receiver
+                    {groupId: groupId }, 
+                    
+                    // 2. Push the new message into the array
+                    { 
+                        $push: { 
+                            messages: {
+                                ContentType: ContentType ,
+                                time: getCurrentDate(),
+                                Content: messageContent,
+                                sender: senderId
+                            }
+                        } 
+                    },
+                    
+                    // 3. Options: upsert will CREATE the document using the query + update data if it fails to find one!
+                    { new: true, upsert: true } 
+            );
+            } catch(e) {
+                console.error("Error sending message:", e);
+                return;
+            }
+            sendChatMessage(req.UserId , GroupId , result.url);
+            res.status(SuccessStatusCodes.ResourceCreated).json({
+                msg : "Message Sent !"
             });
+            return;
+        };
         });
-        res.status(SuccessStatusCodes.Success).json({
-            msg : "The Message was sent successfully !"
-        });
-        return ;
     }
     catch(e)
     {
-        res.status(ServerErrors.InternalServerError).json({
-            msg : "Cloudinary File Uploader is not responding !"+e
+        res.status(ServerErrors.NoServerResponse).json({
+            msg : "Cloudinary File Uploader is not responding !" + e
         });
-        return;
+        return ;
     }
 })
-
 UserToGroupMessageRouter.get("/Access/All" , usermiddleware , async function(req , res)
 {
     const GroupId:String = req.body.GroupId;
 
-    const data = await UserToGroupMessageModel.find({
-        reciever : GroupId
-    });
-
-    if(!data)
+    try
     {
-        res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-            msg : "No messages found !"
+        const data:any = await UserToGroupMessageModel.find({
+            groupId : GroupId
         });
-        return ;
+        res.status(SuccessStatusCodes.Success).json({
+            msg : data.messages
+        });
+        return;
     }
-
-    res.status(SuccessStatusCodes.Success).json({
-        msg : data
-    });
-    
-})
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error !"
+        });
+        return;
+    }
+});
 export default UserToGroupMessageRouter;

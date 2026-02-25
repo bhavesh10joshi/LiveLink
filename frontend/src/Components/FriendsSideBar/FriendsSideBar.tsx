@@ -9,7 +9,6 @@ interface FriendsUsers {
     TypingStatus ?: boolean;
     OnlineOrOfflineDots ?: boolean;
     UniqueId : string;
-    IsSelected: boolean;
     SetSelectedId : (val:string)=>void ,
     selectedId:string
 }

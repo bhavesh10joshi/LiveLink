@@ -1,4 +1,4 @@
-import { UserToUserMessageModel , UserModel } from "../../../db";
+import { UserToUserMessageModel , UserModel, PersonalInvitationsModel } from "../../../db";
 import { usermiddleware } from "../../../Middleware/Index";
 import { SuccessStatusCodes , ClientErrorStatusCodes ,ServerErrors } from "../../../StatusCodes";
 import { Router } from "express";
@@ -23,52 +23,44 @@ UserToUserMessageRouter.post("/Text/Send" , usermiddleware , async function(req:
     // if the content is a Image then the Message will be the link of the image 
     const Message : any = req.body.Message;
 
-    // checking whether the reciever of the message is still the friend of the sender
-    const Friends = await UserModel.findById({
-        _id : req.UserId
-    });
-
-    if(Friends)
+    try
     {
-        const UserFriends = Friends.PersonalMessagingList;
-        let val:Boolean = CheckFortheFriend(RecieverId , UserFriends);
-        if(!val)
-        {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "The Reciever is no Longer your friend !"
-            });
-            return ;
-        }
-        else
-        {
-            try{
-                await UserToUserMessageModel.create({
-                    ContentType : ContentType , 
-                    time : getCurrentDate(),
-                    reciever : RecieverId , 
-                    sender : req.UserId , 
-                    message : Message
-                });
-                res.status(SuccessStatusCodes.Success).json({
-                    msg : "Message Sent Successfully !"
-                });
-                return ;
+        const sendChatMessage = async (senderId:any, recieverId:any, messageContent:any) => {
+        try {
+            await UserToUserMessageModel.findOneAndUpdate(
+                // 1. Find a thread where these two are the sender/receiver
+                { sender: senderId, reciever: recieverId }, 
+                
+                // 2. Push the new message into the array
+                { 
+                    $push: { 
+                        messages: {
+                            ContentType: ContentType ,
+                            time: getCurrentDate(),
+                            Content: messageContent
+                        }
+                    } 
+                },
+                
+                // 3. Options: upsert will CREATE the document using the query + update data if it fails to find one!
+                { new: true, upsert: true } 
+            );
+            } catch (error) {
+                console.error("Error sending message:", error);
             }
-            catch(e)
-            {
-                res.status(ServerErrors.InternalServerError).json({
-                    msg : "Internal Server Error Encountered !"
-                });
-                return ;
-            }
-        }
-    }
-    else
-    {
-        res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-            msg : "Resource not found !"
+        };
+        sendChatMessage(req.UserId , RecieverId , Message);
+        res.status(SuccessStatusCodes.ResourceCreated).json({
+            msg : "Message Sent !"
         });
         return;
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Encountered !"
+        });
+        return ;
     }
 });
 UserToUserMessageRouter.post("/Image/send" , usermiddleware , async function(req:any,res)
@@ -77,52 +69,76 @@ UserToUserMessageRouter.post("/Image/send" , usermiddleware , async function(req
     const ContentType = "image";
     const file = req.files.photo;
 
+    // checking whether the reciever of the message is still the friend of the sender
     try
     {
         await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error,result:any)
         {
-            await UserToUserMessageModel.create({
-                reciever : RecieverId , 
-                ContentType : ContentType , 
-                message : result.url ,
-                time : getCurrentDate() , 
-                sender : req.UserId 
-            });
+            const sendChatMessage = async (senderId:any, recieverId:any, messageContent:any) => 
+            {
+                try {
+                    await UserToUserMessageModel.findOneAndUpdate(
+                        // 1. Find a thread where these two are the sender/receiver
+                        { sender: senderId, reciever: recieverId }, 
+                        
+                        // 2. Push the new message into the array
+                        { 
+                            $push: { 
+                                messages: {
+                                    ContentType: ContentType ,
+                                    time: getCurrentDate(),
+                                    Content: messageContent
+                                }
+                            } 
+                        },
+                        
+                        // 3. Options: upsert will CREATE the document using the query + update data if it fails to find one!
+                        { new: true, upsert: true } 
+                    );
+                } 
+                catch (e) {
+                    res.status(ServerErrors.InternalServerError).json({
+                        msg : "Internal Server Error Occurred !"
+                    });
+                    return;
+                }
+                sendChatMessage(req.UserId , RecieverId , result.url);
+                res.status(SuccessStatusCodes.ResourceCreated).json({
+                    msg : "Message Sent !"
+                });
+                return;
+            };
         });
-        res.status(SuccessStatusCodes.Success).json({
-            msg : "The given Message has been sent !"
-        });
-        return;
-    }
+    }           
     catch(e)
     {
-        res.status(ServerErrors.NoServerResponse).json({
-            msg : "Cloudinary File Uploader is not responding !" + e
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Encountered !"
         });
         return ;
     }
 
 })
-UserToUserMessageRouter.get("/Access/All" , usermiddleware , async function(req:any , res)
+UserToUserMessageRouter.get("/Access/Messages/All" , usermiddleware , async function(req:any , res)
 {
-    const RecieverId : any = req.body.RecieverId;
-    
-    try{
-        const data:any = await UserToUserMessageModel.find({
-            reciever : RecieverId , 
-            sender : req.UserId 
+    const RecieverId : any = req.body.RecieverId; 
+    try
+    {
+        const data = await UserToUserMessageModel.findOne({
+            sender : req.UserId , 
+            reciever : RecieverId
         });
         res.status(SuccessStatusCodes.Success).json({
-            msg : data
+            msg : data?.messages
         });
-        return ;
+        return;
     }
     catch(e)
     {
-        res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-            msg : "No messages were Found !"
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Encountered !"
         });
-        return ;
+        return;
     }
 });
 

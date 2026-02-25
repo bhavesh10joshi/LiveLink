@@ -16,23 +16,6 @@ interface Styles{
     SetSelectorFunction : ()=>void
 }
 
-const UserFriends : FriendsUsers[] = [{
-        Name : "Bhavesh Joshi",  
-        ProfileImage : Profile,
-        UniqueId:"kshjahkjsakjdhakljshdklja"
-    },{
-        Name : "Bhavesh Joshi", 
-        ProfileImage : Profile,
-        UniqueId:"ndsbfkbkfhhflsdjkahkfhsadkl"
-    },{
-        Name : "Bhavesh Joshi",  
-        ProfileImage : Profile,
-        UniqueId:"sjkhlkfihaiofhjdsabfb"
-    },{
-       Name : "Bhavesh Joshi", 
-        ProfileImage : Profile,
-        UniqueId:"dfkjbcscaKVWaiudiuau"
-    }];
 
 export function UserSettings( props:Styles )
 {
@@ -120,7 +103,7 @@ export function UserSettings( props:Styles )
                         </div>
                     </div>
                 </div>
-            :<CreateNewGroup Friends={UserFriends} SetCreateNewGroupFunction={() => SetCreateNewGroupfunction()}/>
+            :<CreateNewGroup SetCreateNewGroupFunction={() => SetCreateNewGroupfunction()}/>
         :<div><DeleteUserAccount SetDeleteGroupFunction={()=>SetDeleteAccountFunction()}/></div>
         :<div><EditUserProfile ProfileImage={BackendData.ProfilePhoto} About={BackendData.about} Name={BackendData.name} SetEditUserProfileSelector={()=>SetChangeUserProfileFunction()}/></div>
         }

@@ -17,8 +17,7 @@ interface FriendsUsers {
 }
 interface CreateNewGroupStyle
 {
-    SetCreateNewGroupFunction : ()=>void ,
-    Friends : FriendsUsers[] ,   
+    SetCreateNewGroupFunction : ()=>void ,  
 }
 
 

@@ -4,8 +4,9 @@ import DocumentImage from "../ui/Image/SampleImages/ChattingImages/DocumentImage
 import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { TypeTheMessage } from "../Chatting/TypeMessageSend"
 import { UserInfo } from "../../Pages/UserInfo"
-import { useState } from "react"
-
+import { useEffect, useState } from "react"
+import axios from "axios"
+import { boolean } from "zod"
 
 interface messagestyle{
     typeofMessage : "Sent" | "Recieved" | "Date",
@@ -49,32 +50,30 @@ const MessageData:messagestyle[] = [
     ProfilePhoto : Profile 
 }]; 
 
-interface FriendsUsers {
-    ProfileImage: string;
-    Name: string;
-    WasLastMessage ?: Boolean;
-    LastMessage ?: string;
-    TypingStatus ?: Boolean;
-    OnlineOrOfflineDots : Boolean;
-    UniqueId : string;
-    IsSelected: boolean;
-    About : string
+interface Friend {
+    isonline: boolean;
+    name: string;
+    profilephoto: string;
+    typingstatus: boolean;
+    uniqueid: string;
+    _id: string;
+    bio: string;
 }
 
-const UserFriends : FriendsUsers[] = [{
-    ProfileImage : Profile , 
-    Name : "ajay" , 
-    WasLastMessage : false,
-    TypingStatus : true , 
-    OnlineOrOfflineDots : true , 
-    UniqueId : "jksahkhdaskjhdkalshkdja" , 
-    IsSelected : true , 
-    About : "Hi my name is bhavesh joshi this is a realtime chatting application !"
-}]
+// const UserFriends : FriendsUsers[] = [{
+//     ProfileImage : Profile , 
+//     Name : "ajay" , 
+//     WasLastMessage : false,
+//     TypingStatus : true , 
+//     OnlineOrOfflineDots : true , 
+//     UniqueId : "jksahkhdaskjhdkalshkdja" , 
+//     About : "Hi my name is bhavesh joshi this is a realtime chatting application !"
+// }]
 
 export function UserToUserChatDashboard() {
     const[UserInfoStatus , SetUserInfo] = useState(false);
-    const [selectedId, setSelectedId] = useState<string>("jksahkhdaskjhdkalshkdja");
+    const [selectedId, setSelectedId] = useState<string>("fc5d7203-fd30-42a7-b8dc-4bad5c34a9f1");
+    const [FriendsList , SetFriendsList]:any = useState<Friend[]>([]);
 
     function SetUserInfoFunction()
     {
@@ -85,26 +84,42 @@ export function UserToUserChatDashboard() {
         setSelectedId(val);
     }
 
+    useEffect(function(){
+        const HitBackend = async () =>
+        {
+            const token = localStorage.getItem("token");
+            const config = {
+                headers : {
+                    "authorization" : token
+                }
+            };
+            const result:any = await axios.get("http://localhost:5000/LiveLink/Users/Get/Personal/Messaging/List" , config);  
+            SetFriendsList(result.data.msg);
+            console.log(result.data.msg);
+        }
+        HitBackend();
+    },[]);
+    
     return <>
     {
         UserInfoStatus ? 
         <div className="w-full h-full flex justify-center items-center">{
-            UserFriends.map((user)=>
-                user.UniqueId == selectedId ?<UserInfo Name={user.Name} ProfileImage={user.ProfileImage} SetUserSelector={()=>SetUserInfoFunction()} About={user.About} OnlineOrOffline={user.OnlineOrOfflineDots} UniqueId={user.UniqueId}/> :null  
+            FriendsList.map((user:any)=>
+                user.uniqueid == selectedId ?<UserInfo Name={user.name} ProfileImage={user.profilephoto} SetUserSelector={()=>SetUserInfoFunction()} About={user.bio} OnlineOrOffline={user.isonline} UniqueId={user.uniqueid}/> :null  
             )
         }</div> 
         :
         // --- ADDED FRAGMENT WRAPPER < > ---
             <div className="flex w-full h-full justify-center items-center">
-                {UserFriends.map((user)=>(<FriendsSideBar ProfileImage={user.ProfileImage} Name={user.Name}  UniqueId={user.UniqueId} IsSelected={user.IsSelected} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
+                {FriendsList.map((user:any)=>(<FriendsSideBar ProfileImage={user.profilephoto} Name={user.name}  UniqueId={user.uniqueid} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
                 <div className="bg-slate-600 w-[0.2px]"></div>
                 <div className="flex-1 flex flex-col h-full relative">
                 {/* Header / Top Bar could go here */}
                     {/* Input Area (Your UserToUser or GroupToUser Portal) */}
                 <div className=" bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
                     {
-                        UserFriends.map((user)=>
-                        user.UniqueId == selectedId ?<UserToUserNavBar Name={user.Name} ProfilePhoto={user.ProfileImage} SetGroupSelector={()=>SetUserInfoFunction()} IsOnlineOrNot={user.OnlineOrOfflineDots}/> :null  )}
+                        FriendsList.map((user:any)=>
+                        user.uniqueid == selectedId ?<UserToUserNavBar Name={user.name} ProfilePhoto={user.profilephoto} SetGroupSelector={()=>SetUserInfoFunction()} IsOnlineOrNot={user.isonline}/> :null  )}
                 </div>
                 {/* MESSAGE CONTAINER: Scrollable Area */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">

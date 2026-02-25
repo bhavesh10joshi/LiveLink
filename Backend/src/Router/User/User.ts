@@ -445,12 +445,14 @@ UserRouter.post("/Invitation/Personal/Message-Invite" , usermiddleware , async f
                 const RecieverPayload = {
                     name : Findreciever.name , 
                     profilephoto : Findreciever.ProfilePhoto , 
-                    uniqueid : Findreciever.UniqueId
+                    uniqueid : Findreciever.UniqueId ,
+                    about : Findreciever.about
                 };
                 const SenderPayload = {
                     name : FindSender.name , 
                     profilephoto : FindSender.ProfilePhoto , 
-                    uniqueid : FindSender.UniqueId
+                    uniqueid : FindSender.UniqueId ,
+                    about : Findreciever.about
                 };
                 // adding sender to the friendlist of reciever
                 await UserModel.updateOne(
@@ -579,6 +581,25 @@ UserRouter.get("/Profile/Details" , usermiddleware , async function(req:any,res)
     {
         res.status(ServerErrors.InternalServerError).json({
             msg : "Internal Server Error !"
+        });
+        return;
+    }
+});
+UserRouter.get("/Get/Personal/Messaging/List" , usermiddleware , async function(req:any , res)
+{
+    try{
+        const data = await UserModel.findOne({
+            _id : req.UserId
+        });
+        res.status(SuccessStatusCodes.Success).json({
+            msg : data?.PersonalMessagingList
+        });
+        return;
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occured !"
         });
         return;
     }

@@ -32,3 +32,9 @@ Impropvements and corrections in the backend:-
 - 1 :- Socket.io implemented with https and express.js
 
 - 2 :- payment integration
+
+- 3 :- The UI of Sign In page is not looking good , 
+        (especially the text welcome )
+- 4 :-  The buttons can be improved 
+
+- 5 :- a loader can be made at every backend hits so that user does not see a blank screen

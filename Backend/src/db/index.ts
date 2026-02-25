@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import {Schema , model} from "mongoose"
-import { string } from "zod";
+import { boolean, string } from "zod";
 const ObjectId = mongoose.Types.ObjectId;
 
 // contains some necessary details of the users 
@@ -18,27 +18,32 @@ const user = new Schema({
     PersonalMessagingList : [{
         name : {type : string} ,
         profilephoto : {type : string} , 
-        uniqueid : {type : string} 
+        uniqueid : {type : string} ,
+        typingstatus : {type:boolean , default:false} ,
+        isonline : {type:boolean , default : false} ,
+        about : {type:string} 
     }] , 
 });
 
 // contains messages related information of that particular user 
 const UserToUserMessage = new Schema({
-    ContentType : {type : String } ,
-    // can be either a image or a text 
-    time :  { type : String} , 
     reciever : {type : ObjectId},
     sender : {type : ObjectId},
-    message : {type : String}   
+    messages : [{
+        ContentType : {type : String} ,
+        time : {type : String} , 
+        Content : {type : String}
+    }]
 }); 
 
 const UserToGroupMessage = new Schema({
-    ContentType :{type : String} ,  
-    time : { type : String},
-    //the reciever ObjectId will always a Group ObjectId
-    reciever : {type : ObjectId} , 
-    sender : {type : ObjectId} , 
-    Message : { type : String}
+    groupId : {type : ObjectId},
+    messages : [{
+        ContentType : {type : String} ,
+        time : {type : String} , 
+        Content : {type : String},
+        sender : {type : ObjectId}  
+    }]
 });
 
 // contains all the information related the groups 
