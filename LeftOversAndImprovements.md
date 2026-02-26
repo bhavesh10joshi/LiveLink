@@ -38,3 +38,9 @@ Impropvements and corrections in the backend:-
 - 4 :-  The buttons can be improved 
 
 - 5 :- a loader can be made at every backend hits so that user does not see a blank screen
+
+- 6 :- Add to group Button has to be styled more better 
+
+- 7 :- Make a new better page for handling errors
+
+- 8 : -Whenever we delete a group then that group should also be deleted from the Users GroupList Array !

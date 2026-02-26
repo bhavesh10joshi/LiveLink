@@ -4,6 +4,7 @@ import { EditPencil } from "../Components/Icons/EditPencil"
 import { UnfriendOrLeaveGroup } from "../Components/Icons/LeaveGrouporUnfriend"
 import { SucessUnfriend } from "../Components/Icons/SuccessUnfriend"
 import { useState } from "react"
+import axios from "axios"
 
 interface UserInfoStyle{
     SetUserSelector : ()=>void , 
@@ -14,6 +15,7 @@ interface UserInfoStyle{
     UniqueId:string
 }
 
+
 export function UserInfo(props:UserInfoStyle)
 {
     const[UnfreindUser , SetUnfriendUser] = useState(false);
@@ -22,7 +24,27 @@ export function UserInfo(props:UserInfoStyle)
     {
         SetUnfriendUser(!UnfreindUser);
     }
-
+    async function HitBackend()
+    {
+        const token = localStorage.getItem("token");
+        const payload = {
+            FriendsUniqueId : props.UniqueId   
+        };
+        const config = {
+            headers : {
+                "authorization" : token 
+            }
+        };
+        try
+        {
+            await axios.post("http://localhost:5000/LiveLink/Users/Unfriend" , payload , config);
+            SetUnfriendUserfunction();
+        }
+        catch(e)
+        {
+            alert("Error while Unfriending a User !");
+        }        
+    } 
     return<>
         {!UnfreindUser
         ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
@@ -33,13 +55,13 @@ export function UserInfo(props:UserInfoStyle)
                 </div>
                 <div className="bg-slate-500 h-[0.1px] mt-[1rem]"></div>
                 <div className="flex justify-center items-center mt-[2rem]">
-                    <img src={Profile} alt="" className="rounded-full w-[10rem]"/>
+                    <img src={props.ProfileImage} alt="" className="rounded-full w-[10rem]"/>
                 </div>
                 <div className="flex w-full justify-center items-center"><div className="text-center text-[1.5rem] mt-[1rem] pl-[2rem] pr-[2rem] text-white font-bold">{props.Name}</div></div>
                 <div className="flex w-full justify-center items-center"><div className="text-center text-[0.8rem] mt-[0.5rem] pl-[2rem] pr-[2rem] text-slate-400">{props.About}</div></div>
                 <div className="w-full h-[1px] bg-slate-500 mt-[2rem]"></div>
                <div className="flex justify-center items-center w-full mt-[1.5rem]">
-                    <button type="button" aria-label="Name" className="flex justify-center items-center text-white font-bold border border-red-500 rounded-md pl-[5rem] pr-[5rem] bg-red-600 text-[0.8rem]"><div><UnfriendOrLeaveGroup/></div><div>Unfriend this User</div></button>
+                    <button type="button" aria-label="Name" className="flex justify-center items-center text-white font-bold border border-red-500 rounded-md pl-[5rem] pr-[5rem] bg-red-600 text-[0.8rem]" onClick={() => HitBackend()}><div><UnfriendOrLeaveGroup/></div><div>Unfriend this User</div></button>
                 </div>
                 <div className="text-red-700 flex justify-center items-center text-[0.8rem] mt-[0.5rem] text-center font-bold">You may have to send request to this user again for messaging!</div>
             </div>

@@ -1,11 +1,15 @@
+import { useState } from "react"
 import { AddtoGroupUser } from "../Icons/AddtoGroupUserIcon"
 import { More } from "../Icons/MoreIcon"
+import { AddUserToGroup } from "../../Pages/AddUserToGroup"
+
 
 interface UserStyle{
     Name : string ,
     IsOnlineOrNot : Boolean ,
     ProfilePhoto : string    ,
-    SetGroupSelector : ()=>void 
+    SetGroupSelector : ()=>void ,
+    SetAddUserToGroupfunction : ()=>void
 }
 
 export function UserToUserNavBar(props:UserStyle)
@@ -29,7 +33,7 @@ export function UserToUserNavBar(props:UserStyle)
             </div>
                 <div className="flex justify-center items-end ">
                    <div className="flex justify-center items-center">
-                        <button className="flex justify-center items-center" aria-label="Name"><AddtoGroupUser/><span className="text-[#808080] font-bold text-[0.9rem] ml-[0.5rem]">Add To Group</span></button>
+                        <button className="flex justify-center items-center" aria-label="Name" onClick={() => props.SetAddUserToGroupfunction()}><AddtoGroupUser/><span className="text-[#808080] font-bold text-[0.9rem] ml-[0.5rem]">Add To Group</span></button>
                    </div>
                    <div>
                         <button type="button" className="flex justify-center items-center" aria-label="Name" onClick={()=>props.SetGroupSelector()}><More/></button>

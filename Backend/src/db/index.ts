@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import {Schema , model} from "mongoose"
 import { boolean, string } from "zod";
+import { UniqueId } from "../uuid";
 const ObjectId = mongoose.Types.ObjectId;
 
 // contains some necessary details of the users 
@@ -14,14 +15,19 @@ const user = new Schema({
     UniqueId : {type : String , unique : true , required:true}   ,
     ResetOTP : {type : String} , 
     ResetOTPExpiry : {type : String} ,
-    GroupList : [{type : ObjectId}] ,
+    GroupList : [{
+        name : {type : String} ,
+        Groupprofilephoto : {type : String} , 
+        Groupuniqueid : {type : String} ,
+        about : {type : String} 
+    }] ,
     PersonalMessagingList : [{
-        name : {type : string} ,
-        profilephoto : {type : string} , 
-        uniqueid : {type : string} ,
-        typingstatus : {type:boolean , default:false} ,
-        isonline : {type:boolean , default : false} ,
-        about : {type:string} 
+        name : {type : String} ,
+        profilephoto : {type : String} , 
+        uniqueid : {type : String} ,
+        typingstatus : {type : Boolean , default:false} ,
+        isonline : {type : Boolean , default : false} ,
+        about : {type : String} 
     }] , 
 });
 
@@ -54,26 +60,24 @@ const group = new Schema({
     GroupProfileImage : {type : String , default : "https://res.cloudinary.com/dumtrt8jf/image/upload/v1771816036/GroupAvatar_qvbz2x.jpg"} ,
     // contains the image of the group that user set up
     bio : {type : String} ,
-    UsersList : [{type : ObjectId}]  
+    UsersList : [{
+        name : {type : String} , 
+        ProfileImage : {type : String}
+    }]
 });   
 
 const GroupInvitations = new Schema({
     RecieverId : {type : ObjectId} , 
     SenderId : {type : ObjectId} , 
     GroupId : {type : ObjectId} , 
-        // If Status is true it means that the request accepted and if false means that rejected the request 
-    Status : {type : Boolean} , 
-    // if Readornot is false is true it means that he has markedit as read and if false it means they have not marked as read 
-    ReadOrNot : {type : Boolean}
+    UniqueId : {type : String},
 });
 
 const PersonalInvitations = new Schema({
     SenderId : {type : ObjectId} , 
     RecieverId : {type : ObjectId} ,
     // the Invitation is valid till it is not been accepted or rejected by the user , suppose if the user rejects the proposal , then the invitation will automatically be deleted !
-    Status : {type : Boolean} , 
-    // if Readornot is false is true it means that he has markedit as read and if false it means they have not marked as read 
-    ReadOrNot : {type : Boolean}    
+    Status : {type : Boolean} ,   
 });
 
 export const UserToUserMessageModel = model("UserToUserMessage" , UserToUserMessage) ;

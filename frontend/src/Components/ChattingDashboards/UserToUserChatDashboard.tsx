@@ -7,6 +7,7 @@ import { UserInfo } from "../../Pages/UserInfo"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { boolean } from "zod"
+import { AddUserToGroup } from "../../Pages/AddUserToGroup"
 
 interface messagestyle{
     typeofMessage : "Sent" | "Recieved" | "Date",
@@ -74,6 +75,7 @@ export function UserToUserChatDashboard() {
     const[UserInfoStatus , SetUserInfo] = useState(false);
     const [selectedId, setSelectedId] = useState<string>("fc5d7203-fd30-42a7-b8dc-4bad5c34a9f1");
     const [FriendsList , SetFriendsList]:any = useState<Friend[]>([]);
+    const[AddUserToGroupState , SetAddUserToGroup] = useState(false);
 
     function SetUserInfoFunction()
     {
@@ -83,7 +85,10 @@ export function UserToUserChatDashboard() {
     {
         setSelectedId(val);
     }
-
+    function SetAddUserToGroupFunction()
+    {
+        SetAddUserToGroup(!AddUserToGroupState);
+    }
     useEffect(function(){
         const HitBackend = async () =>
         {
@@ -95,7 +100,6 @@ export function UserToUserChatDashboard() {
             };
             const result:any = await axios.get("http://localhost:5000/LiveLink/Users/Get/Personal/Messaging/List" , config);  
             SetFriendsList(result.data.msg);
-            console.log(result.data.msg);
         }
         HitBackend();
     },[]);
@@ -105,11 +109,11 @@ export function UserToUserChatDashboard() {
         UserInfoStatus ? 
         <div className="w-full h-full flex justify-center items-center">{
             FriendsList.map((user:any)=>
-                user.uniqueid == selectedId ?<UserInfo Name={user.name} ProfileImage={user.profilephoto} SetUserSelector={()=>SetUserInfoFunction()} About={user.bio} OnlineOrOffline={user.isonline} UniqueId={user.uniqueid}/> :null  
+                user.uniqueid == selectedId ?<UserInfo Name={user.name} ProfileImage={user.profilephoto} SetUserSelector={()=>SetUserInfoFunction()} About={user.bio} OnlineOrOffline={user.isonline} UniqueId={user.uniqueid} /> :null  
             )
         }</div> 
-        :
-        // --- ADDED FRAGMENT WRAPPER < > ---
+        : !AddUserToGroupState
+        ?// --- ADDED FRAGMENT WRAPPER < > ---
             <div className="flex w-full h-full justify-center items-center">
                 {FriendsList.map((user:any)=>(<FriendsSideBar ProfileImage={user.profilephoto} Name={user.name}  UniqueId={user.uniqueid} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
                 <div className="bg-slate-600 w-[0.2px]"></div>
@@ -119,7 +123,7 @@ export function UserToUserChatDashboard() {
                 <div className=" bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
                     {
                         FriendsList.map((user:any)=>
-                        user.uniqueid == selectedId ?<UserToUserNavBar Name={user.name} ProfilePhoto={user.profilephoto} SetGroupSelector={()=>SetUserInfoFunction()} IsOnlineOrNot={user.isonline}/> :null  )}
+                        user.uniqueid == selectedId ?<UserToUserNavBar Name={user.name} ProfilePhoto={user.profilephoto} SetGroupSelector={()=>SetUserInfoFunction()} IsOnlineOrNot={user.isonline} SetAddUserToGroupfunction={() => SetAddUserToGroupFunction()}/> : null  )}
                 </div>
                 {/* MESSAGE CONTAINER: Scrollable Area */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">
@@ -180,6 +184,7 @@ export function UserToUserChatDashboard() {
                     </div>
                 </div> 
                 </div>
+        :<AddUserToGroup SetAddUserToGroupfunction={()=>SetAddUserToGroupFunction()}/>
     }
     </>
 }

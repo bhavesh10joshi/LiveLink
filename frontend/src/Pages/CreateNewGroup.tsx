@@ -31,9 +31,6 @@ export function CreateNewGroup(props:CreateNewGroupStyle)
 
     function HandleImageFunction(event: React.ChangeEvent<HTMLInputElement>)
     {
-        
-        const CurrentName = NameRef.current.value;
-        const CurrentAbout = AboutRef.current.value;
         const file = event.target.files?.[0];
         
         if(!file)
@@ -43,8 +40,6 @@ export function CreateNewGroup(props:CreateNewGroupStyle)
         
         const formData:any = new FormData();
         formData.append("photo" , file);
-        formData.append("name" , CurrentName);
-        formData.append("bio" , CurrentAbout);
         SetProfileImage(formData);
     }
     function HandleImageButtonfunction()
@@ -60,6 +55,10 @@ export function CreateNewGroup(props:CreateNewGroupStyle)
         }
         else
         {
+            const CurrentName = NameRef.current.value;
+            const CurrentAbout = AboutRef.current.value;
+            ProfileImage.append("name" , CurrentName);
+            ProfileImage.append("bio" , CurrentAbout);
             try{
                 const token = localStorage.getItem("token");
                 const config = {

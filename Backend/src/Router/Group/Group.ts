@@ -5,47 +5,65 @@ import { usermiddleware } from "../../Middleware/Index";
 import { UniqueId } from "../../uuid";
 import { CheckForaGroupMember } from "../../CheckforaGroupMember/CheckGroupMember";
 import cloudinary from "../../CloudinaryConfig/Cloudinary";
+import { success } from "zod";
+import { ServerRouter } from "react-router-dom";
 
 const GroupRouter = Router();
 
-// Endpoint for Creating Group 
-GroupRouter.post("/Create" ,usermiddleware, async function(req:any , res)
-{
-    const name = req.body.name;
-    const bio = req.body.bio;
+GroupRouter.post("/Create", usermiddleware, async function(req: any, res) {
+    const { name, bio } = req.body;
+    const file = req.files?.photo;
     const Id = UniqueId();
-    const file = req.files.photo;
-    
-    try{
-        await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any){
-            try{
-                await GroupModel.create({
-                    name : name , 
-                    UniqueId : Id , 
-                    GroupProfileImage : result.url , 
-                    bio : bio , 
-                    creatorId : req.UserId
-                });
-                res.status(SuccessStatusCodes.Success).json({
-                    msg : "Successfully created the group !"
-                });
-                return;
-            }   
-            catch(e)
-            {
-                res.status(ServerErrors.InternalServerError).json({
-                    msg : "Internal Server Error Occurred !"
-                });
-                return;
-            }
-        });
+
+    if (!file) {
+        return res.status(400).json({ msg: "No photo uploaded!" });
     }
-    catch(e)
-    {
-        res.status(ServerErrors.InternalServerError).json({
-            msg:"Internal Server Error !"
+
+    try {
+        const creator: any = await UserModel.findOne({ _id: req.UserId });
+        
+        // 1. Await the upload directly (No callback!)
+        const result = await cloudinary.uploader.upload(file.tempFilePath);
+        console.log("Cloudinary Upload Result: " + result.url);
+
+        // 2. Create the Group
+        const created = await GroupModel.create({
+            name: name,
+            UniqueId: Id,
+            GroupProfileImage: result.url,
+            bio: bio,
+            creatorId: req.UserId,
+            UsersList: [creator._id]
         });
-        return;
+
+        // 3. Update the User
+        if (created) {
+            await UserModel.updateOne(
+                { _id: req.UserId },
+                {
+                    $push: {
+                        GroupList : {
+                            name: created.name,
+                            Groupprofilephoto: created.GroupProfileImage,
+                            Groupuniqueid: created.UniqueId,
+                            about: created.bio
+                        }
+                    }
+                }
+            );
+
+            console.log("Group Created Success!");
+            return res.status(SuccessStatusCodes.Success).json({
+                msg: "Group Created Successfully!"
+            });
+        }
+
+    } catch (e: any) {
+        // This will now properly catch BOTH Cloudinary network errors and DB errors
+        console.error("Error encountered:", e);
+        return res.status(ServerErrors.InternalServerError).json({
+            msg: "Internal Server Error Encountered!"
+        });
     }
 });
 // Making the Changes into the Group info
@@ -76,139 +94,152 @@ GroupRouter.post("/Profile/Edit" , usermiddleware, async function(req:any , res)
 GroupRouter.post("/Add-Members/Send/Group-Invite" ,usermiddleware , async function(req:any , res)
 {
     const GroupUniqueId = req.body.GroupUniqueId;
-    const GroupId:any = await GroupModel.findOne({
-        UniqueId : GroupUniqueId
-    });
-
-    if(!GroupId)
-    {
-        res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-            msg : "The Given group was not found by the user !"
-        });
-    }
-
-    const UserUniqueId = req.body.UserUniqueId;
-    const RecieverId = await UserModel.findOne({
-        UniqueId : UserUniqueId
-    });
-
-    if(!RecieverId)
-    {
-        res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-            msg : "The Reciever of the Invitation is not valid !" 
-        });
-        return;
-    }
-
-    //Checking whether there is already an inviation or not
-    const CheckForDuplicateInvitations = await GroupInvitationsModel.findOne({
-        RecieverId : RecieverId._id , 
-        SenderId : req.UserId , 
-        GroupId : GroupId._id
-    });
-
-    if(CheckForDuplicateInvitations)
-    {
-        res.status(ClientErrorStatusCodes.Conflicts).json({
-            msg : "This Invitation already exists for the particular Reciever and the Group !"
-        });
-        return ;
-    }
-
+    const RecieverUniqueId = req.body.RecieverId;
     try{
-        await GroupInvitationsModel.create({
-            RecieverId : RecieverId._id , 
-            SenderId : req.UserId , 
-            GroupId : GroupId._id , 
-            Status : false ,
-            ReadOrNot : false 
+        // checking if the reciever is already the participant of the group
+        const reciever:any = await UserModel.findOne({
+            UniqueId : RecieverUniqueId
         });
-        res.status(SuccessStatusCodes.ResourceCreated).json({
-            msg : "Invitation sent Successfully !" 
-        });
+        const IsMember = reciever?.GroupList.some((user:any) => user.Groupuniqueid == GroupUniqueId);
+        if(IsMember)
+        {
+            res.status(ClientErrorStatusCodes.Conflicts).json({
+                msg : "User is  already a member"
+            });
+            return;
+        }
+        else
+        {
+            try{
+                const findgroup:any = await GroupModel.findOne({
+                    UniqueId : GroupUniqueId
+                });
+                try{
+                    await GroupInvitationsModel.create({
+                        RecieverId : reciever._id , 
+                        SenderId : req.UserId  ,
+                        GroupId : findgroup._id  ,
+                        UniqueId : UniqueId()
+                    });
+                    res.status(SuccessStatusCodes.Success).json({
+                        msg : "Invitation Sent Successfully !"
+                    });
+                    return;
+                }
+                catch(e)
+                {
+                    res.status(ServerErrors.InternalServerError).json({
+                        msg : "Internal Server Error Encountered !"
+                    });
+                    return;
+                }
+            }
+            catch(e)
+            {
+                res.status(ServerErrors.InternalServerError).json({
+                    msg : "Internal Server Error Encountered !"
+                });
+                return;
+            }
+        }
     }
     catch(e)
     {
         res.status(ServerErrors.InternalServerError).json({
-            msg : "Internal Server Error !" 
+            msg : "Internal Server Error Encountered !"
         });
+        return;
     }
 });
 // Endpoint for Accepting or Rejecting the Request for Joining the Group
 GroupRouter.post("/Invitation/Group-Invite" , usermiddleware , async function(req:any , res)
 {
     const GroupUniqueId = req.body.GroupUniqueId;
+    const GroupInvitationUniqueId = req.body.GroupInvitationUniqueId;
     const Decision:boolean = req.body.Decision;
-
     //Finding if the Group Still exists
-    const FindGroup:any = await GroupModel.findOne({
-        UniqueId : GroupUniqueId
-    });
-
-    if(!FindGroup)
-    {
-        res.status(ClientErrorStatusCodes.Conflicts).json({
-            msg : "The Given Group Does Not Exists !"
+    try{
+        const FindSender:any = await UserModel.findOne({
+            _id : req.UserId
         });
-        return;
-    }
-
-    if(Decision)
-    {
-        // Accepted the Invitation of the sender
-        const Invite = await GroupInvitationsModel.updateOne(
-                { GroupId : FindGroup._id , RecieverId : req.UserId }, 
-                { $set: {Status : true , ReadOrNot : true}} 
-        );
-
-        if(!Invite)
-        {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "The Invitation does not Exists"
-            });
-            return;
-        }
-        
         try{
-            await UserModel.updateOne(
-                { _id : req.UserId}, 
-                { $push: {GroupList : FindGroup._id}} 
-            );
-            await GroupModel.updateOne(
-                { _id : FindGroup._id}, 
-                { $push: {UsersList : req.UserId}} 
-            );
-            res.status(SuccessStatusCodes.Success).json({
-                msg : "Invitation Accepted Successfully !"
+            const FindGroup:any = await GroupModel.findOne({
+                UniqueId : GroupUniqueId
             });
+            if(!FindGroup)
+            {
+                res.status(ClientErrorStatusCodes.Conflicts).json({
+                    msg : "The Given Group Does Not Exists !"
+                });
+                return;
+            }
+            if(Decision)
+            {
+                try{
+                    await GroupInvitationsModel.deleteOne({
+                        UniqueId : GroupInvitationUniqueId
+                    });
+                    await UserModel.updateOne(
+                        { _id : req.UserId}, 
+                        { $push: {GroupList : {
+                            name : FindGroup.name ,
+                            Groupprofilephoto:FindGroup.GroupProfileImage,
+                            Groupuniqueid:FindGroup.UniqueId,
+                            about:FindGroup.bio,
+                        }}} 
+                    );
+                    await GroupModel.updateOne(
+                        { _id : FindGroup._id}, 
+                        { $push: {UsersList : {
+                            name : FindSender.name , 
+                            ProfileImage :FindSender.ProfilePhoto
+                        }}} 
+                    );
+                    res.status(SuccessStatusCodes.Success).json({
+                        msg : "Invitation Accepted Successfully !"
+                    });
+                    return;
+                }
+                catch(e)
+                {
+                    res.status(ServerErrors.InternalServerError).json({
+                        msg : "Internal Server Error Occured !"
+                    });
+                    return;
+                }
+            } 
+            else
+            {
+                try{
+                    await GroupInvitationsModel.deleteOne({
+                        UniqueId : GroupInvitationUniqueId
+                    });
+                    res.status(SuccessStatusCodes.Success).json({
+                        msg : "Invitation rejected Successfully !"
+                    });
+                    return;
+                }
+                catch(e)
+                {
+                    res.status(ServerErrors.InternalServerError).json({
+                        msg : "Internal Server Error Occured !"
+                    });
+                    return;
+                }
+            }
         }
         catch(e)
         {
             res.status(ServerErrors.InternalServerError).json({
-                msg : "Internal Server Error Occurred !"  
+                msg : "Internal Server Error Occured !"
             });
             return;
         }
-        return;
-    } 
-    else
+    }
+    catch(e)
     {
-        // Rejected the Invitation of the sender
-        const Invite = await GroupInvitationsModel.updateOne(
-                { GroupId : FindGroup._id , RecieverId : req.UserId }, 
-                { $set: {Status : false , ReadOrNot : true}} 
-        );
-
-        if(!Invite)
-        {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "The Invitation does not Exists"
-            });
-            return;
-        }
-
-        res.status(SuccessStatusCodes.Success).json({
-            msg : "Invitation Rejected Successfully !"
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occured !"
         });
         return;
     }

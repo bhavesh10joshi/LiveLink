@@ -371,8 +371,7 @@ UserRouter.post("/Personal/Start-messaging/Send-Invite" ,usermiddleware,async fu
             await PersonalInvitationsModel.create({
                 SenderId : req.UserId , 
                 RecieverId : RecieverId._id ,
-                Status : false ,
-                ReadOrNot : false 
+                Status : false 
             });
             res.status(SuccessStatusCodes.ResourceCreated).json({
                 msg : "Invitation Sent Successfully !"
@@ -570,7 +569,6 @@ UserRouter.get("/Profile/Details" , usermiddleware , async function(req:any,res)
         }
         else
         {
-            console.log(data);
             res.status(ClientErrorStatusCodes.ResourceNotFound).json({
                 msg : "This User Does Not Exists !"
             });
@@ -593,6 +591,34 @@ UserRouter.get("/Get/Personal/Messaging/List" , usermiddleware , async function(
         });
         res.status(SuccessStatusCodes.Success).json({
             msg : data?.PersonalMessagingList
+        });
+        return;
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occured !"
+        });
+        return;
+    }
+});
+UserRouter.post("/Unfriend" , usermiddleware , async function(req:any ,res)
+{
+    const FriendsUniqueId = req.body.FriendsUniqueId;
+
+    try{
+        await UserModel.findOneAndUpdate(
+          { _id : req.UserId} ,
+          {
+            $pull : {
+                PersonalMessagingList:{
+                    uniqueid : FriendsUniqueId 
+                }
+            } 
+          }
+        );
+        res.status(SuccessStatusCodes.Success).json({
+            msg : "Unfriended user Successfully !"
         });
         return;
     }
