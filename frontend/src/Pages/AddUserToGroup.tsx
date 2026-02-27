@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 interface Style{
+    UniqueId : String
     SetAddUserToGroupfunction : ()=>void
 };
 export function AddUserToGroup(props:Style) {
@@ -32,6 +33,8 @@ export function AddUserToGroup(props:Style) {
     }, []);
     async function SendInvite(GroupUniqueId:String , RecieverUniqueId:String)
     {
+        console.log("GroupUniqueId : "+GroupUniqueId );
+        console.log("RecieverUniqueId : "+RecieverUniqueId );
         const token = localStorage.getItem("token");
         const config = {
             headers : {
@@ -43,12 +46,18 @@ export function AddUserToGroup(props:Style) {
             RecieverUniqueId : RecieverUniqueId
         }
         try{
-            const result = await axios.post("http://localhost:5000/LiveLink/Users/Groups/Add-Members/Send/Group-Invite" , payload , config);
-            if(result.status == ) 
+            await axios.post("http://localhost:5000/LiveLink/Users/Groups/Add-Members/Send/Group-Invite" , payload , config);
+            Navigate("/LiveLink/User/Edit/Success");
         }
-        catch(e)
+        catch(e:any)
         {
-            alert("Error Encountered while sending invite !")
+            if (e.response && e.response.status === 409) {
+                alert("Member already exists in this Group !");
+            } 
+            else {
+                console.log(e);
+                alert("Error Encountered while sending invite !");
+            }
         }
     } 
     return (
@@ -83,7 +92,7 @@ export function AddUserToGroup(props:Style) {
                                     </div>
                                 </div>
                                 <div className="w-2/9 flex justify-center items-center">
-                                    <button aria-label="Send Invite" className="text-white bg-blue-800 rounded-md pl-[0.5rem] pr-[0.5rem] py-[0.3rem] text-[0.95rem] font-bold">
+                                    <button aria-label="Send Invite" className="text-white bg-blue-800 rounded-md pl-[0.5rem] pr-[0.5rem] py-[0.3rem] text-[0.95rem] font-bold" onClick={() => SendInvite(users.Groupuniqueid , props.UniqueId)}>
                                         Send Invite
                                     </button>
                                 </div>

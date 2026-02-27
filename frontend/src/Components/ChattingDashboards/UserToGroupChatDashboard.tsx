@@ -147,7 +147,7 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
             )
         }</div>:
         <div className="flex w-full h-full justify-center items-center">
-            {UsersGroup.map((user)=>(<FriendsSideBar ProfileImage={user.ProfileImage} Name={user.Name}  UniqueId={user.UniqueId} IsSelected={user.IsSelected} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
+            {UsersGroup.map((user)=>(<FriendsSideBar ProfileImage={user.ProfileImage} Name={user.Name}  UniqueId={user.UniqueId} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
             <div className="bg-slate-600 w-[0.2px]"></div>
             {/* 3. Main Chat Area */}
             <div className="flex-1 flex flex-col h-full relative">
@@ -213,7 +213,7 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
                     ))}
                 </div>
                     <div className="bg-black-500 backdrop-blur-sm border-t border-gray-800 border border-slate-500 w-full">
-                        <TypeTheMessage/>
+                        <TypeTheMessage type="personal" RecieverUniqueId={selectedId}/>
                     </div>
                 </div>
         </div>

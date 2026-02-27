@@ -123,7 +123,8 @@ export function UserToUserChatDashboard() {
                 <div className=" bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
                     {
                         FriendsList.map((user:any)=>
-                        user.uniqueid == selectedId ?<UserToUserNavBar Name={user.name} ProfilePhoto={user.profilephoto} SetGroupSelector={()=>SetUserInfoFunction()} IsOnlineOrNot={user.isonline} SetAddUserToGroupfunction={() => SetAddUserToGroupFunction()}/> : null  )}
+                        user.uniqueid == selectedId ?<div><UserToUserNavBar Name={user.name} ProfilePhoto={user.profilephoto} SetGroupSelector={()=>SetUserInfoFunction()} IsOnlineOrNot={user.isonline} SetAddUserToGroupfunction={() => SetAddUserToGroupFunction()}/> </div>: null  )
+                    }
                 </div>
                 {/* MESSAGE CONTAINER: Scrollable Area */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">
@@ -179,12 +180,12 @@ export function UserToUserChatDashboard() {
                         </div>
                     ))}
                 </div>
-                    <div className="bg-black-500 backdrop-blur-sm border-t border-gray-800 border border-slate-500 w-full">
-                        <TypeTheMessage/>
-                    </div>
-                </div> 
+                <div className="bg-black-500 backdrop-blur-sm border-t border-gray-800 border border-slate-500 w-full">
+                    <TypeTheMessage type="personal" RecieverUniqueId={selectedId}/>
                 </div>
-        :<AddUserToGroup SetAddUserToGroupfunction={()=>SetAddUserToGroupFunction()}/>
+            </div> 
+        </div>
+        :<AddUserToGroup SetAddUserToGroupfunction={()=>SetAddUserToGroupFunction()} UniqueId={selectedId}/>
     }
     </>
 }

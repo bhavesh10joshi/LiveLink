@@ -94,7 +94,8 @@ GroupRouter.post("/Profile/Edit" , usermiddleware, async function(req:any , res)
 GroupRouter.post("/Add-Members/Send/Group-Invite" ,usermiddleware , async function(req:any , res)
 {
     const GroupUniqueId = req.body.GroupUniqueId;
-    const RecieverUniqueId = req.body.RecieverId;
+    const RecieverUniqueId = req.body.RecieverUniqueId;
+
     try{
         // checking if the reciever is already the participant of the group
         const reciever:any = await UserModel.findOne({
@@ -115,6 +116,8 @@ GroupRouter.post("/Add-Members/Send/Group-Invite" ,usermiddleware , async functi
                     UniqueId : GroupUniqueId
                 });
                 try{
+                    console.log(reciever);
+                    console.log(findgroup);
                     await GroupInvitationsModel.create({
                         RecieverId : reciever._id , 
                         SenderId : req.UserId  ,
@@ -128,6 +131,7 @@ GroupRouter.post("/Add-Members/Send/Group-Invite" ,usermiddleware , async functi
                 }
                 catch(e)
                 {
+                    console.log("1"+e);
                     res.status(ServerErrors.InternalServerError).json({
                         msg : "Internal Server Error Encountered !"
                     });
@@ -136,6 +140,7 @@ GroupRouter.post("/Add-Members/Send/Group-Invite" ,usermiddleware , async functi
             }
             catch(e)
             {
+                console.log("2"+e);
                 res.status(ServerErrors.InternalServerError).json({
                     msg : "Internal Server Error Encountered !"
                 });
@@ -145,6 +150,7 @@ GroupRouter.post("/Add-Members/Send/Group-Invite" ,usermiddleware , async functi
     }
     catch(e)
     {
+        console.log("3"+e);
         res.status(ServerErrors.InternalServerError).json({
             msg : "Internal Server Error Encountered !"
         });
