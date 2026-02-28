@@ -63,37 +63,38 @@ UserToGroupMessageRouter.post("/Image/Send/ToAll" , async function(req:any,res)
     {
         await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any)
         {
-            const sendChatMessage = async (senderId:any, groupId:any, messageContent:any) => {
-            try {
-                await UserToGroupMessageModel.findOneAndUpdate(
-                    // 1. Find a thread where these two are the sender/receiver
-                    {groupId: groupId }, 
-                    
-                    // 2. Push the new message into the array
-                    { 
-                        $push: { 
-                            messages: {
-                                ContentType: ContentType ,
-                                time: getCurrentDate(),
-                                Content: messageContent,
-                                sender: senderId
-                            }
-                        } 
-                    },
-                    
-                    // 3. Options: upsert will CREATE the document using the query + update data if it fails to find one!
-                    { new: true, upsert: true } 
-            );
-            } catch(e) {
-                console.error("Error sending message:", e);
+            const sendChatMessage = async (senderId:any, groupId:any, messageContent:any) => 
+            {
+                try {
+                    await UserToGroupMessageModel.findOneAndUpdate(
+                        // 1. Find a thread where these two are the sender/receiver
+                        {groupId: groupId }, 
+                        
+                        // 2. Push the new message into the array
+                        { 
+                            $push: { 
+                                messages: {
+                                    ContentType: ContentType ,
+                                    time: getCurrentDate(),
+                                    Content: messageContent,
+                                    sender: senderId
+                                }
+                            } 
+                        },
+                        
+                        // 3. Options: upsert will CREATE the document using the query + update data if it fails to find one!
+                        { new: true, upsert: true } 
+                );
+                } catch(e) {
+                    console.error("Error sending message:", e);
+                    return;
+                }
+                res.status(SuccessStatusCodes.ResourceCreated).json({
+                    msg : "Message Sent !"
+                });
                 return;
-            }
-            sendChatMessage(req.UserId , GroupId , result.url);
-            res.status(SuccessStatusCodes.ResourceCreated).json({
-                msg : "Message Sent !"
-            });
-            return;
-        };
+            };
+         sendChatMessage(req.UserId , GroupId , result.url);
         });
     }
     catch(e)

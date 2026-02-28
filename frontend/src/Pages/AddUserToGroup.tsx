@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { CloseIcon } from "../Components/Icons/CloseIcon";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { APIurl } from "../Config/ApiConfig";
 
 interface Style{
     UniqueId : String
@@ -20,7 +21,7 @@ export function AddUserToGroup(props:Style) {
                 }
             }; 
             try {
-                const data: any = await axios.get("http://localhost:5000/LiveLink/Users/Profile/Details", config);
+                const data: any = await axios.get(`${APIurl}/Users/Profile/Details`, config);
                 SetGroupData(data.data.msg.GroupList);
                 console.log(data.data.msg.GroupList);
             } catch (e) {
@@ -46,7 +47,7 @@ export function AddUserToGroup(props:Style) {
             RecieverUniqueId : RecieverUniqueId
         }
         try{
-            await axios.post("http://localhost:5000/LiveLink/Users/Groups/Add-Members/Send/Group-Invite" , payload , config);
+            await axios.post(`${APIurl}/Users/Groups/Add-Members/Send/Group-Invite` , payload , config);
             Navigate("/LiveLink/User/Edit/Success");
         }
         catch(e:any)

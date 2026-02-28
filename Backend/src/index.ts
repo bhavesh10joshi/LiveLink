@@ -35,8 +35,9 @@ async function main()
 {
     try{
         await mongoose.connect(Mongo_url as string);
-        app.listen(5000);
-        console.log("Connected to Server !");
+        app.listen(5000 , '0.0.0.0', () => {
+            console.log(`Server running on port 5000`);
+        });
     }
     catch(e)
     {

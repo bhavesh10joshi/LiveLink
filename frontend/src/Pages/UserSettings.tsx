@@ -6,6 +6,7 @@ import { DeleteUserAccount } from "./DeleteUserAccount"
 import { EditUserProfile } from "./EditUserProfile"
 import { CreateNewGroup } from "./CreateNewGroup"
 import axios from "axios"
+import { APIurl } from "../Config/ApiConfig"
 
 interface FriendsUsers {
     ProfileImage: string,
@@ -58,7 +59,7 @@ export function UserSettings( props:Styles )
                                 "authorization": token
                             }
                         };
-                        const response:any = await axios.get( "http://localhost:5000/LiveLink/Users/Profile/Details" , payload);
+                        const response:any = await axios.get( `${APIurl}/Users/Profile/Details` , payload);
                         console.log(response.data.msg.PersonalMessagingList);
                         SetBackenddata(response.data.msg);
                 }

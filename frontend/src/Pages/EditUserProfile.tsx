@@ -6,6 +6,7 @@ import { useRef } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { UploadProfileImage } from "./UploadProfileImage"
+import { APIurl } from "../Config/ApiConfig"
 
 interface EditStyle
 {
@@ -36,7 +37,7 @@ export function EditUserProfile(props:EditStyle)
             about : CurrentAbout
         } 
         try{
-            await axios.post("http://localhost:5000/LiveLink/Users/Profile/Edit" , payload , config);
+            await axios.post(`${APIurl}/Users/Profile/Edit` , payload , config);
             Navigate("/LiveLink/User/Edit/Success");
         }
         catch(e)

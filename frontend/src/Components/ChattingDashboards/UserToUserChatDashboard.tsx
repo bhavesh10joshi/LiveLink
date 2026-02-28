@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { boolean } from "zod"
 import { AddUserToGroup } from "../../Pages/AddUserToGroup"
+import { APIurl } from "../../Config/ApiConfig"
 
 interface messagestyle{
     typeofMessage : "Sent" | "Recieved" | "Date",
@@ -98,7 +99,7 @@ export function UserToUserChatDashboard() {
                     "authorization" : token
                 }
             };
-            const result:any = await axios.get("http://localhost:5000/LiveLink/Users/Get/Personal/Messaging/List" , config);  
+            const result:any = await axios.get(`${APIurl}/Users/Get/Personal/Messaging/List` , config);  
             SetFriendsList(result.data.msg);
         }
         HitBackend();
@@ -114,9 +115,8 @@ export function UserToUserChatDashboard() {
         }</div> 
         : !AddUserToGroupState
         ?// --- ADDED FRAGMENT WRAPPER < > ---
-            <div className="flex w-full h-full justify-center items-center">
+        <div className="flex w-full h-full justify-center items-center">
                 {FriendsList.map((user:any)=>(<FriendsSideBar ProfileImage={user.profilephoto} Name={user.name}  UniqueId={user.uniqueid} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
-                <div className="bg-slate-600 w-[0.2px]"></div>
                 <div className="flex-1 flex flex-col h-full relative">
                 {/* Header / Top Bar could go here */}
                     {/* Input Area (Your UserToUser or GroupToUser Portal) */}
@@ -180,7 +180,7 @@ export function UserToUserChatDashboard() {
                         </div>
                     ))}
                 </div>
-                <div className="bg-black-500 backdrop-blur-sm border-t border-gray-800 border border-slate-500 w-full">
+                <div className="bg-black-500 backdrop-blur-md  border rounded-lg border-slate-500 border-md border-full  mb-[1rem] mr-[1rem] ml-[1rem]">
                     <TypeTheMessage type="personal" RecieverUniqueId={selectedId}/>
                 </div>
             </div> 

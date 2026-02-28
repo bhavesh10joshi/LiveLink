@@ -5,6 +5,7 @@ import { UnfriendOrLeaveGroup } from "../Components/Icons/LeaveGrouporUnfriend"
 import { SucessUnfriend } from "../Components/Icons/SuccessUnfriend"
 import { useState } from "react"
 import axios from "axios"
+import { APIurl } from "../Config/ApiConfig"
 
 interface UserInfoStyle{
     SetUserSelector : ()=>void , 
@@ -37,7 +38,7 @@ export function UserInfo(props:UserInfoStyle)
         };
         try
         {
-            await axios.post("http://localhost:5000/LiveLink/Users/Unfriend" , payload , config);
+            await axios.post(`${APIurl}/Users/Unfriend` , payload , config);
             SetUnfriendUserfunction();
         }
         catch(e)

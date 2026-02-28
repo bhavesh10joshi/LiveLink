@@ -16,7 +16,8 @@ interface FriendsUsers {
 export function FriendsSideBar(props:FriendsUsers) {
     
     return (
-        <div className="bg-black-500 w-[20rem] h-screen rounded-s-lg px-8 py-4 ml-4 flex flex-col gap-4">
+    <div className="h-full pt-[1rem] pb-[1rem]">
+        <div className="bg-black-500 w-[20rem] rounded-md px-8 py-4 ml-4 flex flex-col gap-4 border border-slate-500  h-full">
             
             <div className="w-full">
                 <SearchBar placeholder="Search by Name or Unique Id" />
@@ -68,5 +69,6 @@ export function FriendsSideBar(props:FriendsUsers) {
                     </div>
             </div>
         </div>
+    </div>
     );
 }

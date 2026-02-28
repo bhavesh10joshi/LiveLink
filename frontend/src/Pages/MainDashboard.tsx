@@ -4,8 +4,6 @@ import { SideBar } from "../Components/SideBar/SideBar"
 import { useState } from "react"
 import { NotificationDashboard } from "../Components/NotificationsDashboard/Notificationdashboard"
 import { UserSettings } from "./UserSettings"
-import { NewGroup } from "./NewGroup"
-
 
 export function MainDashboard()
 {

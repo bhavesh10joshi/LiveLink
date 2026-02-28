@@ -7,7 +7,7 @@ import { Footer } from "../Components/Footer/Footer";
 import { useNavigate } from "react-router-dom";
 import { useRef , useState } from "react";
 import axios from "axios";
-
+import { APIurl } from "../Config/ApiConfig";
 
 export function SignInPage()
 {
@@ -24,7 +24,7 @@ export function SignInPage()
 
         try
         {
-            const result = await axios.post("http://localhost:5000/LiveLink/Users/Login" , payload);
+            const result = await axios.post(`${APIurl}/Users/Login` , payload);
 
             if(result)
             {

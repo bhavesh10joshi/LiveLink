@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import { Validations } from "../ZodVaalidations/Zod";
 import axios from "axios";
-
+import { APIurl } from "../Config/ApiConfig";
 
 export function CreateAccount()
 {
@@ -42,7 +42,7 @@ export function CreateAccount()
         };
 
         try{
-            const result = await axios.post("http://localhost:5000/LiveLink/Users/SignUp" , payload);
+            const result = await axios.post(`${APIurl}/Users/SignUp` , payload);
             
             if(result)
             {

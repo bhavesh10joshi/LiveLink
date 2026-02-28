@@ -69,19 +69,21 @@ UserRouter.post("/Login" , async function(req,res)
 {
     const email : string = req.body.email ;
     const password : string = req.body.password ; 
-    
+    console.log("acha");
     try{
         const FindUser = await UserModel.findOne({
             email : email
         });
-
+        console.log("hello");
         if(FindUser)
         {
             try
             {
+                console.log("ok");
                 const Checkpass = await bcrypt.compare(password , FindUser.password);
                 if(Checkpass)
                 {
+                    console.log("thick bhai ");
                     const token = jwt.sign({
                         id : FindUser._id 
                     } , process.env.USER_SECRET as string);

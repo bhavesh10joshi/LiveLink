@@ -9,6 +9,7 @@ import { useRef } from "react"
 import { Button } from "../Components/Buttons/Button"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { APIurl } from "../Config/ApiConfig"
 
 interface FriendsUsers {
     ProfileImage: string,
@@ -67,7 +68,7 @@ export function CreateNewGroup(props:CreateNewGroupStyle)
                         "authorization" : token
                     }
                 };
-                await axios.post("http://localhost:5000/LiveLink/Users/Groups/Create" , ProfileImage , config);
+                await axios.post(`${APIurl}/Users/Groups/Create` , ProfileImage , config);
                 Navigate("/LiveLink/User/Edit/Success");
             }
             catch(e)

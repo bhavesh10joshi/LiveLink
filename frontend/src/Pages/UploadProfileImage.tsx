@@ -3,6 +3,7 @@ import { Button } from "../Components/Buttons/Button"
 import { CloseIcon } from "../Components/Icons/CloseIcon"
 import { useRef } from "react";
 import axios from "axios";
+import { APIurl } from "../Config/ApiConfig";
 
 interface style{
     SetProfileImageFunction : ()=>void , 
@@ -37,7 +38,7 @@ export function UploadProfileImage(props : style)
                     "authorization": token
                 }
             };
-            await axios.post("http://localhost:5000/LiveLink/Users/Profile/Edit/Image" , formData , config);
+            await axios.post(`${APIurl}/Users/Profile/Edit/Image` , formData , config);
             props.SetEditUserProfileFunction();
         }
         catch(e)

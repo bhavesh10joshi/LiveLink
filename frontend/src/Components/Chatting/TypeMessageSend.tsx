@@ -2,6 +2,7 @@ import { PlusIcon } from "../Icons/PlusBtn"
 import { SendMessage } from "../Icons/SendMessage"
 import { useRef, useState } from "react"
 import axios from "axios"
+import { APIurl } from "../../Config/ApiConfig"
 
 interface Style {
     type: "personal" | "group",
@@ -60,7 +61,7 @@ export function TypeTheMessage(props: Style) {
                 Message: CurrentTextMessage
             };
             try {
-                await axios.post("http://localhost:5000/LiveLink/Users/Message/UserToUser/Text/Send", payload, config);
+                await axios.post(`${APIurl}/Users/Message/UserToUser/Text/Send`, payload, config);
                 alert("Message Sent");
                 InputRef.current.value = ""; 
                 return;
@@ -75,7 +76,7 @@ export function TypeTheMessage(props: Style) {
                 Message: CurrentTextMessage
             };
             try {
-                await axios.post("http://localhost:5000/LiveLink/Users/Message/UserToGroup/Text/Send/toAll", payload, config);
+                await axios.post(`${APIurl}/Users/Message/UserToGroup/Text/Send/toAll`, payload, config);
                 alert("Message Sent");
                 InputRef.current.value = ""; 
                 return;
@@ -97,7 +98,7 @@ export function TypeTheMessage(props: Style) {
         if (props.type == "personal") {
             try {
                 console.log("acha bete ");
-                const result = await axios.post("http://localhost:5000/LiveLink/Users/Message/UserToUser/Image/send", ImageData, config);
+                const result = await axios.post(`${APIurl}/Users/Message/UserToUser/Image/send`, ImageData, config);
                 console.log(result);
                 alert("Message Sent !");
                 
@@ -112,7 +113,7 @@ export function TypeTheMessage(props: Style) {
         } else {
              try {
 
-                await axios.post("http://localhost:5000/LiveLink/Users/Message/UserToGroup/Image/Send/ToAll", ImageData, config);
+                await axios.post(`${APIurl}/Users/Message/UserToGroup/Image/Send/ToAll`, ImageData, config);
                 alert("Message Sent !");
                 
 
@@ -128,8 +129,8 @@ export function TypeTheMessage(props: Style) {
     }
 
     return <>
-        <div className="w-full h-full pl-[2rem] pr-[2rem] pt-[0.5rem] pb-[0.5rem] flex"> 
-            <div className="flex justify-center items-center h-full mr-[0.5rem]">
+        <div className="w-full h-full pl-[1rem] pr-[2rem] pt-[0.5rem] pb-[0.5rem] flex"> 
+            <div className="flex justify-center items-center h-full bg-[#162456] pl-[1rem] rounded-l-lg">
                 <button aria-label="Name" type="button" onClick={HandleButton}>
                     <div className="flex justify-center items-center h-full ">
                         <div className="bg-blue-200 rounded-xl">
@@ -142,7 +143,7 @@ export function TypeTheMessage(props: Style) {
             <input type="file" accept="image/png, image/jpeg, image/webp" aria-label="name" className="invisible w-[0rem]" onChange={SelectImage} ref={ImageRef}/>
             
             <div className="flex justify-center items-center w-full h-full">
-                <input type="text" aria-label="Name" className=" bg-[#162456] h-full w-full rounded-xl placeholder:text-white pl-[1rem]" placeholder="Type a Message ...." ref={InputRef}/>
+                <input type="text" aria-label="Name" className=" bg-[#162456] h-full w-full placeholder:text-white pl-[1rem]" placeholder="Type a Message ...." ref={InputRef}/>
             </div>
             
             <div className="flex justify-center items-center h-full ml-[0.5rem]">

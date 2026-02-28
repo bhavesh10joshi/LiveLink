@@ -15,7 +15,7 @@ interface UserStyle{
 export function UserToUserNavBar(props:UserStyle)
 {
     return<>
-        <div className="flex bg-black-500 pt-[1rem] pl-[2rem] pb-[1rem] pr-[2rem] w-full h-[4rem] border border-slate-500 place-content-between" >
+        <div className="flex bg-black-500 pt-[1rem] pl-[2rem] pb-[1rem] pr-[2rem] mt-[1rem] rounded-md h-[4rem] border border-slate-500 place-content-between ml-[1rem] mr-[1rem]" >
             <div className=" flex justify-center items-center">
                 <div className="flex justify-center items-center mr-[1rem]">
                     <img src={props.ProfilePhoto} alt="UsersProfilePhoto" className="w-[2.5rem] rounded-xl"/>
@@ -31,14 +31,14 @@ export function UserToUserNavBar(props:UserStyle)
                     </div>
                 </div>
             </div>
-                <div className="flex justify-center items-end ">
-                   <div className="flex justify-center items-center">
-                        <button className="flex justify-center items-center" aria-label="Name" onClick={() => props.SetAddUserToGroupfunction()}><AddtoGroupUser/><span className="text-[#808080] font-bold text-[0.9rem] ml-[0.5rem]">Add To Group</span></button>
-                   </div>
-                   <div>
-                        <button type="button" className="flex justify-center items-center" aria-label="Name" onClick={()=>props.SetGroupSelector()}><More/></button>
-                   </div>
+            <div className="flex justify-center items-center ">
+                <div className="flex justify-center items-center">
+                    <button type="button" className="flex justify-center items-center bg-green-800 rounded-xl pl-[1rem] pr-[1rem] pt-[0.2rem] pb-[0.2rem] hover:bg-green-600" aria-label="Name" onClick={() => props.SetAddUserToGroupfunction()}><AddtoGroupUser/><span className="text-[#808080] font-bold  text-white text-[0.9rem] ml-[0.5rem]">Add To Group</span></button>
                 </div>
+                <div className="flex justify-center items-center">
+                    <button type="button" className="flex justify-center items-center " aria-label="Name" onClick={()=>props.SetGroupSelector()}><More/></button>
+                </div>
+            </div>
         </div>
     </>
 }
