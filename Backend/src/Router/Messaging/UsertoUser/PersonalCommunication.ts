@@ -2,9 +2,11 @@ import { UserToUserMessageModel , UserModel, PersonalInvitationsModel } from "..
 import { usermiddleware } from "../../../Middleware/Index";
 import { SuccessStatusCodes , ClientErrorStatusCodes ,ServerErrors } from "../../../StatusCodes";
 import { Router } from "express";
-import { getCurrentDate } from "../../../CurrentDate/Date";
+import { getCurrentDate , getCurrentISTTime} from "../../../CurrentDateandTime/DateAndTime";
 import { CheckFortheFriend } from "../../../CheckForAFriend/CheckForaFriend";
 import { v2 as cloudinary } from 'cloudinary'
+import { receiveMessageOnPort } from "worker_threads";
+import { time } from "console";
 
 cloudinary.config({ 
   cloud_name: process.env.CLOUD_NAME as string , 
@@ -43,8 +45,10 @@ UserToUserMessageRouter.post("/Text/Send" , usermiddleware , async function(req:
                             $push: { 
                                 messages: {
                                     ContentType: ContentType ,
-                                    time: getCurrentDate(),
-                                    Content: messageContent
+                                    Date: getCurrentDate(),
+                                    time : getCurrentISTTime() , 
+                                    Content: messageContent,
+                                    MessageType : "Sent" 
                                 }
                             } 
                         },
@@ -89,7 +93,7 @@ UserToUserMessageRouter.post("/Text/Send" , usermiddleware , async function(req:
 UserToUserMessageRouter.post("/Image/send", usermiddleware, async function(req: any, res: any) {
     const RecieverUniqueId: string = req.body.RecieverUniqueId;
     const ContentType = "image";
-    
+
     if (!req.files || !req.files.photo) {
         return res.status(ClientErrorStatusCodes.BadRequest).json({
             msg: "No image file provided!"
@@ -123,8 +127,10 @@ UserToUserMessageRouter.post("/Image/send", usermiddleware, async function(req: 
                 $push: { 
                     messages: {
                         ContentType: ContentType,
-                        time: getCurrentDate(),
-                        Content: result.url
+                        Date: getCurrentDate(),
+                        time : getCurrentISTTime() , 
+                        Content: result.url , 
+                        MessageType : "Sent" 
                     }
                 } 
             },
@@ -144,22 +150,54 @@ UserToUserMessageRouter.post("/Image/send", usermiddleware, async function(req: 
 });
 UserToUserMessageRouter.get("/Access/Messages/All" , usermiddleware , async function(req:any , res)
 {
-    const RecieverId : any = req.body.RecieverId; 
-    try
+    console.log("hello");
+    const RecieverUniqueId : any = req.query.RecieverUniqueId; 
+    if(!RecieverUniqueId)
     {
-        const data = await UserToUserMessageModel.findOne({
-            sender : req.UserId , 
-            reciever : RecieverId
-        });
-        res.status(SuccessStatusCodes.Success).json({
-            msg : data?.messages
+        res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+            msg : "The Given request has no Information about the reciever !"
         });
         return;
     }
+    try{
+        const findUser:any = await UserModel.findOne({
+            UniqueId : RecieverUniqueId
+        });
+        if(findUser)
+        {
+            try
+            {
+                const data = await UserToUserMessageModel.findOne({
+                    sender : req.UserId , 
+                    reciever : findUser._id
+                });
+                res.status(SuccessStatusCodes.Success).json({
+                    msg : data?.messages
+                });
+                return;
+            }
+            catch(e)
+            {
+                console.log("Error Aaya "+e);
+                res.status(ServerErrors.InternalServerError).json({
+                    msg : "Internal Server Error Encountered !"
+                });
+                return;
+            } 
+        }
+        else
+        {
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "Reciever was not found !"
+            });
+            return;
+        }
+    }
     catch(e)
     {
+        console.log("Nya error "+e);
         res.status(ServerErrors.InternalServerError).json({
-            msg : "Internal Server Error Encountered !"
+            msg : "Internal Server Error !"
         });
         return;
     }

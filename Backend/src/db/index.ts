@@ -36,7 +36,13 @@ const UserToUserMessage = new Schema({
     reciever : {type : ObjectId},
     sender : {type : ObjectId},
     messages : [{
+        MessageType: { 
+            type: String, 
+            enum: ['Received', 'Sent'], 
+            required: true 
+        },
         ContentType : {type : String} ,
+        Date : {type : String} ,
         time : {type : String} , 
         Content : {type : String}
     }]
@@ -46,6 +52,7 @@ const UserToGroupMessage = new Schema({
     groupId : {type : ObjectId},
     messages : [{
         ContentType : {type : String} ,
+        Date : {type : String} ,
         time : {type : String} , 
         Content : {type : String},
         sender : {type : ObjectId}  

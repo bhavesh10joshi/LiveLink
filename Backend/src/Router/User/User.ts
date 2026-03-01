@@ -491,7 +491,7 @@ UserRouter.post("/Invitation/Personal/Message-Invite" , usermiddleware , async f
     }
 });
 // Endpoint for accessing all the Notifications that are related to personal Invitations(Only One that are unread)
-UserRouter.get("/Access/Personal/Notifications" ,usermiddleware, async function(req:any,res)
+UserRouter.get("/Personal/Notifications/All" ,usermiddleware, async function(req:any,res)
 {
     try
     {
@@ -523,7 +523,7 @@ UserRouter.get("/Access/Personal/Notifications" ,usermiddleware, async function(
     }
 });
 // Endpoint that gives us all the notifications that are related to group Invitations(Only one that are unread)
-UserRouter.get("/Access/Group/Notifications" , usermiddleware , async function(req:any,res)
+UserRouter.get("/Group/Notifications/All" , usermiddleware , async function(req:any,res)
 {
     try
     {

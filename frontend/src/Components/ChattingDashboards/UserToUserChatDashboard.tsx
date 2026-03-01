@@ -1,56 +1,12 @@
 import { FriendsSideBar } from "../FriendsSideBar/FriendsSideBar"
 import { UserToUserNavBar } from "../Chatting/UserToUserNavBar"
-import DocumentImage from "../ui/Image/SampleImages/ChattingImages/DocumentImage.png"
-import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { TypeTheMessage } from "../Chatting/TypeMessageSend"
 import { UserInfo } from "../../Pages/UserInfo"
 import { useEffect, useState } from "react"
 import axios from "axios"
-import { boolean } from "zod"
 import { AddUserToGroup } from "../../Pages/AddUserToGroup"
 import { APIurl } from "../../Config/ApiConfig"
 
-interface messagestyle{
-    typeofMessage : "Sent" | "Recieved" | "Date",
-    typeOfContent : "text" | "Image",
-    ImageMessage ?: string ,
-    TextMessage ?: string , 
-    TimeOfMesage : string ,
-    DateOfMessage : Number,
-    ProfilePhoto : string
-}
-
-const MessageData:messagestyle[] = [
-{
-    typeofMessage : "Sent" ,
-    typeOfContent : "text" , 
-    TextMessage : "Hey There how are you doing ??", 
-    TimeOfMesage : "3:59 Am",
-    DateOfMessage : 12,
-    ProfilePhoto : Profile 
-},{
-    typeofMessage : "Recieved" ,
-    typeOfContent : "text" ,
-    TextMessage : "Hey There how are you doing ??", 
-    TimeOfMesage : "4:59 Am",
-    DateOfMessage : 12,
-    ProfilePhoto : Profile 
-},
-{
-    typeofMessage : "Sent" ,
-    typeOfContent : "Image" , 
-    ImageMessage : DocumentImage , 
-    TimeOfMesage : "10:59 Pm",
-    DateOfMessage : 12,
-    ProfilePhoto : Profile 
-},{
-    typeofMessage : "Recieved" ,
-    typeOfContent : "Image" ,
-    ImageMessage : DocumentImage , 
-    TimeOfMesage : "12:00 Pm",
-    DateOfMessage : 12,
-    ProfilePhoto : Profile 
-}]; 
 
 interface Friend {
     isonline: boolean;
@@ -77,6 +33,7 @@ export function UserToUserChatDashboard() {
     const [selectedId, setSelectedId] = useState<string>("fc5d7203-fd30-42a7-b8dc-4bad5c34a9f1");
     const [FriendsList , SetFriendsList]:any = useState<Friend[]>([]);
     const[AddUserToGroupState , SetAddUserToGroup] = useState(false);
+    const[MessagesData , SetMessagesData]:any = useState(null);
 
     function SetUserInfoFunction()
     {
@@ -91,9 +48,9 @@ export function UserToUserChatDashboard() {
         SetAddUserToGroup(!AddUserToGroupState);
     }
     useEffect(function(){
+        const token = localStorage.getItem("token");
         const HitBackend = async () =>
         {
-            const token = localStorage.getItem("token");
             const config = {
                 headers : {
                     "authorization" : token
@@ -102,8 +59,33 @@ export function UserToUserChatDashboard() {
             const result:any = await axios.get(`${APIurl}/Users/Get/Personal/Messaging/List` , config);  
             SetFriendsList(result.data.msg);
         }
+        const HitBackendForMessages = async () => {
+            console.log("selectedId is "+ selectedId);
+            console.log("O My");
+            const config = {
+                headers : {
+                    "authorization" : token
+                } , 
+                params : {
+                    RecieverUniqueId : selectedId
+                }
+            };
+            try{
+                const result:any = await axios.get(`${APIurl}/Users/Message/UserToUser/Access/Messages/All` , config);
+                console.log(result.data.msg);
+                SetMessagesData(result.data.msg);
+                return;
+            }
+            catch(e)
+            {
+                console.log(e);
+                alert("Error Occured while fetching Messages !");
+                return;
+            }
+        }
         HitBackend();
-    },[]);
+        HitBackendForMessages();
+    },[selectedId]);
     
     return <>
     {
@@ -127,58 +109,61 @@ export function UserToUserChatDashboard() {
                     }
                 </div>
                 {/* MESSAGE CONTAINER: Scrollable Area */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">
-                    {MessageData.map((msg, index) => (
-                        <div
-                            key={index}
-                            className={`flex w-full ${
-                                msg.typeofMessage === "Sent" ? "justify-end" : "justify-start"
-                            }`}
-                        >
-                            <div className={`flex max-w-[60%] ${
-                                msg.typeofMessage === "Sent" ? "flex-row-reverse" : "flex-row"
-                            } gap-2`}>
-                                
-                                {/* Profile Photo (Optional: Hide for sent messages if you prefer) */}
-                                <img 
-                                    src={msg.ProfilePhoto} 
-                                    alt="profile" 
-                                    className="w-8 h-8 rounded-full mt-1"
-                                />
-
-                                {/* Message Bubble */}
-                                <div className={`flex flex-col ${
-                                    msg.typeofMessage === "Sent" 
-                                        ? "items-end" 
-                                        : "items-start"
-                                }`}>
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 ">
+                    {MessagesData != null
+                        ?MessagesData.map((msg:any, index:any) => (
+                            <div
+                                key={index}
+                                className={`flex w-full ${
+                                    msg.ContentType === "Sent" ? "justify-end" : "justify-start"
+                                }`}
+                            >
+                                <div className={`flex max-w-[60%] ${
+                                    msg.ContentType === "Sent" ? "flex-row-reverse" : "flex-row"
+                                } gap-2`}>
                                     
-                                    {/* Content Bubble */}
-                                    <div className={`p-3 rounded-2xl ${
-                                        msg.typeofMessage === "Sent"
-                                            ? "bg-blue-600 rounded-tr-none text-white"
-                                            : "bg-gray-800 rounded-tl-none text-gray-200"
-                                    }`}>
-                                        {/* Render Image or Text based on type */}
-                                        {msg.typeOfContent === "Image" ? (
-                                            <img 
-                                                src={msg.ImageMessage} 
-                                                alt="Sent attachment" 
-                                                className="rounded-lg max-w-[250px] object-cover"
-                                            />
-                                        ) : (
-                                            <p className="text-sm">{msg.TextMessage}</p>
-                                        )}
-                                    </div>
+                                    {/* Profile Photo (Optional: Hide for sent messages if you prefer) */}
+                                    {/* <img 
+                                        src={msg.ProfilePhoto} 
+                                        alt="profile" 
+                                        className="w-8 h-8 rounded-full mt-1 invisible"
+                                    /> */}
 
-                                    {/* Timestamp */}
-                                    <span className="text-[10px] text-gray-500 mt-1 px-1">
-                                        {msg.TimeOfMesage}
-                                    </span>
+                                    {/* Message Bubble */}
+                                    <div className={`flex flex-col ${
+                                        msg.ContentType === "Sent" 
+                                            ? "items-end" 
+                                            : "items-start"
+                                    }`}>
+                                        
+                                        {/* Content Bubble */}
+                                        <div className={`p-3 rounded-2xl ${
+                                            msg.ContentType === "Sent"
+                                                ? "bg-blue-600 rounded-tr-none text-white"
+                                                : "bg-gray-800 rounded-tl-none text-gray-200"
+                                        }`}>
+                                            {/* Render Image or Text based on type */}
+                                            {msg.ContentType === "image" ? (
+                                                <img 
+                                                    src={msg.Content} 
+                                                    alt="Sent attachment" 
+                                                    className="rounded-lg max-w-[250px] object-cover"
+                                                />
+                                            ) : (
+                                                <p className="text-sm">{msg.Content}</p>
+                                            )}
+                                        </div>
+
+                                        {/* Timestamp */}
+                                        <span className="text-[10px] text-gray-500 mt-1 px-1">
+                                            {`${msg.time} ${msg.Date}`}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                        :<div className="flex justify-center items center w-full h-full font-bold text-slate-600 text-[1.3rem] text-center mt-[12rem]">Take the leap, type the first word, and transform this silence into a connection worth remembering.</div>
+                    }
                 </div>
                 <div className="bg-black-500 backdrop-blur-md  border rounded-lg border-slate-500 border-md border-full  mb-[1rem] mr-[1rem] ml-[1rem]">
                     <TypeTheMessage type="personal" RecieverUniqueId={selectedId}/>

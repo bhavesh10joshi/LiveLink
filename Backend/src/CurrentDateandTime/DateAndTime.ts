@@ -1,3 +1,5 @@
+import { date } from "zod";
+
 export function getCurrentDate(): string {
   const today = new Date();
 
@@ -11,4 +13,15 @@ export function getCurrentDate(): string {
 
   // Combine them into the desired format
   return `${day}-${month}-${year}`;
+}
+export function getCurrentISTTime(): string {
+  const now: Date = new Date();
+
+  return now.toLocaleTimeString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
 }

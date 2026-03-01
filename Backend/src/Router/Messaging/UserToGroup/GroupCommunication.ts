@@ -2,9 +2,8 @@ import { UserToGroupMessageModel , GroupModel , UserModel} from "../../../db";
 import { usermiddleware } from "../../../Middleware/Index";
 import { SuccessStatusCodes , ClientErrorStatusCodes ,ServerErrors } from "../../../StatusCodes";
 import { Router } from "express";
-import { getCurrentDate } from "../../../CurrentDate/Date";
 import cloudinary from "../../../CloudinaryConfig/Cloudinary";
-
+import { getCurrentDate , getCurrentISTTime } from "../../../CurrentDateandTime/DateAndTime";
 const UserToGroupMessageRouter = Router();
 
 UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async function(req:any , res)
@@ -25,7 +24,8 @@ UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async functi
                     $push: { 
                         messages: {
                             ContentType: ContentType ,
-                            time: getCurrentDate(),
+                            Date: getCurrentDate(),
+                            time : getCurrentISTTime() , 
                             Content: Message,
                             sender: senderId
                         }
@@ -75,7 +75,8 @@ UserToGroupMessageRouter.post("/Image/Send/ToAll" , async function(req:any,res)
                             $push: { 
                                 messages: {
                                     ContentType: ContentType ,
-                                    time: getCurrentDate(),
+                                    Date: getCurrentDate(),
+                                    time : getCurrentISTTime() , 
                                     Content: messageContent,
                                     sender: senderId
                                 }

@@ -130,7 +130,7 @@ export function TypeTheMessage(props: Style) {
 
     return <>
         <div className="w-full h-full pl-[1rem] pr-[2rem] pt-[0.5rem] pb-[0.5rem] flex"> 
-            <div className="flex justify-center items-center h-full bg-[#162456] pl-[1rem] rounded-l-lg">
+            <div className="flex justify-center items-center h-full bg-[#162456] pl-[1rem] rounded-l-lg pr-[1rem]">
                 <button aria-label="Name" type="button" onClick={HandleButton}>
                     <div className="flex justify-center items-center h-full ">
                         <div className="bg-blue-200 rounded-xl">
@@ -142,18 +142,18 @@ export function TypeTheMessage(props: Style) {
             
             <input type="file" accept="image/png, image/jpeg, image/webp" aria-label="name" className="invisible w-[0rem]" onChange={SelectImage} ref={ImageRef}/>
             
-            <div className="flex justify-center items-center w-full h-full">
-                <input type="text" aria-label="Name" className=" bg-[#162456] h-full w-full placeholder:text-white pl-[1rem]" placeholder="Type a Message ...." ref={InputRef}/>
+            <div className="flex justify-center items-center w-full h-full ">
+                <input type="text" aria-label="Name" className=" bg-[#162456] h-full w-full placeholder:text-white pl-[1rem] outline-none" placeholder="Type a Message ...." ref={InputRef}/>
             </div>
             
-            <div className="flex justify-center items-center h-full ml-[0.5rem]">
+            <div className="flex justify-center items-center h-full pl-[0.5rem] bg-[#162456] pr-[0.8rem] rounded-r-lg pt-[0.2rem] pb-[0.2rem]">
                 <button 
                     aria-label="Send" 
                     type="button" 
                     onClick={MessageType === "text" ? SendthetextMessage : SendtheImageMessage}
                 >
                     <div className="flex justify-center items-center h-full ">
-                        <div className="bg-blue-200 rounded-xl p-[0.2rem] border">
+                        <div className="bg-black-800 rounded-xl p-[0.2rem] border border-white">
                             <SendMessage/>
                         </div>
                     </div>

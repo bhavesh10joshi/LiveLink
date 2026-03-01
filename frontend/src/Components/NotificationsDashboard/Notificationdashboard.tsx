@@ -1,6 +1,10 @@
 import { useState } from "react";
 import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { MarkAll } from "../Icons/MarkAll";
+import axios from "axios";
+import { APIurl } from "../../Config/ApiConfig";
+import { useEffect } from "react";
+import { CloseIcon } from "../Icons/CloseIcon";
 
 interface NotificationStyle{
     TypeOfNotification : "UserToUserRequest" | "UserToGroupRequest" , 
@@ -48,6 +52,30 @@ const NotificationData:NotificationStyle[] = [{
     NameOfGroup : "College 2023-2027" ,
     Date : "14-02-2026" ,
     Time : "12:56"
+},{
+    TypeOfNotification : "UserToGroupRequest" ,
+    ReadOrUnread : false , 
+    SenderProfilePhoto : Profile , 
+    NameOfSender : "Divyanshu Kandpal" ,
+    NameOfGroup : "College 2023-2027" ,
+    Date : "14-02-2026" ,
+    Time : "12:56"
+},{
+    TypeOfNotification : "UserToGroupRequest" ,
+    ReadOrUnread : false , 
+    SenderProfilePhoto : Profile , 
+    NameOfSender : "Divyanshu Kandpal" ,
+    NameOfGroup : "College 2023-2027" ,
+    Date : "14-02-2026" ,
+    Time : "12:56"
+},{
+    TypeOfNotification : "UserToGroupRequest" ,
+    ReadOrUnread : false , 
+    SenderProfilePhoto : Profile , 
+    NameOfSender : "Divyanshu Kandpal" ,
+    NameOfGroup : "College 2023-2027" ,
+    Date : "14-02-2026" ,
+    Time : "12:56"
 }];
 
 const TextStyle = {
@@ -72,15 +100,42 @@ function CountTheNumberofUnreadNotifications()
 export function NotificationDashboard()
 {
     const[NotificationSelector , SetNotificationSelector] = useState("Unread"); //There are a total two Options that are "All" and "Unread" , All->shows all read and unread notifications and Unread->shows all the unread messages 
+    const[Notificationdata , SetNotificationdata] = useState(null); 
     //By default the button will be at "All"
+    useEffect(function()
+    {
+        const FetchData = async ()=>{
+            const token = localStorage.getItem("token");
+            const Config = {
+                headers : {
+                    "authorization" : token
+                },
+                params : {
+
+                }
+            };
+            try
+            {
+                const data = await axios.get(`${APIurl}/Users` , Config);
+            }
+            catch(e)
+            {
+
+            }
+        }
+    } , []);
+    
     return<>
-        <div className="w-full h-full pt-[2rem] pl-[4rem] pr-[4rem]">
+        <div className="w-full pt-[2rem] pl-[4rem] pr-[4rem] border border-white rounded-md mt-[1rem] ml-[2rem] mr-[2rem] mb-[1rem] overflow-hidden">
             <div className="flex place-content-between">
                 <div className="font-bold text-[2rem] text-white">Notifications</div>
-                <div className="flex justify-center items-center w-[10rem] rounded-xl bg-slate-400 h-[2.5rem]"><button type="button" className="flex justify-center items-center text-[0.9rem] text-black-500"><span className="mr-[0.5rem]"><MarkAll/></span>Mark All as read</button></div>
+                <div className="flex justify-center items-center">
+                    <div className="flex justify-center items-center w-[10rem] h-[2.5rem]"><button type="button" className=" w-full flex justify-center items-center text-[0.9rem] text-white font-bold pl-[1rem] pr-[1rem] rounded-xl bg-green-900 hover:bg-green-600"><span className="mr-[0.5rem]"><MarkAll/></span>Accept All</button></div>
+                    <div className="flex justify-center items-center w-[10rem] h-[1.2rem] ml-[1rem]"><button type="button" className="w-full flex justify-center items-center text-[0.9rem] text-white font-bold pl-[1rem] pr-[1rem] rounded-xl bg-red-900 hover:bg-red-600"><span className="mr-[0.5rem]"><CloseIcon/></span>Reject All</button></div>
+                </div>
             </div>
-            <div className="text-slate-400 text-[0.8rem] ">
-                You Have {CountTheNumberofUnreadNotifications()} Unread Messages!
+            <div className="text-green-600 text-[0.8rem] font-bold">
+                You Have {CountTheNumberofUnreadNotifications()} Unread Messages
             </div>
             <div className="flex w-[7rem] place-content-between mt-[3rem]">
                 {
@@ -91,7 +146,7 @@ export function NotificationDashboard()
                 }
             </div>
             <div className="bg-slate-800 w-full h-[0.2rem] mt-[-0.2rem]"></div>
-            <div className="w-full h-full mt-[3rem]">
+            <div className="w-full h-full mt-[3rem] overflow-auto">
                {
                     NotificationData.map((Notifications) => (<div className="bg-[#020618] pt-[1rem] mt-[1rem] rounded-xl pl-[1rem] pr-[1rem] pb-[1rem] border-blue-800 border">
                         <div className="flex place-content-between  w-full">
