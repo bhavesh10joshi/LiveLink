@@ -76,15 +76,26 @@ const group = new Schema({
 const GroupInvitations = new Schema({
     RecieverId : {type : ObjectId} , 
     SenderId : {type : ObjectId} , 
-    GroupId : {type : ObjectId} , 
+    GroupUniqueId : {type : ObjectId} , 
     UniqueId : {type : String},
+    SenderProfilePhoto : {type : String},
+    GroupProfilePhoto : {type : String},
+    Date : {type : String} , 
+    Time : {type : String} , 
+    NameOfSender : {type : String},
+    GroupName : {type : String} ,
+    SenderUniqueId : {type : String} 
 });
 
 const PersonalInvitations = new Schema({
     SenderId : {type : ObjectId} , 
     RecieverId : {type : ObjectId} ,
-    // the Invitation is valid till it is not been accepted or rejected by the user , suppose if the user rejects the proposal , then the invitation will automatically be deleted !
-    Status : {type : Boolean} ,   
+    SenderProfilePhoto : {type : String},
+    UniqueId : {type : String},
+    Date : {type : String} , 
+    Time : {type : String} ,
+    NameOfSender : {type : String},
+    SenderUniqueId : {type : String} 
 });
 
 export const UserToUserMessageModel = model("UserToUserMessage" , UserToUserMessage) ;

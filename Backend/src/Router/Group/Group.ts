@@ -5,8 +5,7 @@ import { usermiddleware } from "../../Middleware/Index";
 import { UniqueId } from "../../uuid";
 import { CheckForaGroupMember } from "../../CheckforaGroupMember/CheckGroupMember";
 import cloudinary from "../../CloudinaryConfig/Cloudinary";
-import { success } from "zod";
-import { ServerRouter } from "react-router-dom";
+import { getCurrentDate, getCurrentISTTime } from "../../CurrentDateandTime/DateAndTime";
 
 const GroupRouter = Router();
 
@@ -90,166 +89,6 @@ GroupRouter.post("/Profile/Edit" , usermiddleware, async function(req:any , res)
             });
         }
 });
-// Endpoint for Sending a group invite to a user 
-GroupRouter.post("/Add-Members/Send/Group-Invite" ,usermiddleware , async function(req:any , res)
-{
-    const GroupUniqueId = req.body.GroupUniqueId;
-    const RecieverUniqueId = req.body.RecieverUniqueId;
-
-    try{
-        // checking if the reciever is already the participant of the group
-        const reciever:any = await UserModel.findOne({
-            UniqueId : RecieverUniqueId
-        });
-        const IsMember = reciever?.GroupList.some((user:any) => user.Groupuniqueid == GroupUniqueId);
-        if(IsMember)
-        {
-            res.status(ClientErrorStatusCodes.Conflicts).json({
-                msg : "User is  already a member"
-            });
-            return;
-        }
-        else
-        {
-            try{
-                const findgroup:any = await GroupModel.findOne({
-                    UniqueId : GroupUniqueId
-                });
-                try{
-                    console.log(reciever);
-                    console.log(findgroup);
-                    await GroupInvitationsModel.create({
-                        RecieverId : reciever._id , 
-                        SenderId : req.UserId  ,
-                        GroupId : findgroup._id  ,
-                        UniqueId : UniqueId()
-                    });
-                    res.status(SuccessStatusCodes.Success).json({
-                        msg : "Invitation Sent Successfully !"
-                    });
-                    return;
-                }
-                catch(e)
-                {
-                    console.log("1"+e);
-                    res.status(ServerErrors.InternalServerError).json({
-                        msg : "Internal Server Error Encountered !"
-                    });
-                    return;
-                }
-            }
-            catch(e)
-            {
-                console.log("2"+e);
-                res.status(ServerErrors.InternalServerError).json({
-                    msg : "Internal Server Error Encountered !"
-                });
-                return;
-            }
-        }
-    }
-    catch(e)
-    {
-        console.log("3"+e);
-        res.status(ServerErrors.InternalServerError).json({
-            msg : "Internal Server Error Encountered !"
-        });
-        return;
-    }
-});
-// Endpoint for Accepting or Rejecting the Request for Joining the Group
-GroupRouter.post("/Invitation/Group-Invite" , usermiddleware , async function(req:any , res)
-{
-    const GroupUniqueId = req.body.GroupUniqueId;
-    const GroupInvitationUniqueId = req.body.GroupInvitationUniqueId;
-    const Decision:boolean = req.body.Decision;
-    //Finding if the Group Still exists
-    try{
-        const FindSender:any = await UserModel.findOne({
-            _id : req.UserId
-        });
-        try{
-            const FindGroup:any = await GroupModel.findOne({
-                UniqueId : GroupUniqueId
-            });
-            if(!FindGroup)
-            {
-                res.status(ClientErrorStatusCodes.Conflicts).json({
-                    msg : "The Given Group Does Not Exists !"
-                });
-                return;
-            }
-            if(Decision)
-            {
-                try{
-                    await GroupInvitationsModel.deleteOne({
-                        UniqueId : GroupInvitationUniqueId
-                    });
-                    await UserModel.updateOne(
-                        { _id : req.UserId}, 
-                        { $push: {GroupList : {
-                            name : FindGroup.name ,
-                            Groupprofilephoto:FindGroup.GroupProfileImage,
-                            Groupuniqueid:FindGroup.UniqueId,
-                            about:FindGroup.bio,
-                        }}} 
-                    );
-                    await GroupModel.updateOne(
-                        { _id : FindGroup._id}, 
-                        { $push: {UsersList : {
-                            name : FindSender.name , 
-                            ProfileImage :FindSender.ProfilePhoto
-                        }}} 
-                    );
-                    res.status(SuccessStatusCodes.Success).json({
-                        msg : "Invitation Accepted Successfully !"
-                    });
-                    return;
-                }
-                catch(e)
-                {
-                    res.status(ServerErrors.InternalServerError).json({
-                        msg : "Internal Server Error Occured !"
-                    });
-                    return;
-                }
-            } 
-            else
-            {
-                try{
-                    await GroupInvitationsModel.deleteOne({
-                        UniqueId : GroupInvitationUniqueId
-                    });
-                    res.status(SuccessStatusCodes.Success).json({
-                        msg : "Invitation rejected Successfully !"
-                    });
-                    return;
-                }
-                catch(e)
-                {
-                    res.status(ServerErrors.InternalServerError).json({
-                        msg : "Internal Server Error Occured !"
-                    });
-                    return;
-                }
-            }
-        }
-        catch(e)
-        {
-            res.status(ServerErrors.InternalServerError).json({
-                msg : "Internal Server Error Occured !"
-            });
-            return;
-        }
-    }
-    catch(e)
-    {
-        res.status(ServerErrors.InternalServerError).json({
-            msg : "Internal Server Error Occured !"
-        });
-        return;
-    }
-});
 // Endpoint For deleting the group 
 // Point to note is that the creator of the group can only delete the group no one else can delete it 
 GroupRouter.delete("/Delete/Confirm" , usermiddleware , async function(req:any , res)
@@ -312,6 +151,97 @@ GroupRouter.delete("/Delete/Confirm" , usermiddleware , async function(req:any ,
             msg : "You're not the Creator Of this group !"
         });
         return ;
+    }
+});
+// Endpoint for Sending a group invite to a user 
+GroupRouter.post("/Add-Members/Send/Group-Invite" ,usermiddleware , async function(req:any , res)
+{
+    const GroupUniqueId = req.body.GroupUniqueId;
+    const RecieverUniqueId = req.body.RecieverUniqueId;
+
+    try
+    {
+        const FindSender:any = await UserModel.findOne({
+            _id : req.UserId
+        });
+        if(!FindSender){
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "Error Occurred while Finding the sender !"
+            });
+            return;
+        }
+        try{
+        // checking if the reciever is already the participant of the group
+            const reciever:any = await UserModel.findOne({
+                UniqueId : RecieverUniqueId
+            });
+            const IsMember = reciever?.GroupList.some((user:any) => user.Groupuniqueid == GroupUniqueId);
+            if(IsMember)
+            {
+                res.status(ClientErrorStatusCodes.Conflicts).json({
+                    msg : "User is  already a member"
+                });
+                return;
+            }
+            else
+            {
+                try{
+                    const findgroup:any = await GroupModel.findOne({
+                        UniqueId : GroupUniqueId
+                    });
+                    try{
+                        await GroupInvitationsModel.create({
+                            RecieverId : reciever._id , 
+                            SenderId : req.UserId  ,
+                            GroupUniqueId : findgroup._id  ,
+                            UniqueId : UniqueId() , 
+                            Time : getCurrentISTTime() , 
+                            Date : getCurrentDate() ,
+                            GroupProfilePhoto : findgroup.GroupProfileImage,
+                            SenderProfilePhoto :  FindSender.ProfilePhoto , 
+                            NameOfSender : FindSender._id,
+                            GroupName : findgroup.name , 
+                            SenderUniqueId : FindSender.UniqueId
+                        });
+                        res.status(SuccessStatusCodes.Success).json({
+                            msg : "Invitation Sent Successfully !"
+                        });
+                        return;
+                    }
+                    catch(e)
+                    {
+                        console.log("1"+e);
+                        res.status(ServerErrors.InternalServerError).json({
+                            msg : "Internal Server Error Encountered !"
+                        });
+                        return;
+                    }
+                }
+                catch(e)
+                {
+                    console.log("2"+e);
+                    res.status(ServerErrors.InternalServerError).json({
+                        msg : "Internal Server Error Encountered !"
+                    });
+                    return;
+                }
+            }
+        }
+        catch(e)
+        {
+            console.log("3"+e);
+            res.status(ServerErrors.InternalServerError).json({
+                msg : "Internal Server Error Encountered !"
+            });
+            return;
+        }
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Encountered !"
+        });
+        return;
     }
 });
 // Endpoint for Removing members from the Group !

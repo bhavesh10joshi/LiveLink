@@ -8,6 +8,7 @@ import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { APIurl } from "../../Config/ApiConfig"
+import { LogOutIcon } from "../Icons/LogOut"
 
 interface SideBarStyles{
     Selector : String ,
@@ -74,18 +75,23 @@ export function SideBar(props:SideBarStyles)
                     }
                 </div>
             </div>
-            <div className="flex justify-center items-center mt-[16rem]">
+            <div className="flex justify-center items-center mt-[12rem]">
                 <div className="w-full flex justify-center items-center">
                     {
                         props.Selector == "Settings" ?<Button size="HomeSize" text="Settings" FrontIcon={<MainSettingsIcon type="light"/>} color="Blue" onClick={() => props.OnClick("Settings")}/>:<Button size="HomeSize" text="Settings" FrontIcon={<MainSettingsIcon type="dark"/>} color="Black" onClick={() => props.OnClick("Settings")}/>
                     }
                 </div>
             </div>
+            <div className="flex justify-center items-center mt-[1rem]">
+                <div className="w-full flex justify-center items-center">
+                    <Button size="HomeSize" text="Log Out" FrontIcon={<LogOutIcon/>} color="Red"/>
+                </div>
+            </div>
             <div className="flex justify-center items-center mt-[2rem]">
                 <div className="bg-slate-500 h-[1px] w-full rounded-xl"></div>
             </div>
             {UserData != null
-                ?<div className="mt-[2rem]">
+                ?<div className="mt-[2rem] flex justify-center items-center rounded-lg bg-slate-900 pt-[0.5rem] pb-[0.5rem] border border-blue-500">
                     <SideBarProfile  Name={UserData.name} Image={UserData.ProfilePhoto}/>
                 </div>
                 :null

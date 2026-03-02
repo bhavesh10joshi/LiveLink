@@ -9,6 +9,7 @@ import { usermiddleware } from "../../Middleware/Index";
 import { UserObject , SignUpInput , passInput , passwordObject } from "../../ZodValidations";
 import { UniqueId } from "../../uuid";
 import cloudinary from "../../CloudinaryConfig/Cloudinary";
+import { getCurrentDate, getCurrentISTTime } from "../../CurrentDateandTime/DateAndTime";
 
 const UserRouter = Router();
 
@@ -293,6 +294,75 @@ UserRouter.delete("/Delete/Account" ,usermiddleware, async function(req:any , re
         })
     }
 });
+// Endpoint for sending a personal invite for start messaging from a user to a user
+UserRouter.post("/Personal/Start-messaging/Send-Invite" ,usermiddleware,async function(req:any , res)
+{
+    const UserUniqueId = req.body.UserUniqueId;
+
+    try{
+        const FindSender:any = await UserModel.findOne({
+            _id : req.UserId
+        });
+        if(!FindSender)
+        {
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "Error Occurred while finding the sender !"
+            });
+            return;
+        } 
+        try{
+        // checking whether the User Exsts or not !
+        const RecieverId = await UserModel.findOne({
+            UniqueId : UserUniqueId
+        });
+
+        if(!RecieverId)
+        {
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "Invalid Reciever For the Invitation !"
+            });
+            return;
+        }
+        try{
+            await PersonalInvitationsModel.create({
+                SenderId : req.UserId , 
+                RecieverId : RecieverId._id ,
+                SenderProfilePhoto : FindSender.ProfilePhoto,
+                UniqueId : UniqueId() , 
+                Date : getCurrentDate() , 
+                Time : getCurrentISTTime(),
+                NameOfSender : FindSender.name , 
+                SenderUniqueId : FindSender.UniqueId      
+            });
+            res.status(SuccessStatusCodes.ResourceCreated).json({
+                msg : "Invitation Sent Successfully !"
+            });
+            return;
+        }
+        catch(e)
+        {
+            res.status(ServerErrors.InternalServerError).json({
+                msg : "Internal Server Error Encountered !"
+            });
+            return;
+        }
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+                msg : "Internal Server Error Encountered !"
+        });
+        return;
+    }
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Encountered !"
+        });
+        return;
+    }
+});
 // Endpoints for making some changes in Profile of User
 UserRouter.post("/Profile/Edit" , usermiddleware , async function(req:any , res)
 {
@@ -351,210 +421,6 @@ UserRouter.post("/Profile/Edit/Image" , usermiddleware , async function(req:any,
         return ;
     }
 });
-// Endpoint for sending a personal invite for start messaging from a user to a user
-UserRouter.post("/Personal/Start-messaging/Send-Invite" ,usermiddleware,async function(req:any , res)
-{
-    const UserUniqueId = req.body.UserUniqueId;
-
-    try{
-        // checking whether the User Exsts or not !
-        const RecieverId = await UserModel.findOne({
-            UniqueId : UserUniqueId
-        });
-
-        if(!RecieverId)
-        {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "Invalid Reciever For the Invitation !"
-            });
-            return;
-        }
-        try{
-            await PersonalInvitationsModel.create({
-                SenderId : req.UserId , 
-                RecieverId : RecieverId._id ,
-                Status : false 
-            });
-            res.status(SuccessStatusCodes.ResourceCreated).json({
-                msg : "Invitation Sent Successfully !"
-            });
-            return;
-        }
-        catch(e)
-        {
-            res.status(ServerErrors.InternalServerError).json({
-                msg : "Internal Server Error Encountered !"
-            });
-            return;
-        }
-    }
-    catch(e)
-    {
-        res.status(ServerErrors.InternalServerError).json({
-                msg : "Internal Server Error Encountered !"
-        });
-        return;
-    }
-});
-// Endpoints For Accepting or Rejecting the Invitation For Joining the Personal Chat
-UserRouter.post("/Invitation/Personal/Message-Invite" , usermiddleware , async function(req:any , res)
-{
-    const PersonalInvitationId = req.body.PersonalInvitationId;
-    const SenderUniqueId = req.body.SenderUniqueId;
-    const Decision:boolean = req.body.Decision;
-
-    // Checking if the Sender still exists 
-    try{
-        const FindSender = await UserModel.findOne({
-            UniqueId : SenderUniqueId
-        });
-        if(!FindSender || !Decision)
-        {
-            // if find sender does not exists then simply delete the invitation !
-            try
-            {
-                await PersonalInvitationsModel.deleteOne({
-                    _id : PersonalInvitationId
-                });
-                res.status(SuccessStatusCodes.Success).json({
-                    msg : "No such Invitation exists !"
-                });
-                return;
-            }
-            catch(e)
-            {
-                res.status(ServerErrors.InternalServerError).json({
-                    msg : "Internal Server Error occurred !"
-                });
-                return;
-            }
-        }
-        else
-        {
-            try
-            {
-                const Findreciever = await UserModel.findOne({
-                    _id : req.UserId
-                });
-                if(!Findreciever)
-                {
-                    res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                        msg : "User does not exists !"
-                    });
-                    return;
-                }
-                const RecieverPayload = {
-                    name : Findreciever.name , 
-                    profilephoto : Findreciever.ProfilePhoto , 
-                    uniqueid : Findreciever.UniqueId ,
-                    about : Findreciever.about
-                };
-                const SenderPayload = {
-                    name : FindSender.name , 
-                    profilephoto : FindSender.ProfilePhoto , 
-                    uniqueid : FindSender.UniqueId ,
-                    about : Findreciever.about
-                };
-                // adding sender to the friendlist of reciever
-                await UserModel.updateOne(
-                    { _id : req.UserId}, 
-                    { $push: {PersonalMessagingList : SenderPayload}} 
-                );
-                // adding reciever to the friendlist of sender
-                await UserModel.updateOne(
-                    { _id : FindSender._id}, 
-                    { $push: {PersonalMessagingList : RecieverPayload}} 
-                );
-                await PersonalInvitationsModel.deleteOne({
-                    _id : PersonalInvitationId
-                }); 
-                res.status(SuccessStatusCodes.ResourceCreated).json({
-                    msg : "Invitation accepted Successfully !"
-                });
-                return;
-            }
-            catch(e)
-            {   
-                res.status(ServerErrors.InternalServerError).json({
-                    msg : "Internal Server Occurred !"
-                });
-                return;
-            }
-        }
-    }
-    catch(e)
-    {
-        res.status(ServerErrors.InternalServerError).json({
-            msg : "Internal Server Occurred !"
-        });
-        return;
-    }
-});
-// Endpoint for accessing all the Notifications that are related to personal Invitations(Only One that are unread)
-UserRouter.get("/Personal/Notifications/All" ,usermiddleware, async function(req:any,res)
-{
-    try
-    {
-        const data = await PersonalInvitationsModel.find({
-            RecieverId : req.UserId , 
-            ReadOrNot : false
-        });
-        if(data)
-        {
-            res.status(SuccessStatusCodes.Success).json({
-                msg : data
-            });
-            return;
-        }
-        else
-        {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "No Personal Invitations found !"
-            });
-            return;
-        }
-    }
-    catch(e)
-    {
-        res.status(ServerErrors.InternalServerError).json({
-            msg : "Internal Server Error Occurred !"
-        });
-        return;
-    }
-});
-// Endpoint that gives us all the notifications that are related to group Invitations(Only one that are unread)
-UserRouter.get("/Group/Notifications/All" , usermiddleware , async function(req:any,res)
-{
-    try
-    {
-        const data = await GroupInvitationsModel.find({
-            RecieverId : req.UserId , 
-            ReadOrNot : false
-        });
-        if(data)
-        {
-            res.status(SuccessStatusCodes.Success).json({
-                msg : data
-            });
-            return;
-        }
-        else
-        {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "No Personal Invitations found !"
-            });
-            return;
-        }
-    }
-    catch(e)
-    {
-        res.status(ServerErrors.InternalServerError).json({
-            msg : "Internal Server Error Occurred !"
-        });
-        return;
-    }
-});
-// Endpoint for Getting all the profile details of the user 
 UserRouter.get("/Profile/Details" , usermiddleware , async function(req:any,res)
 {
     try
