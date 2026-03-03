@@ -4,7 +4,10 @@ import DocumentImage from "../ui/Image/SampleImages/ChattingImages/DocumentImage
 import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { TypeTheMessage } from "../Chatting/TypeMessageSend"
 import { GroupInfo } from "../../Pages/GroupInfo";
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import axios from "axios";
+import { APIurl } from "../../Config/ApiConfig"
+import { SearchBar } from "../SearchBar/SearchBar"
 
 interface GeneralStyle{
     SetSelectorFunction : (val:string)=>void
@@ -128,7 +131,9 @@ const UsersGroup: Usersgroup[] = [{
 
 export function UserToGroupChatDashboard(props:GeneralStyle) {
     const[GroupInfoStatus , SetGroupInfo] = useState(false);
-    const [selectedId, setSelectedId] = useState<string>("kskjfhdks45646_shdjagjhj");
+    const [selectedId, setSelectedId] = useState<string>("82804af0-03f9-4e08-bcfe-51d18b9757ed");
+    const [GroupList , SetGroupList]:any = useState([]);
+    const [UserFriends , SetUserFriends]:any = useState([]);
 
     function SetGroupInfoFunction()
     {
@@ -138,25 +143,56 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
     {
         setSelectedId(val);
     }
+    useEffect(function() {
+        const GetGroupList = async () =>{
+            const token = localStorage.getItem("token");
+            const Config = {
+                headers : {
+                    "authorization" : token
+                }
+            };
+            try{
+                const data = await axios.get(`${APIurl}/Users/Profile/Details` , Config);
+                SetGroupList(data.data.msg.GroupList);
+                SetUserFriends(data.data.msg.PersonalMessagingList);
+                return;
+            }
+            catch(e)
+            {
+                alert("Error Occurred while Fetching Group List !");
+                return;
+            }
+        };
+        GetGroupList();
+    },[])
     return <>
     {
         // GroupInfoStatus ?<div className="w-full h-full flex justify-center items-center"><GroupInfo SetGroupSelector={SetGroupInfoFunction} GroupName={}/></div>:
         GroupInfoStatus ?<div className="w-full h-full flex justify-center items-center">{
-            UsersGroup.map((user)=>
-              user.UniqueId == selectedId ?<GroupInfo GroupName={user.Name} GroupInfo={user.GroupInfo} Members={user.Groupmembers} GroupProfilePhoto={user.ProfileImage} CreationDate={user.CreationDate} SetGroupSelector={()=>SetGroupInfoFunction()} FriendsUser={UserFriends}/> :null  
+            GroupList.map((user:any)=>
+              user.Groupuniqueid == selectedId ?<GroupInfo SetGroupSelector={()=>SetGroupInfoFunction()} GroupUniqueId={selectedId} FriendsUser={UserFriends}/> :null  
             )
         }</div>:
         <div className="flex w-full h-full justify-center items-center">
-            {UsersGroup.map((user)=>(<FriendsSideBar ProfileImage={user.ProfileImage} Name={user.Name}  UniqueId={user.UniqueId} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
+            <div className="h-full pt-[1rem] pb-[1rem]">
+                <div className="bg-black-500 w-[20rem] rounded-md px-8 py-4 ml-4 flex flex-col gap-4 border border-slate-500  h-full">
+                    <div className="w-full">
+                        <SearchBar placeholder="Search by Name or Unique Id" />
+                         <div className="flex flex-col gap-2 overflow-y-auto overflow-hidden mt-[1rem]">
+                            {GroupList.map((user:any)=>(<FriendsSideBar ProfileImage={user.Groupprofilephoto} Name={user.name}  UniqueId={user.Groupuniqueid} SetSelectedId={()=>SetSelectedId(user.Groupuniqueid)} selectedId={selectedId}/>))}
+                         </div>
+                    </div>
+                </div>
+            </div>            
             <div className="bg-slate-600 w-[0.2px]"></div>
             {/* 3. Main Chat Area */}
             <div className="flex-1 flex flex-col h-full relative">
                 {/* Header / Top Bar could go here */}
-                    {/* Input Area (Your UserToUser or GroupToUser Portal) */}
+                    {/* Input  Area (Your UserToUser or GroupToUser Portal) */}
                 <div className=" bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
                     {
-                    UsersGroup.map((user)=>
-                    user.UniqueId == selectedId ?<UserToGroupNavBar Name={user.Name} ProfilePhoto={user.ProfileImage} SetGroupSelector={()=>SetGroupInfoFunction()}/> :null  )}
+                    GroupList.map((user:any)=>
+                    user.Groupuniqueid == selectedId ?<UserToGroupNavBar name={user.name} Groupprofilephoto={user.Groupprofilephoto} SetGroupSelector={()=>SetGroupInfoFunction()} GroupUniqueId={user.Groupuniqueid}/> :null  )}
                 </div>
                 {/* MESSAGE CONTAINER: Scrollable Area */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">
@@ -212,7 +248,7 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
                         </div>
                     ))}
                 </div>
-                    <div className="bg-black-500 backdrop-blur-sm border-t border-gray-800 border border-slate-500 w-full">
+                    <div className="bg-black-500 backdrop-blur-md border rounded-lg border-slate-500 border-md border-full w-full mb-[1rem] mr-[1rem] ml-[1rem]">
                         <TypeTheMessage type="personal" RecieverUniqueId={selectedId}/>
                     </div>
                 </div>

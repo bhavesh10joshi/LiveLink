@@ -9,6 +9,78 @@ import { getCurrentDate, getCurrentISTTime } from "../../CurrentDateandTime/Date
 
 const GroupRouter = Router();
 
+GroupRouter.post("/Leave" , usermiddleware , async function(req:any,res)
+{
+    const GroupUniqueId = req.body.GroupUniqueId;
+    try
+    {
+        const data = await GroupModel.findOne({
+            UniqueId : GroupUniqueId
+        });
+        if(!data)
+        {
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "Group was not found !"
+            });
+            return;
+        }
+        try
+        {
+            // delete the group if there is only a single member 
+            if(data.UsersList.length == 1)
+            {   
+                await GroupModel.deleteOne({
+                    UniqueId : GroupUniqueId
+                });
+            }
+            else
+            {
+                await GroupModel.findOneAndUpdate(
+                    {UniqueId : GroupUniqueId} , 
+                    {
+                    $pull : {
+                        UsersList : {
+                            UserId : req.UserId
+                        }
+                    } 
+                    },
+                    {
+                        new : true
+                    }
+                );
+            }
+            await UserModel.findOneAndUpdate(
+                {_id : req.User.Id} , 
+                {
+                    $pull:{
+                        GroupList : {
+                            Groupuniqueid : GroupUniqueId
+                        }
+                    }
+                },
+                {new:true}
+            );
+            res.status(SuccessStatusCodes.Success).json({
+                msg : "Left group Successfully !"
+            });
+            return ;
+        }
+        catch(e)
+        {
+            res.status(ServerErrors.InternalServerError).json({
+                msg : "Internal Server Error Occurred !"
+            });
+            return ;
+        }
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occurred !"
+        });
+        return ;
+    }
+});
 GroupRouter.post("/Create", usermiddleware, async function(req: any, res) {
     const { name, bio } = req.body;
     const file = req.files?.photo;
@@ -32,7 +104,12 @@ GroupRouter.post("/Create", usermiddleware, async function(req: any, res) {
             GroupProfileImage: result.url,
             bio: bio,
             creatorId: req.UserId,
-            UsersList: [creator._id]
+            UsersList: [{
+                name : creator.name , 
+                ProfileImage : creator.ProfilePhoto , 
+                UserUniqueId : creator.UniqueId , 
+                UserId : req.UserId , 
+            }]
         });
 
         // 3. Update the User
@@ -64,30 +141,6 @@ GroupRouter.post("/Create", usermiddleware, async function(req: any, res) {
             msg: "Internal Server Error Encountered!"
         });
     }
-});
-// Making the Changes into the Group info
-GroupRouter.post("/Profile/Edit" , usermiddleware, async function(req:any , res)
-{
-    const groupId = req.body.GroupId;
-    const name = req.name;
-    const bio = req.body.bio;
-    
-    try
-        {
-            await GroupModel.updateOne(
-                { _id : groupId }, 
-                { $set: {name : name , bio : bio}} 
-            ); 
-            res.status(SuccessStatusCodes.Success).json({
-                msg : "Group Info updated Successfully !"   
-            });
-        }
-        catch(e)
-        {
-            res.status(ServerErrors.InternalServerError).json({
-                msg : "Internal Server Error !"
-            });
-        }
 });
 // Endpoint For deleting the group 
 // Point to note is that the creator of the group can only delete the group no one else can delete it 
@@ -414,5 +467,34 @@ GroupRouter.post("/Edit/Group/Profile/Image" , usermiddleware , async function(r
         return ;
     }    
 });
-
+GroupRouter.get("/Details/Get" , usermiddleware , async function(req:any,res:any)
+{   
+    console.log("hi");
+    const GroupUniqueId:any = req.query.GroupUniqueId;
+    try{
+        const data = await GroupModel.findOne({
+            UniqueId : GroupUniqueId
+        });
+        if(!data)
+        {
+            console.log("Ho gya !");
+            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
+                msg : "The given Group was not found !"
+            });
+            return;
+        }
+        console.log(data);
+        res.status(SuccessStatusCodes.Success).json({
+            msg : data
+        });
+        return; 
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occurred !"
+        });
+        return;
+    }
+});
 export default GroupRouter;

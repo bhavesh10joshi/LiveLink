@@ -3,7 +3,7 @@ import Profile from "../Components/ui/Image/SampleImages/ProfileImage/Profile.jp
 import { EditPencil } from "../Components/Icons/EditPencil"
 import { AddtoGroupUser } from "../Components/Icons/AddtoGroupUserIcon"
 import { AddMembersToGroup } from "../Components/Icons/AddMembers"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { SuccessAddedtheMember } from "./SuccessAddedtheMember"
 
 interface GroupMembers{
@@ -28,12 +28,16 @@ interface FunctionStyle {
 
 export function AddMembers(props:FunctionStyle)
 {
-    const[AddtheMember , SetAddtheMember] = useState(true);
+    const[AddtheMember , SetAddtheMember] = useState(false);
 
     function SuccessAddedTheMemberFunction()
     {
         SetAddtheMember(!AddtheMember);
     }
+    useEffect(function()
+    {
+        console.log(props.GroupMembersList);
+    } , [])
 
     return <>
         {!AddtheMember
@@ -45,7 +49,6 @@ export function AddMembers(props:FunctionStyle)
                 </div>
                 <div className="bg-slate-500 h-[0.1px] mt-[1rem]"></div>
                 <div className="flex justify-center items-center pl-[2rem] pr-[2rem] mt-[1rem]"><input className="h-[3rem] w-full pl-[1rem] pr-[1rem] bg-slate-800 rounded-xl border border-slate-500 text-[0.8rem]" type="text" placeholder="Find Members ...."/></div>
-                <div className="w-full h-[1px] bg-slate-500 mt-[1rem]"></div>
                 <div className=" pl-[2rem] pr-[2rem] relative flex-1 overflow-y-auto mb-4">
                     {props.GroupMembersList.map((user)=>(
                         props.FriendsUser.map((friend)=>(

@@ -15,7 +15,7 @@ InviteFromUserforGroupRouter.post("/Group-Invite" , usermiddleware , async funct
     const Decision:boolean = req.body.Decision;
     //Finding if the Group Still exists
     try{
-        const FindSender:any = await UserModel.findOne({
+        const FindReciever:any = await UserModel.findOne({
             _id : req.UserId
         });
         try{
@@ -47,8 +47,10 @@ InviteFromUserforGroupRouter.post("/Group-Invite" , usermiddleware , async funct
                     await GroupModel.updateOne(
                         { _id : FindGroup._id}, 
                         { $push: {UsersList : {
-                            name : FindSender.name , 
-                            ProfileImage :FindSender.ProfilePhoto
+                            name : FindReciever.name , 
+                            ProfileImage :FindReciever.ProfilePhoto,
+                            UserUniqueId : FindReciever.UniqueId , 
+                            UserId : FindReciever._id
                         }}} 
                     );
                     res.status(SuccessStatusCodes.Success).json({

@@ -69,7 +69,10 @@ const group = new Schema({
     bio : {type : String} ,
     UsersList : [{
         name : {type : String} , 
-        ProfileImage : {type : String}
+        ProfileImage : {type : String},
+        UserUniqueId : {type : String} ,
+        UserId : {type : ObjectId} , 
+        OnlineOrNot : {type : Boolean , default : true}
     }]
 });   
 

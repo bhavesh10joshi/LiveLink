@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { AddUserToGroup } from "../../Pages/AddUserToGroup"
 import { APIurl } from "../../Config/ApiConfig"
-
+import { SearchBar } from "../SearchBar/SearchBar"
 
 interface Friend {
     isonline: boolean;
@@ -98,7 +98,16 @@ export function UserToUserChatDashboard() {
         : !AddUserToGroupState
         ?// --- ADDED FRAGMENT WRAPPER < > ---
         <div className="flex w-full h-full justify-center items-center">
-                {FriendsList.map((user:any)=>(<FriendsSideBar ProfileImage={user.profilephoto} Name={user.name}  UniqueId={user.uniqueid} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
+                <div className="h-full pt-[1rem] pb-[1rem]">
+                    <div className="bg-black-500 w-[20rem] rounded-md px-8 py-4 ml-4 flex flex-col gap-4 border border-slate-500  h-full">
+                        <div className="w-full">
+                            <SearchBar placeholder="Search by Name or Unique Id" />
+                                <div className="flex flex-col gap-2 overflow-y-auto overflow-hidden mt-[1rem]">
+                                    {FriendsList.map((user:any)=>(<FriendsSideBar ProfileImage={user.profilephoto} Name={user.name}  UniqueId={user.uniqueid} SetSelectedId={()=>SetSelectedId(user.UniqueId)} selectedId={selectedId}/>))}
+                                </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="flex-1 flex flex-col h-full relative">
                 {/* Header / Top Bar could go here */}
                     {/* Input Area (Your UserToUser or GroupToUser Portal) */}

@@ -16,59 +16,48 @@ interface FriendsUsers {
 export function FriendsSideBar(props:FriendsUsers) {
     
     return (
-    <div className="h-full pt-[1rem] pb-[1rem]">
-        <div className="bg-black-500 w-[20rem] rounded-md px-8 py-4 ml-4 flex flex-col gap-4 border border-slate-500  h-full">
+        <div
+            // 1. KEY: Essential for React performance
+            key={props.UniqueId} 
             
-            <div className="w-full">
-                <SearchBar placeholder="Search by Name or Unique Id" />
+            // 2. CLICK HANDLER: Updates the selected state
+            onClick={()=>props.SetSelectedId(props.UniqueId)} 
+
+            // 3. DYNAMIC STYLING: Changes background if selected
+            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors mt-[1rem] ${
+                props.selectedId === props.UniqueId 
+                    ? "bg-blue-600 text-white" // Selected Style
+                    : "bg-gray-800 text-gray-200 hover:bg-gray-700" // Default Style
+            }`}
+        >
+            {/* Profile Image */}
+            <div className="relative">
+                <img 
+                    src={props.ProfileImage} 
+                    alt={props.Name} 
+                    className="w-12 h-12 rounded-full object-cover" 
+                />
+                {/* Online Dot (Conditional Rendering) */}
+                {props.OnlineOrOfflineDots ?
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-gray-800 rounded-full"></span>
+                    : null}
             </div>
 
-            <div className="flex flex-col gap-2 overflow-y-auto overflow-hidden">
-                    <div
-                        // 1. KEY: Essential for React performance
-                        key={props.UniqueId} 
-                        
-                        // 2. CLICK HANDLER: Updates the selected state
-                        onClick={()=>props.SetSelectedId} 
-
-                        // 3. DYNAMIC STYLING: Changes background if selected
-                        className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                            props.selectedId === props.UniqueId 
-                                ? "bg-blue-600 text-white" // Selected Style
-                                : "bg-gray-800 text-gray-200 hover:bg-gray-700" // Default Style
-                        }`}
-                    >
-                        {/* Profile Image */}
-                        <div className="relative">
-                            <img 
-                                src={props.ProfileImage} 
-                                alt={props.Name} 
-                                className="w-12 h-12 rounded-full object-cover" 
-                            />
-                            {/* Online Dot (Conditional Rendering) */}
-                            {props.OnlineOrOfflineDots ?
-                                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-gray-800 rounded-full"></span>
-                                : null}
-                        </div>
-
-                        {/* User Text Info */}
-                        <div className="flex flex-col w-full overflow-hidden">
-                            <div className="flex justify-between items-center">
-                                <h3 className="font-semibold text-sm truncate">{props.Name}</h3>
-                                {props.IsStatus && <span className="text-[10px] opacity-70">Now</span>}
-                            </div>
-                            
-                            <p className="text-xs truncate opacity-80">
-                                {props.TypingStatus ? (
-                                    <span className="text-green-400">Typing...</span>
-                                ) : (
-                                    props.WasLastMessage ?<div>{props.LastMessage}</div> :null  
-                                )}
-                            </p>
-                        </div>
-                    </div>
+            {/* User Text Info */}
+            <div className="flex flex-col w-full overflow-hidden">
+                <div className="flex justify-between items-center">
+                    <h3 className="font-semibold text-sm truncate">{props.Name}</h3>
+                    {props.IsStatus && <span className="text-[10px] opacity-70">Now</span>}
+                </div>
+                
+                <p className="text-xs truncate opacity-80">
+                    {props.TypingStatus ? (
+                        <span className="text-green-400">Typing...</span>
+                    ) : (
+                        props.WasLastMessage ?<div>{props.LastMessage}</div> :null  
+                    )}
+                </p>
             </div>
         </div>
-    </div>
     );
 }
