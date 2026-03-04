@@ -50,7 +50,7 @@ export function GroupInfo(props:GroupInfoStyle)
                 const data:any = await axios.get(`${APIurl}/Users/Groups/Details/Get` , Config);
                 console.log(data);
                 SetGroupInfo(data.data.msg);
-                SetCreatorId(data.data.msg.creatorId);
+                SetCreatorId(data.data.msg.creatorUniqueId);
                 return;
             }   
             catch(e)
@@ -84,10 +84,34 @@ export function GroupInfo(props:GroupInfoStyle)
             return;
         }
     };
+    async function RemoveMember(UserUniqueId : any)
+    {
+        const token = localStorage.getItem("token");
+        const Config = {
+            headers : {
+                "authorization" : token 
+            }
+        };
+        const Payload = {
+            GroupUniqueId : props.GroupUniqueId , 
+            UserUniqueId : UserUniqueId
+        };
+        try
+        {
+            await axios.post(`${APIurl}/Users/Groups/Remove/Group-Member` , Payload , Config);
+            alert("Removed the User Successfully !");
+            return;
+        }
+        catch(e)
+        {
+            alert("Error Occurred while removing the Member from the group !");
+            return;
+        }
+    }
     return<>
         {
         Addmembers
-        ?<div><AddMembers SetAddMembersFunction={()=>SetAddMembersfunction()} GroupMembersList={GroupInfo.UsersList} FriendsUser={props.FriendsUser}/></div>
+        ?<div><AddMembers SetAddMembersFunction={()=>SetAddMembersfunction()} GroupMembersList={GroupInfo.UsersList} FriendsUser={props.FriendsUser} GroupUniqueId={props.GroupUniqueId}/></div>
         : !EditGroupinfo ? !LeaveGroup ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
             <div className=" bg-black-500 w-[30rem] h-[42rem] rounded-xl border-slate-300 border flex flex-col">
                 <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
@@ -129,8 +153,13 @@ export function GroupInfo(props:GroupInfoStyle)
                         <div className="w-2/6 flex justify-end items-center">
                             {
                                 user.UserId == CreatorId
-                                ?<div className="flex justify-center items-center text-blue-800 border-blue-800 border rounded-md pl-[1rem] pr-[1rem] text-[0.9rem]">Admin</div>
-                                :<div className="flex justify-center items-center text-slate-500 border-slate-500 border rounded-md pl-[1rem] pr-[1rem] text-[0.9rem]">Member</div>
+                                ?<div className="flex justify-center items-center text-white bg-blue-800 rounded-md pl-[1rem] pr-[1rem] text-[0.9rem]">
+                                    Admin
+                                </div>
+                                :<div className="flex justify-center items-center ">
+                                    <button type="button" aria-label="name" className=" text-[0.9rem] flex justify-center items-center bg-red-500 text-white rounded-md pl-[1rem] pr-[1rem] mr-[0.5rem]" onClick={() => RemoveMember(user.UserUniqueId)}>Remove</button>
+                                    <div className="text-white bg-blue-800 rounded-md pl-[1rem] pr-[1rem] text-[0.9rem]">Member</div>
+                                </div>
                             }
                         </div>
                     </div>))}

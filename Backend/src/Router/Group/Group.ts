@@ -50,7 +50,7 @@ GroupRouter.post("/Leave" , usermiddleware , async function(req:any,res)
                 );
             }
             await UserModel.findOneAndUpdate(
-                {_id : req.User.Id} , 
+                {_id : req.UserId} , 
                 {
                     $pull:{
                         GroupList : {
@@ -103,7 +103,7 @@ GroupRouter.post("/Create", usermiddleware, async function(req: any, res) {
             UniqueId: Id,
             GroupProfileImage: result.url,
             bio: bio,
-            creatorId: req.UserId,
+            creatorUniqueId: creator.UniqueId,
             UsersList: [{
                 name : creator.name , 
                 ProfileImage : creator.ProfilePhoto , 
@@ -161,47 +161,37 @@ GroupRouter.delete("/Delete/Confirm" , usermiddleware , async function(req:any ,
         return;
     }
 
-    const members = Group.UsersList;
-    if(Group.creatorId == req.UserId)
-    {   
-        // Deleting the Group Reference in each and every user which was part of this group
-        for(let i = 0 ; i < members.length ; i++)
+    const members = Group.UsersList; 
+    // Deleting the Group Reference in each and every user which was part of this group
+    for(let i = 0 ; i < members.length ; i++)
+    {
+        const User = members[i];
+        const result = await UserModel.updateOne(
+                { _id: User },
+                { 
+                    $pull: { GroupList: Group._id } 
+                }
+        );
+        if(!result)
         {
-            const User = members[i];
-            const result = await UserModel.updateOne(
-                    { _id: User },
-                    { 
-                        $pull: { GroupList: Group._id } 
-                    }
-            );
-            if(!result)
-            {
-                res.status(ClientErrorStatusCodes.Conflicts).json({
-                    msg : "Invalid members of the Group !"
-                });
-                return;
-            }
-        }
-        try{
-            await GroupModel.deleteOne({
-                _id : Group._id
+            res.status(ClientErrorStatusCodes.Conflicts).json({
+                msg : "Invalid members of the Group !"
             });
-            res.status(SuccessStatusCodes.ResourceCreated).json({
-                msg : "Successfully Deleted the Group !" 
-            });
-        }
-        catch(e)
-        {
-            res.status(ServerErrors.InternalServerError).json({
-                msg : "Internal Server Error Encountered !"
-            });
-            return ;
+            return;
         }
     }
-    else
+    try{
+        await GroupModel.deleteOne({
+            _id : Group._id
+        });
+        res.status(SuccessStatusCodes.ResourceCreated).json({
+            msg : "Successfully Deleted the Group !" 
+        });
+    }
+    catch(e)
     {
-        req.status(ClientErrorStatusCodes.Conflicts).json({
-            msg : "You're not the Creator Of this group !"
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Encountered !"
         });
         return ;
     }
@@ -325,13 +315,21 @@ GroupRouter.post("/Remove/Group-Member" , usermiddleware , async function(req:an
             await UserModel.updateOne(
                     { _id: User._id },
                     { 
-                        $pull: { GroupList: Group._id } 
+                        $pull: { GroupList: 
+                            {
+                               Groupuniqueid : GroupUniqueId 
+                            } 
+                        }
                     }
             );
             await GroupModel.updateOne(
                     { _id: Group._id },
                     { 
-                        $pull: { UsersList: User._id } 
+                        $pull: { UsersList: 
+                            {
+                               UserUniqueId : UserUniqueId 
+                            } 
+                        }
                     }
             );
             res.status(SuccessStatusCodes.ResourceCreated).json({
@@ -350,45 +348,57 @@ GroupRouter.post("/Edit/Group/Profile" , usermiddleware , async function(req:any
 {
     const name = req.body.name;
     const bio = req.body.bio;
-    const UniqueGroupId = req.body.GroupId ;
-    const UserId:String = req.UserId;
-    //Checking if the user is the member of the group and if he/she is the creator of the group
+    const UniqueGroupId = req.body.UniqueGroupId ;
+   
     try
     {
-        const data:any = await GroupModel.findOne({
-            UniqueId : UniqueGroupId
-        });
-        if(data)
+        await GroupModel.updateOne(
+            {   UniqueId: UniqueGroupId },
+            { $set: {name : name , bio : bio}} 
+        );
+        try
         {
-            // Checking if the User Belongs to this group and if he is the creator or not ??
-            if(CheckForaGroupMember(data.UsersList , UserId , data.creatorId))
-            {
-                await GroupModel.updateOne(
-                    { _id: data._id },
-                    { $set: {name : name , bio : bio}} 
-                );
-                res.status(SuccessStatusCodes.Success).json({
-                    msg : "Profile Edited Successfully !"
-                });
-                return;
+            async function updateGroupDetails( UniqueGroupId:any, newName:any, newAbout:any) {
+                try {
+                    await UserModel.findOneAndUpdate(
+                        { 
+                            _id: req.UserId, 
+                            "GroupList.Groupuniqueid": UniqueGroupId 
+                        },
+                        { 
+                            $set: { 
+                            "GroupList.$.name": newName,
+                            "GroupList.$.about": newAbout
+                            } 
+                        },
+                        { new: true } 
+                    );  
+                } 
+                catch (e) 
+                {
+                    res.status(ServerErrors.InternalServerError).json({
+                        msg : "Internal Server Error Occured !"
+                    });
+                    return ;
+                }
             }
-            else
-            {
-                res.status(ClientErrorStatusCodes.FailedValidation).json({
-                    msg : "You're not an Admin !"
-                })
-            }
+            updateGroupDetails(UniqueGroupId, name , bio );
         }
-        else
+        catch(e)
         {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "The Given Group Does not exists !"
+            res.status(ServerErrors.InternalServerError).json({
+                msg : "Internal Server Error Occured !"
             });
-            return ;
+            return ;  
         }
+        res.status(SuccessStatusCodes.Success).json({
+            msg : "Profile Edited Successfully !"
+        });
+        return;
     }
     catch(e)
     {
+        console.log(e);
         res.status(ServerErrors.InternalServerError).json({
             msg : "Internal Server Error Occured !"
         });
@@ -399,73 +409,79 @@ GroupRouter.post("/Edit/Group/Profile" , usermiddleware , async function(req:any
 GroupRouter.post("/Edit/Group/Profile/Image" , usermiddleware , async function(req:any,res)
 {
     const file = req.files.photo;
-    const UniqueGroupId = req.body.GroupId ;
-    const UserId:String = req.UserId;
+    const UniqueGroupId = req.body.UniqueGroupId ;
+
     //Checking if the user is the member of the group and if he/she is the creator of the group
+    
     try
     {
-        const data:any = await GroupModel.findOne({
-            UniqueId : UniqueGroupId
-        });
-        if(data)
+        await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any)
         {
-            // Checking if the User Belongs to this group and if he is the creator or not ??
-            if(CheckForaGroupMember(data.UsersList , UserId , data.creatorId))
+            try
             {
+                await GroupModel.updateOne(
+                    {UniqueId : UniqueGroupId},
+                    { $set : {GroupProfileImage :result.url}}
+                );
                 try
                 {
-                    await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any)
-                    {
-                        try
+                    async function updateGroupDetails( UniqueGroupId:any, newUrl:any) {
+                        try {
+                            await UserModel.findOneAndUpdate(
+                                { 
+                                    _id: req.UserId, 
+                                    "GroupList.Groupuniqueid": UniqueGroupId 
+                                },
+                                { 
+                                    $set: { 
+                                    "GroupList.$.Groupprofilephoto": newUrl
+                                    } 
+                                },
+                                { new: true } 
+                            );  
+                        } 
+                        catch (e) 
                         {
-                            await GroupModel.updateOne(
-                                {_id : data._id},
-                                { $set : {GroupProfileImage :result.url}}
-                            );
-                        }
-                        catch(e)
-                        {
+                            console.log("acha thick hei ",e);
                             res.status(ServerErrors.InternalServerError).json({
-                                msg : "Internal Server Error !"
+                                msg : "Internal Server Error Occured !"
                             });
                             return ;
                         }
-                    });
-                    res.status(SuccessStatusCodes.Success).json({
-                        msg : "Profile Updated Successfully !"
-                    });
-                    return;
+                    }
+                    updateGroupDetails(UniqueGroupId, result.url );
                 }
                 catch(e)
                 {
+                    console.log("acha kya baat ",e);
                     res.status(ServerErrors.InternalServerError).json({
-                        msg : "Cloudinary Server is not responding !"
+                        msg : "Internal Server Error Occured !"
                     });
-                    return ;
+                    return ;  
                 }
             }
-            else
+            catch(e)
             {
-                res.status(ClientErrorStatusCodes.FailedValidation).json({
-                    msg : "You're not an Admin !"
-                })
+                console.log("acha ",e);
+                res.status(ServerErrors.InternalServerError).json({
+                    msg : "Internal Server Error !"
+                });
+                return ;
             }
-        }
-        else
-        {
-            res.status(ClientErrorStatusCodes.ResourceNotFound).json({
-                msg : "The Given Group Does not exists !"
-            });
-            return ;
-        }
+        });
+        res.status(SuccessStatusCodes.Success).json({
+            msg : "Profile Updated Successfully !"
+        });
+        return;
     }
     catch(e)
     {
+        console.log(e);
         res.status(ServerErrors.InternalServerError).json({
-            msg : "Internal Server Error Occured !"
+            msg : "Cloudinary Server is not responding !"
         });
         return ;
-    }    
+    }   
 });
 GroupRouter.get("/Details/Get" , usermiddleware , async function(req:any,res:any)
 {   

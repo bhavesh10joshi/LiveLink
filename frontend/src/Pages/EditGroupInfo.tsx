@@ -68,6 +68,7 @@ export function EditGroupInfo(props:EditStyle)
         }
         catch(e)
         {
+            console.log(e);
             alert("Error Encountered while changing the group profile !");
             return;
         }

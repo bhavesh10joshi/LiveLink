@@ -9,15 +9,16 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { APIurl } from "../../Config/ApiConfig"
 import { LogOutIcon } from "../Icons/LogOut"
+import { useNavigate } from "react-router-dom"
 
 interface SideBarStyles{
     Selector : String ,
     OnClick : (val:string)=>void
 }
 
-
 export function SideBar(props:SideBarStyles)
 {
+    const Navigate = useNavigate();
     const [UserData , SetUserData]:any = useState(null);
     useEffect(function()
     {
@@ -46,6 +47,11 @@ export function SideBar(props:SideBarStyles)
        };   
        FetchData(); 
     } , []);
+    function LogOut()
+    {
+        localStorage.removeItem("token");
+        Navigate("/LiveLink/Introduction");
+    }
     return<>
     <div className="h-screen pt-[1rem] pb-[1rem] pl-[1rem]">
         <div className=" bg-black-500 w-[16rem] h-full rounded-md pl-[2rem] pr-[2rem] pt-[1rem] pb-[1rem] border border-slate-500">
@@ -84,7 +90,7 @@ export function SideBar(props:SideBarStyles)
             </div>
             <div className="flex justify-center items-center mt-[1rem]">
                 <div className="w-full flex justify-center items-center">
-                    <Button size="HomeSize" text="Log Out" FrontIcon={<LogOutIcon/>} color="Red"/>
+                    <Button size="HomeSize" text="Log Out" FrontIcon={<LogOutIcon/>} color="Red" onClick={() => LogOut()}/>
                 </div>
             </div>
             <div className="flex justify-center items-center mt-[2rem]">

@@ -61,7 +61,7 @@ const UserToGroupMessage = new Schema({
 
 // contains all the information related the groups 
 const group = new Schema({
-    creatorId : {type : ObjectId , required : true} ,
+    creatorUniqueId : {type : String , required : true} ,
     UniqueId : {type : String},
     name : {type : String},  
     GroupProfileImage : {type : String , default : "https://res.cloudinary.com/dumtrt8jf/image/upload/v1771816036/GroupAvatar_qvbz2x.jpg"} ,

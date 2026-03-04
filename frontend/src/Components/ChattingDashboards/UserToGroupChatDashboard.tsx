@@ -134,6 +134,7 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
     const [selectedId, setSelectedId] = useState<string>("82804af0-03f9-4e08-bcfe-51d18b9757ed");
     const [GroupList , SetGroupList]:any = useState([]);
     const [UserFriends , SetUserFriends]:any = useState([]);
+    const [MessageData , SetMessageData]:any = useState([]); 
 
     function SetGroupInfoFunction()
     {
@@ -163,8 +164,11 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
                 return;
             }
         };
+        const GetMessageData = async () => {
+            const to
+        }
         GetGroupList();
-    },[])
+    },[]);
     return <>
     {
         // GroupInfoStatus ?<div className="w-full h-full flex justify-center items-center"><GroupInfo SetGroupSelector={SetGroupInfoFunction} GroupName={}/></div>:
