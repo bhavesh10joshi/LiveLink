@@ -144,7 +144,7 @@ GroupRouter.post("/Create", usermiddleware, async function(req: any, res) {
 });
 // Endpoint For deleting the group 
 // Point to note is that the creator of the group can only delete the group no one else can delete it 
-GroupRouter.delete("/Delete/Confirm" , usermiddleware , async function(req:any , res)
+GroupRouter.post("/Delete/Confirm" , usermiddleware , async function(req:any , res)
 {
     // checking whether the user is the creator Of the group or not 
     const GroupUniqueId = req.body.GroupUniqueId;
@@ -169,7 +169,9 @@ GroupRouter.delete("/Delete/Confirm" , usermiddleware , async function(req:any ,
         const result = await UserModel.updateOne(
                 { _id: User },
                 { 
-                    $pull: { GroupList: Group._id } 
+                    $pull: { GroupList: {
+                     Groupuniqueid : GroupUniqueId 
+                    }} 
                 }
         );
         if(!result)
@@ -236,13 +238,13 @@ GroupRouter.post("/Add-Members/Send/Group-Invite" ,usermiddleware , async functi
                         await GroupInvitationsModel.create({
                             RecieverId : reciever._id , 
                             SenderId : req.UserId  ,
-                            GroupUniqueId : findgroup._id  ,
+                            GroupUniqueId : findgroup.UniqueId  ,
                             UniqueId : UniqueId() , 
                             Time : getCurrentISTTime() , 
                             Date : getCurrentDate() ,
                             GroupProfilePhoto : findgroup.GroupProfileImage,
                             SenderProfilePhoto :  FindSender.ProfilePhoto , 
-                            NameOfSender : FindSender._id,
+                            NameOfSender : FindSender.name,
                             GroupName : findgroup.name , 
                             SenderUniqueId : FindSender.UniqueId
                         });

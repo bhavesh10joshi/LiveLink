@@ -183,8 +183,9 @@ export function NotificationDashboard()
                                 <div className="w-0/4"><img src={Notifications.SenderProfilePhoto} alt="SendersProfilephoto" className="rounded-xl w-[2.5rem] mr-[1rem]"/></div>
                                 <div className="w-3/4">
                                     <div className="flex justify-start"><div className="font-bold text-[1rem]">{Notifications.NameOfSender}</div></div>
-                                    <div className="flex justify-start text-slate-500 text-[0.7rem] font-semibold">
-                                        {`${Notifications.NameOfSender} ${TextStyle[NotificationSelector]}${Notifications.GroupName}`}
+                                    <div className="flex justify-start text-slate-500 text-[0.7rem] font-semibold mt-[0.5rem]">
+                                        {`${Notifications.NameOfSender} ${TextStyle[NotificationSelector]}`}
+                                        <div className="flex ml-[0.5rem] text-white font-bold">{`"${Notifications.GroupName}"`}</div>
                                     </div>
                                 </div>
                                 <div className="w-1/4 flex justify-end flex justify-start text-slate-500 text-[0.7rem] font-bold">

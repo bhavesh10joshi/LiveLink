@@ -6,7 +6,7 @@ import { APIurl } from "../../Config/ApiConfig"
 
 interface Style {
     type: "personal" | "group",
-    GroupId?: String,
+    groupUniqueId?: String,
     RecieverUniqueId?: String
 }
 
@@ -31,12 +31,11 @@ export function TypeTheMessage(props: Style) {
 
         const formdata: any = new FormData();
         formdata.append("photo", file);
-        formdata.append("ContentType", "image");
 
         if (props.type == "personal") {
             formdata.append("RecieverUniqueId", props.RecieverUniqueId);
         } else {
-            formdata.append("GroupId", props.GroupId);
+            formdata.append("groupUniqueId", props.groupUniqueId);
         }  
         
         SetImageData(formdata);
@@ -71,7 +70,7 @@ export function TypeTheMessage(props: Style) {
             }
         } else {
             const payload = {
-                GroupId: props.GroupId, 
+                groupUniqueId: props.groupUniqueId, 
                 ContentType: "text", 
                 Message: CurrentTextMessage
             };
@@ -112,11 +111,9 @@ export function TypeTheMessage(props: Style) {
             }
         } else {
              try {
-
-                await axios.post(`${APIurl}/Users/Message/UserToGroup/Image/Send/ToAll`, ImageData, config);
+                const result = await axios.post(`${APIurl}/Users/Message/UserToGroup/Image/Send/ToAll`, ImageData, config);
                 alert("Message Sent !");
-                
-
+                console.log(result);
                 SetMessageType("text");
                 SetImageData(null);
                 ImageRef.current.value = ""; 

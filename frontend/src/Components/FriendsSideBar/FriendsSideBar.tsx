@@ -24,7 +24,7 @@ export function FriendsSideBar(props:FriendsUsers) {
             onClick={()=>props.SetSelectedId(props.UniqueId)} 
 
             // 3. DYNAMIC STYLING: Changes background if selected
-            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors mt-[1rem] ${
+            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors mt-[1rem] hover:border-blue-800 hover:border ${
                 props.selectedId === props.UniqueId 
                     ? "bg-blue-600 text-white" // Selected Style
                     : "bg-gray-800 text-gray-200 hover:bg-gray-700" // Default Style

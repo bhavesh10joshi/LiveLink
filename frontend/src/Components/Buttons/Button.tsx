@@ -28,7 +28,7 @@ const ColorVarients = {
     "Blue" : "bg-blue-800 hover:shadow-blue-800/80" , 
     "Grey" : "bg-slate-700 hover:shadow-slate-700/80" , 
     "Black" : "bg-slate-900 border border-blue-500 hover:shadow-slate-700/80 ",
-    "Red": "bg-red-700 hover:shadow-red-700/80 ",
+    "Red": "bg-black-500 border border-red-500 hover:shadow-red-700/80 ",
     "NoColor": "text-slate"
 };
 const DefaultStyles:String = "flex items-center justify-center gap-2 text-white text-bold  text-[0.9rem] font-[550]";

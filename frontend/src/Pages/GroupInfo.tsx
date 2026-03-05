@@ -152,7 +152,7 @@ export function GroupInfo(props:GroupInfoStyle)
                         </div>
                         <div className="w-2/6 flex justify-end items-center">
                             {
-                                user.UserId == CreatorId
+                                user.UserUniqueId == CreatorId
                                 ?<div className="flex justify-center items-center text-white bg-blue-800 rounded-md pl-[1rem] pr-[1rem] text-[0.9rem]">
                                     Admin
                                 </div>

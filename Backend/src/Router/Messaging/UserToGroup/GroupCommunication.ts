@@ -8,16 +8,19 @@ const UserToGroupMessageRouter = Router();
 
 UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async function(req:any , res)
 {
-    const GroupId : String = req.body.GroupId; 
+    const groupUniqueId : String = req.body.groupUniqueId; 
     const ContentType : any = "text";
     const Message:any = req.body.Message;
 
     try{
-        const sendChatMessage = async (senderId:any, groupId:any, messageContent:any) => {
+        const FindSender:any = await UserModel.findOne({
+            _id : req.UserId 
+        });
+        const sendChatMessage = async () => {
         try {
             await UserToGroupMessageModel.findOneAndUpdate(
                 // 1. Find a thread where these two are the sender/receiver
-                {groupId: groupId }, 
+                {groupUniqueId: groupUniqueId }, 
                 
                 // 2. Push the new message into the array
                 { 
@@ -27,7 +30,8 @@ UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async functi
                             Date: getCurrentDate(),
                             time : getCurrentISTTime() , 
                             Content: Message,
-                            sender: senderId
+                            senderUniqueId: FindSender.UniqueId,
+                            name : FindSender.name
                         }
                     } 
                 },
@@ -37,9 +41,10 @@ UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async functi
             );
             } catch (error) {
                 console.error("Error sending message:", error);
+                return;
             }
         };
-        sendChatMessage(req.UserId , GroupId , Message);
+        sendChatMessage();
         res.status(SuccessStatusCodes.ResourceCreated).json({
             msg : "Message Sent !"
         });
@@ -53,22 +58,25 @@ UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async functi
         return;
     }
 });
-UserToGroupMessageRouter.post("/Image/Send/ToAll" , async function(req:any,res)
+UserToGroupMessageRouter.post("/Image/Send/ToAll" , usermiddleware , async function(req:any,res)
 {
-    const GroupId : String = req.body.RecieverId;
+    const groupUniqueId : any = req.body.groupUniqueId;
     const ContentType : any = "image";
     const file = req.files.photo;
 
     try
     {
+        const FindSender:any = await UserModel.findOne({
+            _id : req.UserId 
+        });
         await cloudinary.uploader.upload(file.tempFilePath , async function(err:Error , result:any)
         {
-            const sendChatMessage = async (senderId:any, groupId:any, messageContent:any) => 
+            const sendChatMessage = async (messageContent:any) => 
             {
                 try {
                     await UserToGroupMessageModel.findOneAndUpdate(
                         // 1. Find a thread where these two are the sender/receiver
-                        {groupId: groupId }, 
+                        {groupUniqueId: groupUniqueId }, 
                         
                         // 2. Push the new message into the array
                         { 
@@ -78,7 +86,8 @@ UserToGroupMessageRouter.post("/Image/Send/ToAll" , async function(req:any,res)
                                     Date: getCurrentDate(),
                                     time : getCurrentISTTime() , 
                                     Content: messageContent,
-                                    sender: senderId
+                                    senderUniqueId: FindSender.UniqueId,
+                                    name : FindSender.name
                                 }
                             } 
                         },
@@ -95,8 +104,12 @@ UserToGroupMessageRouter.post("/Image/Send/ToAll" , async function(req:any,res)
                 });
                 return;
             };
-         sendChatMessage(req.UserId , GroupId , result.url);
+         sendChatMessage(result.url);
         });
+        res.status(SuccessStatusCodes.ResourceCreated).json({
+            msg : "Message Sent!"
+        });
+        return;
     }
     catch(e)
     {
@@ -108,20 +121,21 @@ UserToGroupMessageRouter.post("/Image/Send/ToAll" , async function(req:any,res)
 })
 UserToGroupMessageRouter.get("/Access/All" , usermiddleware , async function(req , res)
 {
-    const GroupId:String = req.body.GroupId;
+    const groupUniqueId:any = req.query.groupUniqueId;
 
     try
     {
         const data:any = await UserToGroupMessageModel.find({
-            groupId : GroupId
+            groupUniqueId : groupUniqueId
         });
         res.status(SuccessStatusCodes.Success).json({
-            msg : data.messages
+            msg : data
         });
         return;
     }
     catch(e)
     {
+        console.log(e);
         res.status(ServerErrors.InternalServerError).json({
             msg : "Internal Server Error !"
         });

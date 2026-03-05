@@ -150,7 +150,6 @@ UserToUserMessageRouter.post("/Image/send", usermiddleware, async function(req: 
 });
 UserToUserMessageRouter.get("/Access/Messages/All" , usermiddleware , async function(req:any , res)
 {
-    console.log("hello");
     const RecieverUniqueId : any = req.query.RecieverUniqueId; 
     if(!RecieverUniqueId)
     {

@@ -1,6 +1,7 @@
 import { Warning } from "../Components/Icons/Warning"
 import axios from "axios"
 import { APIurl } from "../Config/ApiConfig"
+import { useNavigate } from "react-router-dom"
 
 interface DeleteGroupStyle
 {
@@ -10,6 +11,7 @@ interface DeleteGroupStyle
 }
 export function ConfirmDeleteGroup(props:DeleteGroupStyle)
 {
+    const Navigate = useNavigate();
     async function DeleteGroupHitBackend()
     {
         const token = localStorage.getItem("token");
@@ -23,11 +25,12 @@ export function ConfirmDeleteGroup(props:DeleteGroupStyle)
         }
         try{
             await axios.post(`${APIurl}/Users/Groups/Delete/Confirm` , Payload , Config);
-            props.SetDeleteGroupFunction();
+            Navigate("/LiveLink/User/Dashboard/Chat");
             return;
         }
         catch(e)
         {
+            console.log(e);
             alert("Error Encountered while Deleting Group !");
             return;
         }

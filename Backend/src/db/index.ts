@@ -49,13 +49,14 @@ const UserToUserMessage = new Schema({
 }); 
 
 const UserToGroupMessage = new Schema({
-    groupId : {type : ObjectId},
+    groupUniqueId : {type : String},
     messages : [{
         ContentType : {type : String} ,
         Date : {type : String} ,
         time : {type : String} , 
         Content : {type : String},
-        sender : {type : ObjectId}  
+        name : {type : String},
+        senderUniqueId : {type : String}  
     }]
 });
 
@@ -79,7 +80,7 @@ const group = new Schema({
 const GroupInvitations = new Schema({
     RecieverId : {type : ObjectId} , 
     SenderId : {type : ObjectId} , 
-    GroupUniqueId : {type : ObjectId} , 
+    GroupUniqueId : {type : String} , 
     UniqueId : {type : String},
     SenderProfilePhoto : {type : String},
     GroupProfilePhoto : {type : String},

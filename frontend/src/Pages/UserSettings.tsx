@@ -77,8 +77,8 @@ export function UserSettings( props:Styles )
                 ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
                     <div className=" bg-black-500 w-[30rem] h-[42rem] rounded-xl border-slate-300 border flex flex-col">
                         <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
-                            <div className="flex justify-center items-center"><button type="button" className="bg-red-900 w-[10rem] h-[2rem] rounded-md font-bold" onClick={()=>SetDeleteAccountFunction()}>Delete Account</button></div>
-                            <div className="flex justify-center items-center"><button type="button" className="bg-green-800 w-[10rem] h-[2rem] rounded-md font-bold" onClick={()=>SetCreateNewGroupfunction()}>Create New Group</button></div>
+                            <div className="flex justify-center items-center"><button type="button" className="border-[2px] bg-black-800 border-red-600 w-[10rem] h-[2rem] rounded-md text-white text-[0.9rem] hover:shadow-red-600/80" onClick={()=>SetDeleteAccountFunction()}>Delete Account</button></div>
+                            <div className="flex justify-center items-center"><button type="button" className="border-[2px]  bg-black-800 border-green-600 w-[10rem] h-[2rem] rounded-md text-white text-[0.9rem] ml-[-3rem] hover:shadow-green-600/80" onClick={()=>SetCreateNewGroupfunction()}>Create New Group</button></div>
                             <div className="flex justify-center items-center w-[2rem] h-[2rem] bg-black-800 rounded-xl"><button type="button" aria-label="Name" onClick={()=>props.SetSelectorFunction()}><div><CloseIcon/></div></button></div>
                         </div>
                         <div className="bg-slate-500 h-[0.1px] mt-[1rem]"></div>
