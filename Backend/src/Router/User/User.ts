@@ -205,8 +205,7 @@ UserRouter.post("/Otp/Authentication" , async function(req , res)
         msg : "Successfull Verification of the User !"
     });
 }) ;
-//Endpoint for updating the password !
-UserRouter.post("/Change/password" , async function(req,res)
+UserRouter.post("/Forgot-password/Change/password" , async function(req,res)
 {
     const email = req.body.email;
     const zodsafeObject = passwordObject.safeParse(req.body);
@@ -247,6 +246,46 @@ UserRouter.post("/Change/password" , async function(req,res)
     }
 }) ;
 //Everything after this needs token Authorization !
+//Endpoint for updating the password !
+UserRouter.post("/Profile/Change/password" ,usermiddleware, async function(req:any,res)
+{
+    const zodsafeObject = passwordObject.safeParse(req.body);
+
+    if(!zodsafeObject.success)
+    {
+        return res.status(ClientErrorStatusCodes.BadRequest).json({
+            msg : "Validation Failed "
+        }); 
+    }
+
+    const newpass : passInput = zodsafeObject.data;
+
+    //Password Hash Conversion Using Bcrypt 
+    const hashednewpassword = await bcrypt.hash(newpass.password , 5);
+
+    if(!hashednewpassword)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occured !"
+        });
+    }
+    
+    try{
+        await UserModel.updateOne(
+            { _id : req.UserId }, 
+            { $set: { password : hashednewpassword}} 
+        ); 
+        res.status(SuccessStatusCodes.ResourceCreated).json({
+            msg : "Password updated Successfully !"
+        });
+    }
+    catch(e)
+    {
+        res.status(ServerErrors.InternalServerError).json({
+            msg : "Internal Server Error Occured !"
+        });
+    }
+}) ;
 //Endpoint for changing the password of the user from profile while logged in 
 UserRouter.post("/Change/Password/otp-Generate" , usermiddleware , async function(req : any , res)
 {
@@ -494,6 +533,37 @@ UserRouter.post("/Unfriend" , usermiddleware , async function(req:any ,res)
     {
         res.status(ServerErrors.InternalServerError).json({
             msg : "Internal Server Error Occured !"
+        });
+        return;
+    }
+});
+// function that returns the Users when searched for 
+UserRouter.get("/Search", usermiddleware, async function(req: any, res) {
+    const name = req.query.name;
+
+    if (!name) {
+        res.json({ msg: [] });
+        return;
+    }
+
+    try {
+        const Data = await UserModel.find({
+            name: { 
+                $regex: name, 
+                $options: "i"
+                // makes the search case insensitive 
+            }
+        });
+        
+        res.json({
+            msg: Data
+        });
+        return;
+    }
+    catch(e) {
+        console.log(e);
+        res.status(ServerErrors.InternalServerError).json({
+            msg: "Internal Server Error Occurred!"
         });
         return;
     }

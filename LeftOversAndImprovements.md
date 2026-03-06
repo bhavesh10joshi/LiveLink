@@ -27,3 +27,8 @@
 - 13 :- when removing a member or leaving a group , it should get a warning !
 
 - 14 :- Welcome on SignIn page , Sign In and create account button in main page !(Improve them !)
+
+- 15 :- Responsiveness of chat pages has to be made 
+
+- 16 :- OAuth and githubAuth has to be implemented !
+

@@ -12,16 +12,11 @@ interface AuthStyle
 
 export function EmailAuthChangePassword(props:AuthStyle)
 {
-    const[VerficationStatus , SetVerificationStatus] = useState("Success");
-
-    function SetVerificationStatusFunction(val:string)
-    {
-        SetVerificationStatus(val);
-    }
-
     return<>
-    {VerficationStatus == "InProgress"
-        ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
+        <ConfirmPasswordChange SetChangePasswordFunction={() => props.SetChangePasswordFunction()}/> 
+    </>
+}
+{/* <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
             <div className=" bg-black-500 w-[30rem] h-[42rem] rounded-xl border-slate-300 border flex flex-col">
                 <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
                     <div className=" font-bold text-[1.3rem] text-white-800 flex justify-center items-center"><div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold"><div>!</div></div><div className="ml-[0.6rem] text-[1rem]">Email Verification</div></div>
@@ -59,23 +54,18 @@ export function EmailAuthChangePassword(props:AuthStyle)
                     </button>
                 </div>            
             </div>
-        </div>
-        : VerficationStatus == "Error" 
-            ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-                <div className=" bg-black-500 w-[30rem] h-[22rem] rounded-xl border-slate-300 border flex flex-col p-[2rem]">
-                    <div className="flex justify-center items-center w-full ">
-                        <div className="bg-black-800 text-white font-bold w-[8rem] rounded-md h-[8rem] flex justify-center items-center"><Warning/></div>
-                    </div>
-                    <div className="text-[1.5rem] flex justify-center items-center text-slate-300 mt-[1rem] font-bold">
-                        Incorrect Code
-                    </div>
-                    <div className="flex justify-center items-center mt-[3rem]">
-                        <button type="button" className="w-3/5 bg-blue-950 h-[3rem] flex justify-center items-center rounded-md" onClick={()=>SetVerificationStatusFunction("InProgress")}>Try Again</button>
-                        <button type="button" className="w-2/5 bg-slate-800 h-[3rem] flex justify-center items-center rounded-md ml-[1rem]" onClick={()=>props.SetChangePasswordFunction()}>Cancel</button>
-                    </div>        
-                </div>
-            </div>
-        :<ConfirmPasswordChange SetChangePasswordFunction={() => props.SetChangePasswordFunction()}/> 
-    }
-    </>
-}
+        </div> */}
+        // <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
+        //         <div className=" bg-black-500 w-[30rem] h-[22rem] rounded-xl border-slate-300 border flex flex-col p-[2rem]">
+        //             <div className="flex justify-center items-center w-full ">
+        //                 <div className="bg-black-800 text-white font-bold w-[8rem] rounded-md h-[8rem] flex justify-center items-center"><Warning/></div>
+        //             </div>
+        //             <div className="text-[1.5rem] flex justify-center items-center text-slate-300 mt-[1rem] font-bold">
+        //                 Incorrect Code
+        //             </div>
+        //             <div className="flex justify-center items-center mt-[3rem]">
+        //                 <button type="button" className="w-3/5 bg-blue-950 h-[3rem] flex justify-center items-center rounded-md" onClick={()=>SetVerificationStatusFunction("InProgress")}>Try Again</button>
+        //                 <button type="button" className="w-2/5 bg-slate-800 h-[3rem] flex justify-center items-center rounded-md ml-[1rem]" onClick={()=>props.SetChangePasswordFunction()}>Cancel</button>
+        //             </div>        
+        //         </div>
+        //     </div>

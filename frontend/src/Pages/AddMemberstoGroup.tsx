@@ -62,7 +62,6 @@ export function AddMembers(props:FunctionStyle)
                     <div className="flex justify-center items-center w-[2rem] h-[2rem] bg-black-800 rounded-xl"><button type="button" aria-label="Name" onClick={()=>props.SetAddMembersFunction()}><div><CloseIcon/></div></button></div>
                 </div>
                 <div className="bg-slate-500 h-[0.1px] mt-[1rem]"></div>
-                <div className="flex justify-center items-center pl-[2rem] pr-[2rem] mt-[1rem]"><input className="h-[3rem] w-full pl-[1rem] pr-[1rem] bg-slate-800 rounded-xl border border-slate-500 text-[0.8rem]" type="text" placeholder="Find Members ...."/></div>
                 <div className=" pl-[2rem] pr-[2rem] relative flex-1 overflow-y-auto mb-4">
                     {FilteredData.map((user:any)=>(
                         <div className="bg-black-800 w-full h-[4rem] pt-[0.5rem] pb-[0.5rem] pl-[1rem] pr-[1rem] rounded-xl flex mt-[1rem] ">

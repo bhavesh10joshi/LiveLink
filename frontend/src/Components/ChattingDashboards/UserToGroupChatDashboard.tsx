@@ -230,8 +230,7 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
             <div className="h-full pt-[1rem] pb-[1rem]">
                 <div className="bg-black-500 w-[20rem] rounded-md px-8 py-4 ml-4 flex flex-col gap-4 border border-slate-500  h-full">
                     <div className="w-full">
-                        <SearchBar placeholder="Search by Name or Unique Id" />
-                         <div className="flex flex-col gap-2 overflow-y-auto overflow-hidden mt-[1rem]">
+                         <div className="flex flex-col gap-2 overflow-y-auto overflow-hidden">
                             {GroupList.map((user:any)=>(<FriendsSideBar ProfileImage={user.Groupprofilephoto} Name={user.name}  UniqueId={user.Groupuniqueid} SetSelectedId={()=>SetSelectedId(user.Groupuniqueid)} selectedId={selectedId}/>))}
                          </div>
                     </div>

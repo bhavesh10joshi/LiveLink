@@ -12,7 +12,6 @@ import { ForgotPassword } from './Pages/ForgotPassEmailVerify'
 import { VerifyEmailOTP } from './Pages/ForgotPassOTP'
 import { ChangePass } from './Pages/ChangePass'
 import { SuccessChangePass } from './Pages/Successchangepass'
-import { UploadProfileImage } from './Pages/UploadProfileImage'
 import { Editsuccess } from './Components/SuccessPage/EditSuccess'
 
 function App() {

@@ -90,9 +90,8 @@ export function UserSettings( props:Styles )
                         </div>
                         <div className="flex w-full justify-center items-center"><div className="text-center text-[1.5rem] mt-[1rem] pl-[2rem] pr-[2rem] text-white font-bold">{BackendData.name}</div></div>
                         <div className="flex w-full justify-center items-center"><div className="text-center text-[0.8rem] mt-[0.5rem] pl-[2rem] pr-[2rem] text-slate-400">{BackendData.about}</div></div>
-                        <div className="flex justify-center items-center pl-[2rem] pr-[2rem] mt-[1rem]"><input className="h-[3rem] w-full pl-[1rem] pr-[1rem] bg-slate-800 rounded-xl border border-slate-500 text-[0.8rem]" type="text" placeholder="Find Friends ...."/></div>
-                        <div className="w-full h-[1px] bg-slate-500 mt-[1rem]"></div>
-                        <div className=" pl-[2rem] pr-[2rem] relative flex-1 overflow-y-auto mb-4">
+                        
+                        <div className=" pl-[2rem] pr-[2rem] relative flex-1 overflow-y-auto mb-4 mt-[1rem]">
                             {BackendData.PersonalMessagingList.map((user)=>(<div className="bg-black-800 w-full h-[4rem] pt-[0.5rem] pb-[0.5rem] pl-[1rem] pr-[1rem] rounded-xl flex mt-[1rem] ">
                                 <div className="w-1/6">
                                     <img src={user.profilephoto} alt="MemberInfo" className="w-[3rem] rounded-full"/>
