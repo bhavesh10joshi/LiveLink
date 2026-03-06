@@ -1,46 +1,29 @@
-# LeftOvers and improvements in frontend:-
+# LeftOvers and improvements in Application:-
 
-- 1 :- When we add a user to a group , a confirmation to the Member has to be made the request for the Invitation to the user is made . 
+- 1 :- websockets implementation => Online , Typing Status and real time messages =>Learn
 
-- 2 :- In Notification Section User has a choice to either accept the request for user-to-user or user-to-group invitation or dismiss the request.
+- 2 :- when user does anything ex:-=>adding a user , chnaging profile etc , he should get a modern confirmation(till now i only have implemented an alert)
 
-- 3 :- When the a friend is Made Unfriend then in the profile of that friend for the user , it should be unfriended tagged and a option should be displayed to send a message request .
+- 3 :- when axios request is being hit , the page should show a loader !(Everywhere)
 
-- 4 :- everywhere where there is an option to add someone to the group or friend list then the option should be displayed as "Send Request" --> Something like this(Can be Improved later).
+- 4 :- Suppose if there are no freinds in friendsidebar then something should be displayed there 
 
-- 5 :- When the Request is accepted by the user then it should be notified to the sender that blah-blah-blah user has accepted your request for user-to-user or group-to-group.
+- 5 :- Usedebounce() hook for searching ! =>Learn
 
-- 6 :- DropDown has to be made for the searching the users using their name or unique id .
+- 6 :- A non creator is also able to Remove a user from a group => fix this 
 
-- 7 :- While searching the user if we find the A user then on a page has to be designed for showing that particular person profile with all options .
+- 7 :- When deleting my own account i should get logged out automatically !
 
-- 8:- Mark all options read button not working in notification section 
+- 8:- UsePassword() hook implementation when entering otp => Learn
 
-- 9 :- UseDebounce() hook has to be implemented for the searching part of the application both for sending request to an individual user by a user or when adding a member to the user .
+- 9 :- Otp testing has to be done !
 
-- 10 :- While entering the otp recieved for verification the email , in this a custom hook has to made UseOTP() for dynamically entering the 6-digit otp inside the input boxes .
+- 10 :- when a person is sending an image as a message he should be shown that image as a confirmation in chat page! 
 
-- 11 :- Inside the navbar of the UserToUserChatDashboard the "add to group" btn is not styled properly and it has no working currently.
+- 11 :- If can be done , Implement the payment integration page . Implement razorpay or stripe (designed the pages already using stich ai ) => Learn
 
-- 12 :- LogOut Functionality have also be added in the frontend !
+- 12 :- Forgot Password Implementation on both login and in usersettings 
 
-- 13 :- Payment integration page
+- 13 :- when removing a member or leaving a group , it should get a warning !
 
-
-Impropvements and corrections in the backend:-
-
-- 1 :- Socket.io implemented with https and express.js
-
-- 2 :- payment integration
-
-- 3 :- The UI of Sign In page is not looking good , 
-        (especially the text welcome )
-- 4 :-  The buttons can be improved 
-
-- 5 :- a loader can be made at every backend hits so that user does not see a blank screen
-
-- 6 :- Add to group Button has to be styled more better 
-
-- 7 :- Make a new better page for handling errors
-
-- 8 : -Whenever we delete a group then that group should also be deleted from the Users GroupList Array !
+- 14 :- Welcome on SignIn page , Sign In and create account button in main page !(Improve them !)
