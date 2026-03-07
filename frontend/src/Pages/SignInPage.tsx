@@ -8,13 +8,14 @@ import { useNavigate } from "react-router-dom";
 import { useRef , useState } from "react";
 import axios from "axios";
 import { APIurl } from "../Config/ApiConfig";
+import { ForgotPassword } from "./ForgotPassEmailVerify";
 
 export function SignInPage()
 {
     const Navigate = useNavigate();
     const EmailRef:any = useRef(null);
     const PasswordRef:any = useRef(null);
-
+    const [Forgotpassword , SetForgotPassword] = useState(false);
     async function HitBackend()
     {
         const payload:any  = {
@@ -41,16 +42,15 @@ export function SignInPage()
             alert("Error while Logging Up , Please Try Again later !");
         }
     }
-
-
     function Navigatetosignin()
     {
         Navigate("/LiveLink/User/Create/Account")
     }
 
     return<>
-    <div className="min-h-screen bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)]">
-        <Navbar/>
+        {!Forgotpassword
+            ?<div className="min-h-screen bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)]">
+            <Navbar/>
         <div className="flex justify-center items-center mt-[4rem]">
             <div className="text-white text-[1.4rem] lg:text-[1.8rem] font-bold">Welcome Back</div>
         </div>
@@ -64,7 +64,7 @@ export function SignInPage()
                 <div className="text-slate-300 font-bold text-[0.9rem] mt-[1rem] flex">
                     <div>Password</div>
                     <div className="w-full flex justify-end">
-                        <button type="button" className="text-blue-800 hover:text-slate-500">Forgot Password</button>
+                        <button type="button" className="text-blue-800 hover:text-slate-500" onClick={() => SetForgotPassword(!Forgotpassword)}>Forgot Password</button>
                     </div>
                 </div>
                 <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="Enter Your Password" Reference={PasswordRef}/></div>
@@ -100,7 +100,7 @@ export function SignInPage()
                 </div>
             </div>
         </div>
-        <Footer/>
-    </div>
+        <Footer/></div>
+        :<div className="min-h-screen bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)]"><ForgotPassword/></div>}
     </>
 }

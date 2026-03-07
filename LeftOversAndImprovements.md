@@ -8,7 +8,7 @@
 
 - 4 :- Suppose if there are no freinds in friendsidebar then something should be displayed there 
 
-- 5 :- Usedebounce() hook for searching ! =>Learn
+- 5 :- Done => Usedebounce() hook for searching ! =>Learn
 
 - 6 :- A non creator is also able to Remove a user from a group => fix this 
 

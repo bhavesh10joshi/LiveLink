@@ -179,10 +179,10 @@ UserRouter.post("/Otp/Authentication" , async function(req , res)
 {
     const email = req.body.email;
     const otp = req.body.otp;
-
+    console.log(otp);
     const FindUser:any = await UserModel.findOne({
         email : email ,
-        resetOTPExpiry: { $gt: Date.now() }
+        ResetOTPExpiry: { $gt: Date.now() }
     });
 
     if(!FindUser)
@@ -190,6 +190,7 @@ UserRouter.post("/Otp/Authentication" , async function(req , res)
         res.status(ClientErrorStatusCodes.ResourceNotFound).json({
             msg : "Invalid Email or Otp"
         });
+        return;
     }
 
     const verify = await bcrypt.compare(otp , FindUser?.ResetOTP);
@@ -199,11 +200,13 @@ UserRouter.post("/Otp/Authentication" , async function(req , res)
         res.status(ClientErrorStatusCodes.ResourceNotFound).json({
             msg : "Incorrect Otp Provided by the User !"
         });
+        return;
     }
     
     res.status(SuccessStatusCodes.Success).json({
         msg : "Successfull Verification of the User !"
     });
+    return;
 }) ;
 UserRouter.post("/Forgot-password/Change/password" , async function(req,res)
 {

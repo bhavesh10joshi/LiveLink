@@ -14,7 +14,7 @@ const user = new Schema({
     // image that the use will be uploading as per his/her preference has to be implemented 
     UniqueId : {type : String , unique : true , required:true}   ,
     ResetOTP : {type : String} , 
-    ResetOTPExpiry : {type : String} ,
+    ResetOTPExpiry : {type : Number} ,
     GroupList : [{
         name : {type : String} ,
         Groupprofilephoto : {type : String} , 

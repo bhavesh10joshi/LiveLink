@@ -13,6 +13,7 @@ import { VerifyEmailOTP } from './Pages/ForgotPassOTP'
 import { ChangePass } from './Pages/ChangePass'
 import { SuccessChangePass } from './Pages/Successchangepass'
 import { Editsuccess } from './Components/SuccessPage/EditSuccess'
+import { ConfirmPasswordChangeOnSignIn } from './Pages/ChangePasswordonSignIn'
 
 function App() {
   return <>
@@ -31,6 +32,7 @@ function App() {
         <Route path="/LiveLink/User/Change/Password" element={<ChangePass/>}/>
         <Route path="/LiveLink/User/Success/Changed/Password" element={<SuccessChangePass/>}/>
         <Route path="/LiveLink/User/Edit/Success" element={<Editsuccess/>}/>
+        <Route path="/LiveLink/User/SignIn/Change/Password" element={<ConfirmPasswordChangeOnSignIn/>}/>
       </Routes>
     </BrowserRouter>
   </>

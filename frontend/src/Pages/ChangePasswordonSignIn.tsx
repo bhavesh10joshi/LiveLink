@@ -8,12 +8,7 @@ import { APIurl } from "../Config/ApiConfig"
 import { useRef } from "react"
 import { useNavigate } from "react-router-dom"
 
-interface Style
-{
-    SetChangePasswordFunction:()=>void
-}
-
-export function ConfirmPasswordChange(props:Style)
+export function ConfirmPasswordChangeOnSignIn()
 {
     const Navigate = useNavigate();
     const [NewPassword , SetNewPassword] = useState(null);
@@ -24,19 +19,15 @@ export function ConfirmPasswordChange(props:Style)
 
     async function ConfirmPasswordChange()
     {
-        const token = localStorage.getItem("token");
-        const Config = {
-            headers : {
-                "authorization" : token
-            }
-        };
+        const email = localStorage.getItem("email");
         const Payload = {
+            email : email , 
             password : NewPassword
         }
         try
         {
-            await axios.post(`${APIurl}/Users/Profile/Change/password` , Payload , Config);
-            localStorage.removeItem("token");
+            await axios.post(`${APIurl}/Users/Forgot-password/Change/password` , Payload);
+            localStorage.removeItem("email");
             Navigate("/LiveLink/Introduction");
             return;
         }
@@ -50,9 +41,8 @@ export function ConfirmPasswordChange(props:Style)
     return<>
     <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
         <div className=" bg-black-500 w-[30rem] h-[43rem] rounded-xl border-slate-300 border flex flex-col">
-            <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
-                <div className=" font-bold text-[1.3rem] text-white-800 flex justify-center items-center"><div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold"><div>!</div></div><div className="ml-[0.6rem] text-[1rem]">Change Password</div></div>
-                <div className="flex justify-center items-center w-[2rem] h-[2rem] bg-black-800 rounded-xl"><button type="button" aria-label="Name" onClick={() => props.SetChangePasswordFunction()}><div><CloseIcon/></div></button></div>
+            <div className=" w-full flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
+                <button type="button" className="flex justify-center items-center bg-blue-800 text-white font-mono pl-[2rem] pr-[2rem] pt-[0.5rem] pb-[0.5rem] rounded-md text-[0.8rem]" onClick={() => Navigate("/LiveLink/Introduction")}>Back to SignIn</button>
             </div>
             <div className="bg-slate-500 h-[0.1px] mt-[1rem] "></div>
             <div className="w-full flex justify-center items-center mt-[2rem]"> 
