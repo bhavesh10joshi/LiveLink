@@ -23,7 +23,7 @@ export function UserSettings( props:Styles )
     const[DeleteAccount , SetAccountDelete] = useState(false);
     const [UserProfileChange , SetProfileChange] = useState(false);
     const[CreatenewGroup , SetCreateNewGroup] = useState(false);
-    const[BackendData , SetBackenddata]:any = useState({
+    const[BackendData , SetBackenddata] = useState({
         "name": "",
         "ProfilePhoto": "",
         "UniqueId": "",
