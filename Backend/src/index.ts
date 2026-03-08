@@ -30,11 +30,9 @@ app.use(fileUpload({
     useTempFiles : true
 }));
 
-app.post("/" , function(req,res)
+app.get("/" , function(req,res)
 {
-    res.status(SuccessStatusCodes.Success).json({
-        msg : "Successfully Deployed the website "
-    });
+    res.status(SuccessStatusCodes.Success).send("Successfully Deployed the website ! ");
 })
 
 app.use("/LiveLink/Users" , UserRouter);
