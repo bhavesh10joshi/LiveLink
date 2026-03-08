@@ -319,7 +319,7 @@ UserRouter.post("/Change/Password/otp-Generate" , usermiddleware , async functio
     });
 });
 //Endpoint for deleting the User as per his/her request
-UserRouter.delete("/Delete/Account" ,usermiddleware, async function(req:any , res)
+UserRouter.post("/Delete/Account" ,usermiddleware, async function(req:any , res)
 {
     try{
         UserModel.deleteOne({

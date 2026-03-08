@@ -123,19 +123,26 @@ export function SearchUserPage(props:Style)
                                                     </div>
                                                 </div>
                                             </div>
-                                            {Data.PersonalMessagingList?.map((Friends:any)=>
-                                                Friends.uniqueid != SelectedId
-                                                ?<div className="flex justify-center items-center mt-[1rem] w-full">
-                                                    <button type="button" aria-label="name" className="flex justify-center items-center bg-red-800 text-white w-full pt-[0.5rem] pb-[0.5rem] rounded-md" onClick={() => SendInvite()}>
-                                                        Send Invite
-                                                    </button>
-                                                </div>
-                                                :<div className="flex justify-center items-center mt-[1rem] w-full">
-                                                    <div className="flex justify-center items-center bg-red-800 text-white w-full pt-[0.5rem] pb-[0.5rem] rounded-md" >
-                                                        Already a Friend
+                                            {Data.PersonalMessagingList?.length == 0
+                                                ?Data.PersonalMessagingList?.map((Friends:any)=>
+                                                    Friends.uniqueid != SelectedId
+                                                    ?<div className="flex justify-center items-center mt-[1rem] w-full">
+                                                        <button type="button" aria-label="name" className="flex justify-center items-center bg-red-800 text-white w-full pt-[0.5rem] pb-[0.5rem] rounded-md" onClick={() => SendInvite()}>
+                                                            Send Invite
+                                                        </button>
                                                     </div>
+                                                    :<div className="flex justify-center items-center mt-[1rem] w-full">
+                                                        <div className="flex justify-center items-center bg-red-800 text-white w-full pt-[0.5rem] pb-[0.5rem] rounded-md" >
+                                                            Already a Friend
+                                                        </div>
+                                                    </div>
+                                                )
+                                                :<div className="flex justify-center items-center mt-[1rem] w-full">
+                                                        <button type="button" aria-label="name" className="flex justify-center items-center bg-red-800 text-white w-full pt-[0.5rem] pb-[0.5rem] rounded-md" onClick={() => SendInvite()}>
+                                                            Send Invite
+                                                        </button>
                                                 </div>
-                                            )}
+                                            }
                                         </div>
                                         :null
                                     ))

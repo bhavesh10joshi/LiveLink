@@ -10,6 +10,7 @@ export function VerifyEmailOTP()
 {
     const Navigate = useNavigate();
     const[otp , Setotp]:any = useState(new Array(6).fill(""));
+    const[OtpState , SetOtpState]:any = useState(true);
     async function HitBackend()
     {
         const otpRecieved = otp.join("");
@@ -26,7 +27,7 @@ export function VerifyEmailOTP()
         } 
         catch(e)
         {
-            alert("Wrong Otp Entered !");
+            SetOtpState(!OtpState);
             return;
         }
     }
@@ -66,6 +67,11 @@ export function VerifyEmailOTP()
                 <div className="mt-[3rem] w-full pl-[3rem] pr-[3rem]">
                     <button type="button" className="flex justify-center items-center pr-[2rem] pl-[2rem] pt-[1rem] pb-[1rem] bg-blue-800 text-white font-bold rounded-md w-full" onClick={() => HitBackend()}>Submit & Proceed</button>
                 </div>
+                {!OtpState
+                ?<div className="flex justify-center items-center text-red-500 font-mono mt-[0.5rem]">
+                    Wrong OTP Entered , Please Check Again ! 
+                </div>
+                :null}
             </div>
             <div className="flex justify-center items-center mt-[1rem] text-[0.8rem]">
                 <div className="text-slate-500 mr-[0.2rem]">Didn't Recieve the code ?</div>

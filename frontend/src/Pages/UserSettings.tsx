@@ -23,14 +23,14 @@ export function UserSettings( props:Styles )
     const[DeleteAccount , SetAccountDelete] = useState(false);
     const [UserProfileChange , SetProfileChange] = useState(false);
     const[CreatenewGroup , SetCreateNewGroup] = useState(false);
-    const[BackendData , SetBackenddata] = useState({
+    const[BackendData , SetBackenddata]:any = useState({
         "name": "",
-        "ProfilePhoto": Profile,
+        "ProfilePhoto": "",
         "UniqueId": "",
         "GroupList": [],
         "PersonalMessagingList": [{
             "name" : "", 
-            "profilephoto" : Profile ,
+            "profilephoto" : "" ,
             "uniqueid" : ""
         }],
         "about" : "" 

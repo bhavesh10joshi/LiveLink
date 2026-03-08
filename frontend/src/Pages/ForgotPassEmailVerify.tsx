@@ -1,11 +1,12 @@
 import { Button } from "../Components/Buttons/Button"
 import { useNavigate } from "react-router-dom"
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { APIurl } from "../Config/ApiConfig";
 import axios from "axios";
 
 export function ForgotPassword()
 {
+    const[RightEmail , SetRightEmail] = useState(false);
     const Navigate = useNavigate();
     const EmailRef:any = useRef(null);
 
@@ -13,7 +14,7 @@ export function ForgotPassword()
     {
         if(!EmailRef)
         {
-            alert("No Email Entered !");
+            SetRightEmail(!RightEmail);
             return;
         }
         const Payload = {
@@ -28,7 +29,7 @@ export function ForgotPassword()
         }
         catch(e)
         {
-            alert("Error Occurred while Generating Otp !");
+            SetRightEmail(!RightEmail)
             return;
         }
     }
@@ -47,9 +48,16 @@ export function ForgotPassword()
                             Email or Unique Id
                         </div>
                     </div>
-                    <div className="w-full flex justify-center items-center mt-[0.5rem] mb-[2rem]">
+                    <div className="w-full flex justify-center items-center mt-[0.5rem] mb-[0.5rem]">
                         <input type="text" aria-label="Name" className="w-full rounded-md bg-black-500 text-white font-bold h-[3rem] pl-[1rem] pr-[1rem]" ref={EmailRef}/>
                     </div>
+                    {
+                    !RightEmail
+                        ?<div className="flex justify-center items-center text-red-500 font-mono mb-[1.5rem]">
+                            Enter a Valid Email Id !
+                        </div>
+                        :null
+                    }
                     <Button 
                         size="HomeSize" 
                         color="Blue" 

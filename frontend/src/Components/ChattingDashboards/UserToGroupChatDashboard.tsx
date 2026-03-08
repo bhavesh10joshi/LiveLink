@@ -15,122 +15,6 @@ interface GeneralStyle{
     SetSelectorFunction : (val:string)=>void
 }
 
-interface messagestyle{
-    typeofMessage : "Sent" | "Recieved" | "Date",
-    typeOfContent : "text" | "Image",
-    ImageMessage ?: string ,
-    TextMessage ?: string , 
-    TimeOfMesage : string ,
-    DateOfMessage : Number,
-    ProfilePhoto : string 
-}
-interface GroupMembers{
-    MemberName : string ,
-    OnlineOrNot : Boolean , 
-    CreatorOrNot : Boolean , 
-    ProfilePhoto : string ,
-    UniqueId : string
-}
-const MessageData:messagestyle[] = [
-{
-    typeofMessage : "Sent" ,
-    typeOfContent : "text" , 
-    TextMessage : "Hey There how are you doing ??", 
-    TimeOfMesage : "3:59 Am",
-    DateOfMessage : 12,
-    ProfilePhoto : Profile ,
-},{
-    typeofMessage : "Recieved" ,
-    typeOfContent : "text" ,
-    TextMessage : "Hey There how are you doing ??", 
-    TimeOfMesage : "4:59 Am",
-    DateOfMessage : 12,
-    ProfilePhoto : Profile 
-},
-{
-    typeofMessage : "Sent" ,
-    typeOfContent : "Image" , 
-    ImageMessage : DocumentImage , 
-    TimeOfMesage : "10:59 Pm",
-    DateOfMessage : 12,
-    ProfilePhoto : Profile 
-},{
-    typeofMessage : "Recieved" ,
-    typeOfContent : "Image" ,
-    ImageMessage : DocumentImage , 
-    TimeOfMesage : "12:00 Pm",
-    DateOfMessage : 12,
-    ProfilePhoto : Profile 
-}]; 
-
-interface Usersgroup {
-    ProfileImage: string;
-    Name: string;
-    UniqueId: string;
-    IsSelected: boolean;
-    Groupmembers : GroupMembers[];
-    GroupInfo:string , 
-    CreationDate : string
-}
-
-interface FriendsUsers {
-    ProfileImage: string;
-    Name: string;
-    UniqueId : string;
-}
-
-const UserFriends : FriendsUsers[] = [{
-        Name : "Bhavesh Joshi",  
-        ProfileImage : Profile,
-        UniqueId:"kshjahkjsakjdhakljshdklja"
-    },{
-        Name : "Bhavesh Joshi", 
-        ProfileImage : Profile,
-        UniqueId:"ndsbfkbkfhhflsdjkahkfhsadkl"
-    },{
-        Name : "Bhavesh Joshi",  
-        ProfileImage : Profile,
-        UniqueId:"sjkhlkfihaiofhjdsabfb"
-    },{
-       Name : "Bhavesh Joshi", 
-        ProfileImage : Profile,
-        UniqueId:"dfkjbcscaKVWaiudiuau"
-    }]
-
-const UsersGroup: Usersgroup[] = [{
-    ProfileImage: Profile,
-    Name: "College-23-27",
-    UniqueId: "kskjfhdks45646_shdjagjhj",
-    IsSelected: true ,
-    GroupInfo : "My new College group , beacuse i am a brerozgaar aadmi , what about you gang , are you good hahahahahahah",  
-    Groupmembers : [{
-        MemberName : "Bhavesh Joshi", 
-        OnlineOrNot : true , 
-        CreatorOrNot : true , 
-        ProfilePhoto : Profile,
-        UniqueId:"kshjahkjsakjdhakljshdklja"
-    },{
-        MemberName : "Bhavesh Joshi", 
-        OnlineOrNot : false , 
-        CreatorOrNot : false , 
-        ProfilePhoto : Profile,
-        UniqueId:"ndsbfkbkfhhflsdjkahkfhsadkl"
-    },{
-        MemberName : "Bhavesh Joshi", 
-        OnlineOrNot : true , 
-        CreatorOrNot : false , 
-        ProfilePhoto : Profile,
-        UniqueId:"sjkhlkfihaiofhjdsabfb"
-    },{
-        MemberName : "Bhavesh Joshi", 
-        OnlineOrNot : false , 
-        CreatorOrNot : false , 
-        ProfilePhoto : Profile,
-        UniqueId:"dfkjbcscaKVWaiudiuau"
-    }],
-    CreationDate : "14-02-2026"
-}];
-
 export function UserToGroupChatDashboard(props:GeneralStyle) {
     const[GroupInfoStatus , SetGroupInfo] = useState(false);
     const [selectedId, setSelectedId]:any = useState(null);
@@ -230,9 +114,12 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
             <div className="h-full pt-[1rem] pb-[1rem]">
                 <div className="bg-black-500 w-[20rem] rounded-md px-8 py-4 ml-4 flex flex-col gap-4 border border-slate-500  h-full">
                     <div className="w-full">
-                         <div className="flex flex-col gap-2 overflow-y-auto overflow-hidden">
-                            {GroupList.map((user:any)=>(<FriendsSideBar ProfileImage={user.Groupprofilephoto} Name={user.name}  UniqueId={user.Groupuniqueid} SetSelectedId={()=>SetSelectedId(user.Groupuniqueid)} selectedId={selectedId}/>))}
-                         </div>
+                         {GroupList.length != 0
+                            ?<div className="flex flex-col gap-2 overflow-y-auto overflow-hidden">
+                                {GroupList.map((user:any)=>(<FriendsSideBar ProfileImage={user.Groupprofilephoto} Name={user.name}  UniqueId={user.Groupuniqueid} SetSelectedId={()=>SetSelectedId(user.Groupuniqueid)} selectedId={selectedId}/>))}
+                            </div>
+                            :<div className="flex justify-center items-center gap-2 mt-[10rem] text-slate-400 font-mono">No Groups Exists</div>
+                         }
                     </div>
                 </div>
             </div>            

@@ -19,16 +19,6 @@ interface Friend {
     bio: string;
 }
 
-// const UserFriends : FriendsUsers[] = [{
-//     ProfileImage : Profile , 
-//     Name : "ajay" , 
-//     WasLastMessage : false,
-//     TypingStatus : true , 
-//     OnlineOrOfflineDots : true , 
-//     UniqueId : "jksahkhdaskjhdkalshkdja" , 
-//     About : "Hi my name is bhavesh joshi this is a realtime chatting application !"
-// }]
-
 export function UserToUserChatDashboard() {
     const[UserInfoStatus , SetUserInfo] = useState(false);
     const [selectedId, setSelectedId]:any = useState(null);
@@ -132,9 +122,13 @@ export function UserToUserChatDashboard() {
                                     <div className=" w-1/5 flex justify-start items-center"><SearchIcon/></div>
                                     <div className="w-4/5 flex justify-start items-center text-[0.9rem] text-slate-300">Search Users</div>
                                 </button>
-                                    <div className="flex flex-col gap-2 overflow-y-auto overflow-hidden mt-[1rem]">
+                                {
+                                FriendsList.length != 0    
+                                    ?<div className="flex flex-col gap-2 overflow-y-auto overflow-hidden mt-[1rem]">
                                         {FriendsList.map((user:any)=>(<FriendsSideBar ProfileImage={user.profilephoto} Name={user.name}  UniqueId={user.uniqueid} SetSelectedId={()=>SetSelectedId(user.uniqueid)} selectedId={selectedId}/>))}
                                     </div>
+                                    :<div className="w-full h-full flex justify-center items-center mt-[1rem] text-slate-500 font-mono"> No Friends Exists </div>
+                                }
                             </div>
                         </div>
                     </div>

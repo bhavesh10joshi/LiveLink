@@ -4,16 +4,6 @@ import { APIurl } from "../../Config/ApiConfig";
 import { useEffect } from "react";
 import { config } from "zod/v4/core";
 
-interface NotificationStyle{
-    TypeOfNotification : "UserToUserRequest" | "UserToGroupRequest" , 
-    ReadOrUnread : Boolean , //If it is False it means it is not Read And if it is true it means it is read 
-    SenderProfilePhoto : String ,
-    NameOfSender : String , 
-    NameOfGroup ?: String ,
-    Date : String ,
-    Time : String
-}
-
 const TextStyle:any = {
     "Personal" : "Wants To Start A Chat With You !" ,
     "Group" : "Sent You An invitation for the Group ",

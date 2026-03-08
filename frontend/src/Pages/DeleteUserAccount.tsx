@@ -1,4 +1,7 @@
 import { Warning } from "../Components/Icons/Warning"
+import { APIurl } from "../Config/ApiConfig";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface DeleteGroupStyle
 {
@@ -7,6 +10,28 @@ interface DeleteGroupStyle
 
 export function DeleteUserAccount(props:DeleteGroupStyle)
 {
+    const Navigate = useNavigate();
+    async function HitDeleteAccountFunction()
+    {
+        const token = localStorage.getItem("token");
+        const Config =  {
+            headers : {
+                "authorization" : token
+            }
+        };
+        try
+        {
+            await axios.post(`${APIurl}/Users/Delete/Account` , Config);
+            localStorage.removeItem("token");
+            Navigate("/LiveLink/Introduction");
+            return;
+        }
+        catch(e)
+        {
+            alert("Error occurred while Deleting the users account !");
+            return;
+        }
+    }
     return<>
         <div className="fixed inset-0 bg-black-500 bg-opacity-30 backdrop-blur-md flex justify-center items-center">
                     <div className=" bg-black-500 w-[30rem] h-[30rem] rounded-xl flex flex-col">
@@ -19,7 +44,7 @@ export function DeleteUserAccount(props:DeleteGroupStyle)
                             <div className=" text-red-800 flex justify-center items-center text-[1rem] font-extrabold"><div className="text-black-800 w-[1rem] h-[1rem] bg-red-600 rounded-xl flex justify-center items-center mr-[0.5rem]">!</div><div className="text-[0.7rem]">THIS ACTION CANNOT BE UNDONE</div></div>
                         </div>
                         <div className="h-[3rem] w-full pt-[5rem] pr-[2rem] pl-[2rem] text-white font-bold flex justify-center items-center rounded-xl">
-                            <button className="bg-red-600 h-[3rem] w-full rounded-md" type="button">Delete Account</button>
+                            <button className="bg-red-600 h-[3rem] w-full rounded-md" type="button" onClick={() => HitDeleteAccountFunction()}>Delete Account</button>
                         </div>
                         <div className="h-[3rem] w-full pt-[5rem] pr-[2rem] pl-[2rem] text-white flex justify-center items-center rounded-xl">
                             <button className="bg-slate-800 h-[3rem] w-[10rem] rounded-md border border-slate-500" type="button" onClick={()=>props.SetDeleteGroupFunction()}>Cancel</button>
