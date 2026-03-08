@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import path from "path";
 import InviteFromUserforGroupRouter from "./Router/SendInvites/FromUserForUser/ForGroup";
 import InviteFromUserforUserRouter from "./Router/SendInvites/FromUserforGroup/ForUser";
+import { SuccessStatusCodes } from "./StatusCodes";
 
 const envPath = path.resolve(process.cwd(), ".env");
 dotenv.config({ path: envPath });
@@ -28,6 +29,13 @@ app.use(cors());
 app.use(fileUpload({
     useTempFiles : true
 }));
+
+app.post("/" , function(req,res)
+{
+    res.status(SuccessStatusCodes.Success).json({
+        msg : "Successfully Deployed the website "
+    });
+})
 
 app.use("/LiveLink/Users" , UserRouter);
 app.use("/LiveLink/Users/Groups" , GroupRouter);
