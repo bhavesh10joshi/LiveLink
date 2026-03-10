@@ -6,11 +6,8 @@ import { useEffect, useState } from "react"
 import axios from "axios";
 import { APIurl } from "../../Config/ApiConfig"
 
-interface GeneralStyle{
-    SetSelectorFunction : (val:string)=>void
-}
 
-export function UserToGroupChatDashboard(props:GeneralStyle) {
+export function UserToGroupChatDashboard() {
     const[GroupInfoStatus , SetGroupInfo] = useState(false);
     const [selectedId, setSelectedId]:any = useState(null);
     const [GroupList , SetGroupList]:any = useState([]);

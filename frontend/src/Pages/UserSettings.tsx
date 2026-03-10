@@ -7,11 +7,6 @@ import { CreateNewGroup } from "./CreateNewGroup"
 import axios from "axios"
 import { APIurl } from "../Config/ApiConfig"
 
-interface FriendsUsers {
-    ProfileImage: string,
-    Name: string,
-    UniqueId : string,
-}
 interface Styles{
     SetSelectorFunction : ()=>void
 }

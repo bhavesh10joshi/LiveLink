@@ -23,11 +23,6 @@ export function CreateAccount()
     const[ConfirmPassword , SetConfirmPassword] = useState("");
     const[ZodError , SetZodErrors] = useState(false);
 
-    const[CurrentParameters , SetCurrentParameters] = useState({
-        Email : "" ,
-        Password : "" 
-    });
-
     async function HitBackend()
     {
         const currentname = NameRef.current.value;
@@ -73,7 +68,6 @@ export function CreateAccount()
             SetZodErrors(true);
             return;
         }
-        SetCurrentParameters(currentpara);
         SetZodErrors(false);
         HitBackend();
     }
