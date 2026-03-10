@@ -19,6 +19,7 @@ function App() {
   return <>
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<IntroPage/>}/>
         <Route path="/LiveLink/Introduction" element={<IntroPage/>}/>
         <Route path="/LiveLink/Application/Pricing" element={<PricingPage/>}/>
         <Route path="/LiveLink/Application/Security" element={<SecurityPage/>}/>
