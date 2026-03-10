@@ -1,8 +1,4 @@
 import { CloseIcon } from "../Components/Icons/CloseIcon"
-import Profile from "../Components/ui/Image/SampleImages/ProfileImage/Profile.jpg"
-import { EditPencil } from "../Components/Icons/EditPencil"
-import { AddtoGroupUser } from "../Components/Icons/AddtoGroupUserIcon"
-import { AddMembersToGroup } from "../Components/Icons/AddMembers"
 import { useEffect, useState } from "react"
 import { SuccessAddedtheMember } from "./SuccessAddedtheMember"
 import axios from "axios"

@@ -1,4 +1,3 @@
-import type { ReactElement } from "react"
 
 interface style{
     Name : string ,

@@ -1,15 +1,10 @@
 import { FriendsSideBar } from "../FriendsSideBar/FriendsSideBar"
 import { UserToGroupNavBar } from "../Chatting/UserToGroupNavBar"
-import DocumentImage from "../ui/Image/SampleImages/ChattingImages/DocumentImage.png"
-import Profile from "../ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { TypeTheMessage } from "../Chatting/TypeMessageSend"
 import { GroupInfo } from "../../Pages/GroupInfo";
 import { useEffect, useState } from "react"
 import axios from "axios";
 import { APIurl } from "../../Config/ApiConfig"
-import { SearchBar } from "../SearchBar/SearchBar"
-import { config } from "zod/v4/core"
-import { setErrorMap } from "zod/v3"
 
 interface GeneralStyle{
     SetSelectorFunction : (val:string)=>void
@@ -22,6 +17,7 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
     const [UserFriends , SetUserFriends]:any = useState([]);
     const [Messagedata , SetMessagedata]:any = useState(null); 
     const [UserDetails , SetUserDetails]:any = useState();
+    const[MessageSent , SetMessageSent]:any = useState(false);
 
     function SetGroupInfoFunction()
     {
@@ -188,7 +184,7 @@ export function UserToGroupChatDashboard(props:GeneralStyle) {
                     }
                 </div>
                 <div className="bg-black-500 backdrop-blur-md border rounded-lg border-slate-500 border-md border-full w-full mb-[1rem] mr-[1rem] ml-[1rem]">
-                    <TypeTheMessage type="group" groupUniqueId={selectedId}/>
+                    <TypeTheMessage type="group" groupUniqueId={selectedId} SetMessageSent={() => SetMessageSent(!MessageSent)}/>
                 </div>
             </>
             :<div className="flex justify-center items-center w-full h-full text-slate-700 text-[10rem] font-bold">

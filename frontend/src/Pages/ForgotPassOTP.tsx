@@ -1,4 +1,3 @@
-import { Button } from "../Components/Buttons/Button";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthEmail } from "../Components/Icons/AuthEmail";

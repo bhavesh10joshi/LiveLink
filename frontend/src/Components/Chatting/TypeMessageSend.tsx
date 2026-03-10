@@ -7,7 +7,8 @@ import { APIurl } from "../../Config/ApiConfig"
 interface Style {
     type: "personal" | "group",
     groupUniqueId?: String,
-    RecieverUniqueId?: String
+    RecieverUniqueId?: String , 
+    SetMessageSent ?: () => void
 }
 
 export function TypeTheMessage(props: Style) {    
@@ -61,8 +62,8 @@ export function TypeTheMessage(props: Style) {
             };
             try {
                 await axios.post(`${APIurl}/Users/Message/UserToUser/Text/Send`, payload, config);
-                alert("Message Sent");
                 InputRef.current.value = ""; 
+                props.SetMessageSent?.();
                 return;
             } catch (e) {
                 alert("Error Occurred while sending text message!");
@@ -76,8 +77,8 @@ export function TypeTheMessage(props: Style) {
             };
             try {
                 await axios.post(`${APIurl}/Users/Message/UserToGroup/Text/Send/toAll`, payload, config);
-                alert("Message Sent");
-                InputRef.current.value = ""; 
+                InputRef.current.value = "";
+                props.SetMessageSent?.(); 
                 return;
             } catch (e) {
                 alert("Error Occurred while sending text message!");
@@ -97,13 +98,11 @@ export function TypeTheMessage(props: Style) {
         if (props.type == "personal") {
             try {
                 console.log("acha bete ");
-                const result = await axios.post(`${APIurl}/Users/Message/UserToUser/Image/send`, ImageData, config);
-                console.log(result);
-                alert("Message Sent !");
-                
+                await axios.post(`${APIurl}/Users/Message/UserToUser/Image/send`, ImageData, config);
                 SetMessageType("text");
                 SetImageData(null);
                 ImageRef.current.value = ""; 
+                props.SetMessageSent?.();
                 return;
             } catch (e) {
                 alert("Error Occurred while sending message to the user!");
@@ -111,12 +110,11 @@ export function TypeTheMessage(props: Style) {
             }
         } else {
              try {
-                const result = await axios.post(`${APIurl}/Users/Message/UserToGroup/Image/Send/ToAll`, ImageData, config);
-                alert("Message Sent !");
-                console.log(result);
+                await axios.post(`${APIurl}/Users/Message/UserToGroup/Image/Send/ToAll`, ImageData, config);
                 SetMessageType("text");
                 SetImageData(null);
                 ImageRef.current.value = ""; 
+                props.SetMessageSent?.();
                 return;
             } catch (e) {
                 alert("Error Occurred while sending message to the group!");

@@ -1,5 +1,4 @@
 import { CloseIcon } from "../Components/Icons/CloseIcon"
-import { SaveChanges } from "../Components/Icons/SaveChanges"
 import { useState } from "react"
 import { EmailAuthChangePassword } from "./AuthenticationChangePassword"
 import { useRef } from "react"

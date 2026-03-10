@@ -1,7 +1,5 @@
-import { Button } from "../Buttons/Button"
 import { FreeTick } from "../Icons/FreePricingTick" 
-import { PaidTick } from "../Icons/PricingPaidTick"
-import { useState } from "react"
+
 
 interface Style{
     IsMonthly : Boolean ,

@@ -1,7 +1,3 @@
-import { Button } from "../Components/Buttons/Button"
-import Mainpagedesign from "../Components/ui/Image/IntropageImage/Mainpagedesign.png"
-import { FrontArrow } from "../Components/Icons/RightArrow"
-import { Features } from "../Components/Features/features"
 import { Navbar } from "../Components/NavBar/Navbar"
 import { Footer } from "../Components/Footer/Footer"
 import { Toggle } from "../Components/PricingToggles/PricingToggle";

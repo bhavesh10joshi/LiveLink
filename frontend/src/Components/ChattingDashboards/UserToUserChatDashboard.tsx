@@ -9,15 +9,6 @@ import { APIurl } from "../../Config/ApiConfig"
 import { SearchIcon } from "../Icons/Search"
 import { SearchUserPage } from "../../Pages/SearchUserPage"
 
-interface Friend {
-    isonline: boolean;
-    name: string;
-    profilephoto: string;
-    typingstatus: boolean;
-    uniqueid: string;
-    _id: string;
-    bio: string;
-}
 
 export function UserToUserChatDashboard() {
     const[UserInfoStatus , SetUserInfo] = useState(false);
@@ -26,6 +17,7 @@ export function UserToUserChatDashboard() {
     const[AddUserToGroupState , SetAddUserToGroup] = useState(false);
     const[MessagesData , SetMessagesData]:any = useState(null);
     const[SearchUser , SetSearchUser]:any = useState(false);
+    const[MessageSent , SetMessageSent]:any = useState(false);
 
     function SetSearchUserFunction()
     {
@@ -99,7 +91,7 @@ export function UserToUserChatDashboard() {
                 }
             }
             HitBackendForMessages();
-        },[selectedId]
+        },[selectedId , MessageSent]
     )
     
     return <>
@@ -201,7 +193,7 @@ export function UserToUserChatDashboard() {
                             }
                         </div>
                     <div className="bg-black-500 backdrop-blur-md  border rounded-lg border-slate-500 border-md border-full  mb-[1rem] mr-[1rem] ml-[1rem]">
-                        <TypeTheMessage type="personal" RecieverUniqueId={selectedId}/>
+                        <TypeTheMessage type="personal" RecieverUniqueId={selectedId} SetMessageSent={() => SetMessageSent(!MessageSent)}/>
                     </div>
                     </>
                     :<div className="flex justify-center items-center w-full h-full text-slate-700 text-[10rem] font-bold">

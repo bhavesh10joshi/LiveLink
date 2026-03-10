@@ -1,7 +1,5 @@
 import { CloseIcon } from "../Components/Icons/CloseIcon"
-import Profile from "../Components/ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { EditPencil } from "../Components/Icons/EditPencil"
-import { AddMembersToGroup } from "../Components/Icons/AddMembers"
 import { AddMembers } from "./AddMemberstoGroup"
 import { useEffect, useState } from "react"
 import { EditGroupInfo } from "./EditGroupInfo"

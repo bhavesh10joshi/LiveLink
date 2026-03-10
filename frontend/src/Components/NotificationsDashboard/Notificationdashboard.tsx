@@ -2,7 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import { APIurl } from "../../Config/ApiConfig";
 import { useEffect } from "react";
-import { config } from "zod/v4/core";
 
 const TextStyle:any = {
     "Personal" : "Wants To Start A Chat With You !" ,

@@ -1,21 +1,12 @@
 import { CloseIcon } from "../Components/Icons/CloseIcon"
 import { Camera } from "../Components/Icons/Camera"
-import Profile from "../Components/ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { EditPencil } from "../Components/Icons/EditPencil"
 import { useState } from "react"
-import { DeleteUserAccount } from "./DeleteUserAccount"
-import { EditUserProfile } from "./EditUserProfile"
 import { useRef } from "react"
-import { Button } from "../Components/Buttons/Button"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { APIurl } from "../Config/ApiConfig"
 
-interface FriendsUsers {
-    ProfileImage: string,
-    Name: string,
-    UniqueId : string,
-}
 interface CreateNewGroupStyle
 {
     SetCreateNewGroupFunction : ()=>void ,  

@@ -1,7 +1,5 @@
-import { useState } from "react"
 import { AddtoGroupUser } from "../Icons/AddtoGroupUserIcon"
 import { More } from "../Icons/MoreIcon"
-import { AddUserToGroup } from "../../Pages/AddUserToGroup"
 
 
 interface UserStyle{

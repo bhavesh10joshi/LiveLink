@@ -1,7 +1,5 @@
 import { CloseIcon } from "../Components/Icons/CloseIcon"
-import { SaveChanges } from "../Components/Icons/SaveChanges"
 import { useState } from "react"
-import { EmailAuthChangePassword } from "./AuthenticationChangePassword"
 import { FingerPrint } from "../Components/Icons/FingerPrint"
 import axios from "axios"
 import { APIurl } from "../Config/ApiConfig"

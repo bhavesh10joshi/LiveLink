@@ -1,5 +1,4 @@
 import { CloseIcon } from "../Components/Icons/CloseIcon"
-import Profile from "../Components/ui/Image/SampleImages/ProfileImage/Profile.jpg"
 import { EditPencil } from "../Components/Icons/EditPencil"
 import { useEffect, useState } from "react"
 import { DeleteUserAccount } from "./DeleteUserAccount"

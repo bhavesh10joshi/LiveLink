@@ -1,5 +1,3 @@
-import { SearchBar } from "../SearchBar/SearchBar"
-
 interface FriendsUsers {
     ProfileImage: string;
     Name: string;

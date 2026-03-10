@@ -1,6 +1,4 @@
 import { CloseIcon } from "../Components/Icons/CloseIcon"
-import Profile from "../Components/ui/Image/SampleImages/ProfileImage/Profile.jpg"
-import { EditPencil } from "../Components/Icons/EditPencil"
 import { UnfriendOrLeaveGroup } from "../Components/Icons/LeaveGrouporUnfriend"
 import { SucessUnfriend } from "../Components/Icons/SuccessUnfriend"
 import { useState } from "react"
