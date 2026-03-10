@@ -1,133 +1,136 @@
-# 🔗 LiveLink (In Development)
+# LiveLink 💬
 
-**LiveLink** is a modern **real-time chat application** inspired by WhatsApp, built to provide fast, secure, and scalable communication.  
-It supports **one-to-one messaging**, **dynamic group chats**, and **real-time updates** using WebSockets.
+LiveLink is a full-stack, real-time chat application inspired by WhatsApp. It features seamless user-to-user and group communication, real-time notifications, secure authentication, and media sharing. 
 
-The project is actively evolving, with new features and optimizations being added continuously.
+Designed with a modern UI and a robust backend, LiveLink provides a responsive and engaging messaging experience.
 
----
+## ✨ Features
 
-## 🚀 Features
-
-### 🔹 User Features
-- 🔐 Secure authentication (JWT + OAuth)
-- 👤 Edit personal profile information
-- 🖼️ Set and update profile images
-- 🔍 Search users using **unique user IDs**
-- ✉️ Send and receive chat invitations
-- 💬 Real-time one-to-one messaging
-
-### 🔹 Group Chat Features
-- 👥 Create dynamic group chats
-- ✏️ Edit group information (name, description, etc.)
-- 🖼️ Set and update group profile images
-- 💬 Real-time group messaging
-- 🔄 Live updates for group changes
-
-### 🔹 Real-Time Capabilities
-- ⚡ Instant message delivery
-- 🔄 Live UI updates without refresh
-- 🌐 WebSocket-based communication
-
----
-## 🚀 Images
-<img width="1900" height="929" alt="image" src="https://github.com/user-attachments/assets/015e41b7-f05e-499a-90d5-b36fcc66aa24" />
-<img width="1901" height="925" alt="image" src="https://github.com/user-attachments/assets/1762fcf5-a209-421a-95b4-be188bec5d8d" />
-<img width="1919" height="926" alt="image" src="https://github.com/user-attachments/assets/34434aa0-542d-4b81-bbf2-cfd804d389fa" />
-<img width="1912" height="925" alt="Screenshot 2026-02-18 204502" src="https://github.com/user-attachments/assets/113447fb-b2a7-4dfe-a575-1a9bfccab61e" />
-<img width="1919" height="927" alt="image" src="https://github.com/user-attachments/assets/7bf16367-aab1-4563-8bfa-2e3c0850a1da" />
-<img width="1919" height="922" alt="image" src="https://github.com/user-attachments/assets/7188690a-2f89-4f67-b392-300d77a682c2" />
-<img width="1919" height="926" alt="image" src="https://github.com/user-attachments/assets/50f274df-5827-43d3-9f4e-9e887688fe56" />
-
+* **Real-Time Messaging:** Instant message delivery for both one-on-one and group chats.
+* **Group Management:** Create groups, add or remove members, and manage group information.
+* **Secure Authentication:** Email-based verification using OTPs (powered by Nodemailer) and secure password management.
+* **Media Sharing:** Upload and share images within chats, integrated seamlessly with Cloudinary.
+* **Live Notifications:** Stay updated with real-time alerts for new messages, group invites, and friend requests.
+* **Responsive UI:** A beautiful, responsive frontend built with React, Vite, and Tailwind CSS.
+* **Profile Customization:** Edit user profiles, manage friend lists, and update avatars.
 
 ## 🛠️ Tech Stack
 
-### Frontend
-- **React.js**
-- **TypeScript**
-- **Tailwind CSS**
+**Frontend**
+* React 19
+* Vite (Bundler)
+* TypeScript
+* Tailwind CSS (Styling)
+* React Router DOM (Navigation)
+* Zod (Data Validation)
+* Axios (API calls)
+* Lottie React (Animations)
 
-### Backend
-- **Node.js**
-- **Express.js**
-- **WebSockets**
-- **MongoDB**
-- **Mongoose**
+**Backend**
+* Node.js & Express.js
+* TypeScript
+* Cloudinary (Image storage)
+* Nodemailer (Email/OTP services)
+* Zod (Schema validation)
+* Database (Prisma/Mongoose configured in `src/db`)
+* Express for routing and maintaining Api Endpoints .
+* Websockets for realtime messaging !
+* JWT(Json web token) for seemless token authorization !
 
-### Authentication & Security
-- **JSON Web Tokens (JWT)**
-- **OAuth**
-- **bcrypt** (password hashing)
-- **Zod** (schema validation)
+##Architechture Diagram 
+<img width="5676" height="3652" alt="diagram" src="https://github.com/user-attachments/assets/bd23ace8-5f87-4cee-9b52-81e238794a38" />
 
----
+## 📂 Project Structure
 
-## 🧩 Architecture Overview
+The repository is organized into two main directories:
 
-- **Client–Server architecture**
-- REST APIs for authentication, user & group management
-- WebSockets for real-time messaging
-- MongoDB for scalable and flexible data storage
-- Strong validation and security layers to prevent invalid or malicious data
+* `/frontend`: Contains the Vite + React client-side application.
+* `/Backend`: Contains the Node.js server, API routes, database configuration, and third-party service integrations.
 
----
+##Application Images
+<img width="1919" height="925" alt="Screenshot 2026-03-10 150516" src="https://github.com/user-attachments/assets/90e274cd-69a0-446b-8fbd-a4b0a5cc89ac" />
+<img width="1916" height="923" alt="Screenshot 2026-03-10 150530" src="https://github.com/user-attachments/assets/985b6255-f8e6-4f83-b72e-2804fb6c5cd8" />
+<img width="1919" height="925" alt="Screenshot 2026-03-10 150543" src="https://github.com/user-attachments/assets/5cb326ae-cc23-470b-9f1b-cebf58e54a20" />
+<img width="1918" height="927" alt="Screenshot 2026-03-10 150554" src="https://github.com/user-attachments/assets/dc4dcd7f-c9d7-47c3-a384-158c1696ab21" />
+<img width="1918" height="929" alt="Screenshot 2026-03-10 150605" src="https://github.com/user-attachments/assets/b56e97ff-ccc8-4b5b-8fc0-e27d0323c65c" />
+<img width="1917" height="929" alt="Screenshot 2026-03-10 150625" src="https://github.com/user-attachments/assets/60e5e00d-6e57-44e1-9366-31160f952b11" />
+<img width="1918" height="926" alt="Screenshot 2026-03-10 151037" src="https://github.com/user-attachments/assets/26def448-bbb9-45d1-93c9-e5777b372fbd" />
+<img width="1919" height="927" alt="Screenshot 2026-03-10 151115" src="https://github.com/user-attachments/assets/18f12418-6202-4fcd-b445-d42f7079b55d" />
+<img width="1918" height="925" alt="Screenshot 2026-03-10 151147" src="https://github.com/user-attachments/assets/bd013763-b31f-44db-98ef-bbe829f910f3" />
+<img width="1919" height="927" alt="Screenshot 2026-03-10 151157" src="https://github.com/user-attachments/assets/bf27b0a1-c1c7-4782-ad8e-da2fc784ebda" />
+<img width="1916" height="924" alt="Screenshot 2026-03-10 151208" src="https://github.com/user-attachments/assets/82329498-aaeb-465c-a5f7-ab04c7050685" />
+<img width="1918" height="925" alt="Screenshot 2026-03-10 151220" src="https://github.com/user-attachments/assets/b13bf4a9-785e-4a28-ba70-fefae30cdfbb" />
+<img width="1919" height="926" alt="Screenshot 2026-03-10 151230" src="https://github.com/user-attachments/assets/1fe702a1-53c4-4e86-bd1d-9971781df2a7" />
+<img width="1919" height="928" alt="Screenshot 2026-03-10 151250" src="https://github.com/user-attachments/assets/6df5b4ce-09de-47df-a1bc-6a8c2332a252" />
+<img width="1919" height="929" alt="Screenshot 2026-03-10 151318" src="https://github.com/user-attachments/assets/0fb88ef2-06fd-4acb-b346-63a4596e40a4" />
 
-## 📦 Installation & Setup
+
+## 🚀 Getting Started
+
+Follow these instructions to set up the project on your local machine for development and testing.
 
 ### Prerequisites
-- Node.js (v18+ recommended)
-- MongoDB (local or cloud)
-- npm or yarn
 
-### Clone the Repository
+* Node.js installed on your machine.
+* A Cloudinary account for media storage.
+* An email account to configure Nodemailer (e.g., Gmail App Passwords).
+* A running database instance.
+
+### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/LiveLink.git
-cd LiveLink
+git clone https://github.com/bhavesh10joshi/livelink.git
+cd livelink
 ```
 
-### Backend Setup
+### 2. Backend Setup
+
+Navigate to the backend directory and install dependencies:
 ```bash
-cd server
+cd Backend
 npm install
-npm run dev
 ```
 
-### Frontend Setup
-```bash
-cd client
-npm install
-npm run dev
-```
-
-### ⚙️ Environment Variables
-Create a .env file in the backend directory:
-```bash
+Create a `.env` file in the `Backend` directory (refer to `.env.example` if available) and add your environment variables:
+```env
 PORT=5000
-MONGO_URI=your_mongodb_connection_string
+DATABASE_URL=your_database_connection_string
 JWT_SECRET=your_jwt_secret
-OAUTH_CLIENT_ID=your_oauth_client_id
-OAUTH_CLIENT_SECRET=your_oauth_client_secret
+CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+EMAIL_USER=your_email_address
+EMAIL_PASS=your_email_app_password
 ```
 
-## 🛠️ Upcoming Features
-- ✅ Message read receipts
-- ✅ Typing indicators
-- 📎 Media sharing (images, files)
-- 🔔 Real-time notifications
-- 🛡️ Advanced privacy & security controls
-- 📱 Mobile-friendly UI enhancements
+Start the backend development server:
+```bash
+npm run dev
+```
 
-## 🤝 Contributing
-Contributions are welcome!
-If you’d like to improve LiveLink:
+### 3. Frontend Setup
 
-###1.Fork the repository
-###2.Create a feature branch
-###3.Commit your changes
-###4.Open a Pull Request
+Open a new terminal, navigate to the frontend directory, and install dependencies:
+```bash
+cd frontend
+npm install
+```
 
-## ⭐ Acknowledgements
-###Inspired by real-world messaging platforms like WhatsApp, with a focus on scalability, performance, and clean architecture.
+Start the Vite development server:
+```bash
+npm run dev
+```
+The Backend in deployed on Render and Frontend is deployed on Vercel.
+Working Link :- `https://live-link-phi.vercel.app/`
 
-##📄 License
-###  This project is licensed under the MIT License.
+## 🌍 Deployment
+
+* **Backend:** Successfully configured for deployment on platforms like Render. Ensure all environment variables are added to your hosting provider's dashboard.
+* **Frontend:** Optimized for Vercel.
+  * Framework Preset: Vite
+  * Build Command: `npm run build`
+  * Output Directory: `dist`
+  * Install Command: `npm install`
+
+## 👨‍💻 Author
+
+**Bhavesh Joshi**
