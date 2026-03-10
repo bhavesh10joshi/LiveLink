@@ -20,7 +20,7 @@ export function MainDashboard()
                     selector == "Settings" ?<UserSettings SetSelectorFunction={()=>setselctor("Home")}/> : null
                 }
                 {
-                    selector == "Groups" ?<UserToGroupChatDashboard SetSelectorFunction={()=>setselctor("Groups")}/> : null
+                    selector == "Groups" ?<UserToGroupChatDashboard/> : null
                 }
                 {
                     selector == "Notification" ?<NotificationDashboard/> : null
