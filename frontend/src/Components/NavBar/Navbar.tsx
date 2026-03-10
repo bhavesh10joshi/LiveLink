@@ -30,7 +30,7 @@ export function Navbar()
         }
         else if(val == "Home")
         {
-            navigate("/LiveLink/Application/Pricing");
+            navigate("/LiveLink/Introduction");
         }
         else
         {
