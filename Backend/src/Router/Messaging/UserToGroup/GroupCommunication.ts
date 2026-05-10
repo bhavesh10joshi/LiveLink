@@ -8,7 +8,7 @@ const UserToGroupMessageRouter = Router();
 
 UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async function(req:any , res)
 {
-    const groupUniqueId : String = req.body.groupUniqueId; 
+    const groupUniqueId : string = req.body.groupUniqueId; 
     const ContentType : any = "text";
     const Message:any = req.body.Message;
 
@@ -18,6 +18,7 @@ UserToGroupMessageRouter.post("/Text/Send/toAll" , usermiddleware , async functi
         });
         const sendChatMessage = async () => {
         try {
+            // @ts-ignore
             await UserToGroupMessageModel.findOneAndUpdate(
                 // 1. Find a thread where these two are the sender/receiver
                 {groupUniqueId: groupUniqueId }, 
@@ -74,6 +75,7 @@ UserToGroupMessageRouter.post("/Image/Send/ToAll" , usermiddleware , async funct
             const sendChatMessage = async (messageContent:any) => 
             {
                 try {
+                    // @ts-ignore
                     await UserToGroupMessageModel.findOneAndUpdate(
                         // 1. Find a thread where these two are the sender/receiver
                         {groupUniqueId: groupUniqueId }, 

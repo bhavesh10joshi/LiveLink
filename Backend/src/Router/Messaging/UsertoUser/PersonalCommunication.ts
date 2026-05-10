@@ -16,12 +16,13 @@ const UserToUserMessageRouter = Router();
 //for sending the Message from one user to another
 UserToUserMessageRouter.post("/Text/Send" , usermiddleware , async function(req:any , res)
 {
-    const RecieverUniqueId : String = req.body.RecieverUniqueId;
+    const RecieverUniqueId : string = req.body.RecieverUniqueId;
     const ContentType : any = "text";
     const Message : any = req.body.Message;
 
     try
     {
+        // @ts-ignore
         const FindReciever = await UserModel.findOne({
             UniqueId : RecieverUniqueId
         });
@@ -103,6 +104,7 @@ UserToUserMessageRouter.post("/Image/send", usermiddleware, async function(req: 
     const file = req.files.photo;
 
     try {
+        // @ts-ignore
         const FindReciever = await UserModel.findOne({
             UniqueId: RecieverUniqueId
         });
