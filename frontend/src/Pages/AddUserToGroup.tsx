@@ -3,13 +3,17 @@ import { CloseIcon } from "../Components/Icons/CloseIcon";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { APIurl } from "../Config/ApiConfig";
+import { useGlobalUI } from "../Config/GlobalUIContext";
+import { SkeletonProfile } from "../Components/Loader/Skeleton";
 
 interface Style{
     UniqueId : String
     SetAddUserToGroupfunction : ()=>void
 };
 export function AddUserToGroup(props:Style) {
+    const { showLoading, hideLoading, showError } = useGlobalUI();
     const [GroupData, SetGroupData]: any = useState();
+    const [isLoading, setIsLoading] = useState(true);
     const Navigate = useNavigate();
     
     useEffect(function() {
@@ -24,9 +28,11 @@ export function AddUserToGroup(props:Style) {
                 const data: any = await axios.get(`${APIurl}/Users/Profile/Details`, config);
                 SetGroupData(data.data.msg.GroupList);
                 console.log(data.data.msg.GroupList);
+                setIsLoading(false);
             } catch (e) {
                 console.log("Error hei" + e);
-                alert("Error Encountered While Fetching data !");
+                setIsLoading(false);
+                showError("Error encountered while fetching data!");
                 return;
             }
         };
@@ -46,24 +52,27 @@ export function AddUserToGroup(props:Style) {
             GroupUniqueId : GroupUniqueId ,
             RecieverUniqueId : RecieverUniqueId
         }
+        showLoading("Sending invite...");
         try{
             await axios.post(`${APIurl}/Users/Groups/Add-Members/Send/Group-Invite` , payload , config);
+            hideLoading();
             Navigate("/LiveLink/User/Edit/Success");
         }
         catch(e:any)
         {
+            hideLoading();
             if (e.response && e.response.status === 409) {
-                alert("Member already exists in this Group !");
+                showError("Member already exists in this Group!");
             } 
             else {
                 console.log(e);
-                alert("Error Encountered while sending invite !");
+                showError("Error encountered while sending invite!");
             }
         }
     } 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-            <div className="bg-black-500 w-[30rem] h-[30rem] rounded-xl border-slate-300 border flex flex-col">
+        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center p-4">
+            <div className="bg-black-500 w-[95%] max-w-[30rem] max-h-[90vh] rounded-xl border-slate-300 border flex flex-col overflow-y-auto">
 
                 <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
                     <div className="font-bold text-[1.3rem] text-white-800 flex justify-center items-center">
@@ -81,7 +90,11 @@ export function AddUserToGroup(props:Style) {
                 <div className="flex justify-center items-center mt-[2rem] w-full pl-[2rem] pr-[2rem]">
                     <input type="text" aria-label="name" placeholder="Search Groups" className="w-full h-[2rem] rounded-md bg-black-800 border border-white pl-[2rem] pr-[2rem] pt-[1.2rem] pb-[1.2rem]" />
                 </div>
-                {GroupData && GroupData.length > 0 ? (
+                {isLoading
+                    ? <div className="flex flex-col pl-[2rem] pr-[2rem] pt-[2rem] pb-[1rem] gap-3">
+                        <SkeletonProfile /><SkeletonProfile /><SkeletonProfile />
+                      </div>
+                    : GroupData && GroupData.length > 0 ? (
                     <div className="flex flex-col pl-[2rem] pr-[2rem] pt-[2rem] pb-[1rem] flex-1 overflow-y-auto gap-3">
                         {GroupData.map((users: any, index: number) => (
                             <div key={index} className="w-full bg-black-800 min-h-[4rem] flex place-content-between pl-[1rem] pr-[1rem] border border-slate-400 rounded-md py-2">
@@ -101,9 +114,10 @@ export function AddUserToGroup(props:Style) {
                         ))}
                     </div>
                 ) : (
-                    /* Centered Empty State */
-                    <div className="flex-1 flex justify-center items-center px-8 text-center text-blue-500 font-bold">
-                        Join a Group first to start adding members!
+                    <div className="flex-1 flex flex-col justify-center items-center px-8 py-8 text-center min-h-[12rem]">
+                        <div className="text-slate-600 text-[2.5rem] font-bold mb-2">📭</div>
+                        <div className="text-white font-bold text-[1.1rem]">No Groups Added</div>
+                        <div className="text-slate-500 text-[0.8rem] mt-1">Create or join a group first to start adding members</div>
                     </div>
                 )}
             </div>

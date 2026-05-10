@@ -9,8 +9,10 @@ import { APIurl } from "../../Config/ApiConfig"
 import { SearchIcon } from "../Icons/Search"
 import { SearchUserPage } from "../../Pages/SearchUserPage"
 import { SkeletonProfile, SkeletonMessage } from "../Loader/Skeleton"
+import { useGlobalUI } from "../../Config/GlobalUIContext"
 
 export function UserToUserChatDashboard() {
+    const { showError } = useGlobalUI();
     const[UserInfoStatus , SetUserInfo] = useState(false);
     const [selectedId, setSelectedId]:any = useState(null);
     const [FriendsList , SetFriendsList]:any = useState([]);
@@ -20,6 +22,7 @@ export function UserToUserChatDashboard() {
     const[isLoadingMessages, setIsLoadingMessages] = useState(false);
     const[SearchUser , SetSearchUser]:any = useState(false);
     const[MessageSent , SetMessageSent]:any = useState(false);
+    const[refreshFriends, setRefreshFriends] = useState(false);
 
     function SetSearchUserFunction()
     {
@@ -36,6 +39,10 @@ export function UserToUserChatDashboard() {
     function SetAddUserToGroupFunction()
     {
         SetAddUserToGroup(!AddUserToGroupState);
+    }
+    function triggerFriendsRefresh() {
+        setRefreshFriends(prev => !prev);
+        setSelectedId(null);
     }
     useEffect(function(){
         const token = localStorage.getItem("token");
@@ -56,12 +63,12 @@ export function UserToUserChatDashboard() {
             catch(e)
             {
                 setIsLoadingFriends(false);
-                alert("error Occurred while fetching details for Users!");
+                showError("Error occurred while fetching details for Users!");
                 return;
             }
         }
         HitBackend();
-    },[]);
+    },[refreshFriends]);
     useEffect(
         function()
         {
@@ -70,7 +77,7 @@ export function UserToUserChatDashboard() {
                 return;
             }
             const token = localStorage.getItem("token");
-                const HitBackendForMessages = async () => {
+            const HitBackendForMessages = async () => {
                 console.log("selectedId is "+ selectedId);
                 console.log("O My");
                 setIsLoadingMessages(true);
@@ -93,7 +100,7 @@ export function UserToUserChatDashboard() {
                 {
                     console.log(e);
                     setIsLoadingMessages(false);
-                    alert("Error Occured while fetching Messages !");
+                    showError("Error occurred while fetching Messages!");
                     return;
                 }
             }
@@ -106,16 +113,15 @@ export function UserToUserChatDashboard() {
         UserInfoStatus ? 
         <div className="w-full h-full flex justify-center items-center">{
             FriendsList.map((user:any)=>
-                user.uniqueid == selectedId ?<UserInfo Name={user.name} ProfileImage={user.profilephoto} SetUserSelector={()=>SetUserInfoFunction()} About={user.bio} OnlineOrOffline={user.isonline} UniqueId={user.uniqueid} /> :null  
+                user.uniqueid == selectedId ?<UserInfo Name={user.name} ProfileImage={user.profilephoto} SetUserSelector={()=>{ SetUserInfoFunction(); triggerFriendsRefresh(); }} About={user.bio} OnlineOrOffline={user.isonline} UniqueId={user.uniqueid} /> :null  
             )
         }</div> 
         : !SearchUser
             ? !AddUserToGroupState
-            ?// --- ADDED FRAGMENT WRAPPER < > ---
-            <>
-            <div className="flex w-full h-full justify-center items-center flex-col lg:flex-row pb-[5rem] lg:pb-0">
+            ?<>
+            <div className="flex w-full h-full justify-center items-center flex-col lg:flex-row">
                     <div className={`h-full pt-[1rem] pb-[1rem] w-full lg:w-auto lg:block ${selectedId ? 'hidden' : 'block'}`}>
-                        <div className="bg-black-500 w-full lg:w-[20rem] rounded-md px-8 py-4 lg:ml-4 flex flex-col gap-4 border border-slate-500 h-full">
+                        <div className="bg-black-500 w-full lg:w-[20rem] rounded-md px-4 lg:px-8 py-4 lg:ml-4 flex flex-col gap-4 border border-slate-500 h-full">
                             <div className="w-full">
                                 <button type="button" aria-label="name" className="w-full h-[3rem] bg-blue-950 rounded-full border border-blue-500 pl-[1rem] pr-[1rem] flex justify-center items-center" onClick={() => SetSearchUserFunction()}>
                                     <div className=" w-1/5 flex justify-start items-center"><SearchIcon/></div>
@@ -136,18 +142,15 @@ export function UserToUserChatDashboard() {
                         </div>
                     </div>
                     <div className={`flex-1 flex flex-col h-full relative w-full lg:w-auto lg:flex ${selectedId ? 'flex' : 'hidden'}`}>
-                    {/* Header / Top Bar could go here */}
-                        {/* Input Area (Your UserToUser or GroupToUser Portal) */}
                     {selectedId != null
                         ?<>
-                        <div className=" bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
+                        <div className="bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
                             {
                                 FriendsList.map((user:any)=>
                                 user.uniqueid == selectedId ?<div><UserToUserNavBar Name={user.name} ProfilePhoto={user.profilephoto} SetGroupSelector={()=>SetUserInfoFunction()} IsOnlineOrNot={user.isonline} SetAddUserToGroupfunction={() => SetAddUserToGroupFunction()}/> </div>: null  )
                             }
                         </div>
-                        {/* MESSAGE CONTAINER: Scrollable Area */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 ">
+                        <div className="flex-1 overflow-y-auto p-3 lg:p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">
                             {isLoadingMessages
                                 ? <div className="flex flex-col gap-4 w-full"><SkeletonMessage /><SkeletonMessage isSender /><SkeletonMessage /><SkeletonMessage isSender /></div>
                                 : MessagesData != null
@@ -155,34 +158,22 @@ export function UserToUserChatDashboard() {
                                     <div
                                         key={index}
                                         className={`flex w-full ${
-                                            msg.ContentType === "Sent" ? "justify-end" : "justify-start"
+                                            msg.MessageType === "Sent" ? "justify-end" : "justify-start"
                                         }`}
                                     >
-                                        <div className={`flex max-w-[60%] ${
-                                            msg.ContentType === "Sent" ? "flex-row-reverse" : "flex-row"
+                                        <div className={`flex max-w-[85%] lg:max-w-[60%] ${
+                                            msg.MessageType === "Sent" ? "flex-row-reverse" : "flex-row"
                                         } gap-2`}>
-                                            
-                                            {/* Profile Photo (Optional: Hide for sent messages if you prefer) */}
-                                            {/* <img 
-                                                src={msg.ProfilePhoto} 
-                                                alt="profile" 
-                                                className="w-8 h-8 rounded-full mt-1 invisible"
-                                            /> */}
-
-                                            {/* Message Bubble */}
                                             <div className={`flex flex-col ${
-                                                msg.ContentType === "Sent" 
+                                                msg.MessageType === "Sent" 
                                                     ? "items-end" 
                                                     : "items-start"
                                             }`}>
-                                                
-                                                {/* Content Bubble */}
                                                 <div className={`p-3 rounded-2xl ${
-                                                    msg.ContentType === "Sent"
+                                                    msg.MessageType === "Sent"
                                                         ? "bg-blue-600 rounded-tr-none text-white"
                                                         : "bg-gray-800 rounded-tl-none text-gray-200"
                                                 }`}>
-                                                    {/* Render Image or Text based on type */}
                                                     {msg.ContentType === "image" ? (
                                                         <img 
                                                             src={msg.Content} 
@@ -193,8 +184,6 @@ export function UserToUserChatDashboard() {
                                                         <p className="text-sm">{msg.Content}</p>
                                                     )}
                                                 </div>
-
-                                                {/* Timestamp */}
                                                 <span className="text-[10px] text-gray-500 mt-1 px-1">
                                                     {`${msg.time} ${msg.Date}`}
                                                 </span>
@@ -202,14 +191,14 @@ export function UserToUserChatDashboard() {
                                         </div>
                                     </div>
                                 ))
-                                :<div className="flex justify-center items center w-full h-full font-bold text-slate-600 text-[1.3rem] text-center mt-[12rem]">Take the leap, type the first word, and transform this silence into a connection worth remembering.</div>
+                                :<div className="flex justify-center items-center w-full h-full font-bold text-slate-600 text-[1rem] lg:text-[1.3rem] text-center px-4 mt-[4rem] lg:mt-[12rem]">Take the leap, type the first word, and transform this silence into a connection worth remembering.</div>
                             }
                         </div>
-                    <div className="bg-black-500 backdrop-blur-md  border rounded-lg border-slate-500 border-md border-full  mb-[1rem] mr-[1rem] ml-[1rem]">
+                    <div className="bg-black-500 backdrop-blur-md border rounded-lg border-slate-500 mx-2 mb-2 lg:mb-[1rem] lg:mr-[1rem] lg:ml-[1rem]">
                         <TypeTheMessage type="personal" RecieverUniqueId={selectedId} SetMessageSent={() => SetMessageSent(!MessageSent)}/>
                     </div>
                     </>
-                    :<div className="flex justify-center items-center w-full h-full text-slate-700 text-[10rem] font-bold">
+                    :<div className="flex justify-center items-center w-full h-full text-slate-700 text-[4rem] lg:text-[10rem] font-bold">
                         LiveLink
                     </div>
                 }

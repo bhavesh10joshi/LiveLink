@@ -11,9 +11,11 @@ import { useRef } from "react";
 import { Validations } from "../ZodVaalidations/Zod";
 import axios from "axios";
 import { APIurl } from "../Config/ApiConfig";
+import { useGlobalUI } from "../Config/GlobalUIContext";
 
 export function CreateAccount()
 {
+    const { showLoading, hideLoading, showError } = useGlobalUI();
     const Navigate = useNavigate(); 
     const NameRef:any = useRef(null);
     const EmailRef:any = useRef(null);
@@ -34,22 +36,26 @@ export function CreateAccount()
             name : currentname
         };
 
+        showLoading("Creating your account...");
         try{
             const result = await axios.post(`${APIurl}/Users/SignUp` , payload);
             
             if(result)
             {
+                hideLoading();
                 Navigate("/LiveLink/Created/Account/Success");
             }
             else
             {
+                hideLoading();
                 console.log(result);
-                alert("Failed to create an account , Please try again later !");
+                showError("Failed to create an account, Please try again later!");
             }
         }
         catch(e)
         {
-            alert("Failed to create an account , Please try again later !");
+            hideLoading();
+            showError("Failed to create an account, Please try again later!");
         }
     }
     function ZodValidationsfortheInput()
@@ -81,7 +87,7 @@ export function CreateAccount()
             <div className="text-slate-500 text-[0.7rem] lg:text-[0.9rem] font-bold">Start Chatting with Friends and teams in real-time.</div>
         </div>
         <div className="w-full flex justify-center items-center mt-[2rem]">
-            <div className="bg-slate-800 w-[17rem] h-[46rem] lg:h-[32rem] lg:w-[30rem] rounded border-slate-600 border pl-[2rem] pr-[2rem]">
+            <div className="bg-slate-800 w-[95%] max-w-[30rem] h-auto rounded border-slate-600 border px-[1.5rem] lg:px-[2rem]">
                 <div className="text-slate-300 font-bold text-[0.9rem] mt-[2rem]">Full Name</div>
                 <div className="mt-[0.4rem]"><Input Inputtype="text" placeholder="John Doe" EndIcon={<Contact/>} Reference={NameRef}/></div>
                 <div className="text-slate-300 mt-[1rem] flex justify-between items-center">
@@ -111,8 +117,8 @@ export function CreateAccount()
                     </div>
                 }
                 <div className="mt-[0.4rem]"><Input Inputtype="password" placeholder="........." EndIcon={<Key/>} Reference={ConfirmPasswordRef} OnChange={(e:any) => SetConfirmPassword(e.target.value)}/></div>
-                <div className="flex justify-center items-center w-full mt-[2rem]">
-                    <Button size="extrasized" color="Blue" text="Create Account" onClick={() => ZodValidationsfortheInput()}/>
+                <div className="flex justify-center items-center w-full mt-[2rem] pb-[2rem]">
+                    <button type="button" onClick={() => ZodValidationsfortheInput()} className="bg-blue-800 hover:shadow-blue-800/80 rounded-md h-12 w-full flex items-center justify-center gap-2 text-white font-[550] shadow-lg hover:-translate-y-0.5">Create Account</button>
                 </div>
             </div>
         </div>

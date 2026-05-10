@@ -5,6 +5,7 @@ import { ConfirmDeleteGroup } from "./DeleteGroupConfirm"
 import { useRef } from "react"
 import axios from "axios"
 import { APIurl } from "../Config/ApiConfig"
+import { useGlobalUI } from "../Config/GlobalUIContext"
 
 interface EditStyle
 {
@@ -17,6 +18,7 @@ interface EditStyle
 }
 export function EditGroupInfo(props:EditStyle)
 {
+    const { showLoading, hideLoading, showError } = useGlobalUI();
     const[DeleteGroup , SetDeleteGroup] = useState(false);
     const[ImageData , SetImageData]:any = useState(null); 
     const ImageRef:any = useRef(null);
@@ -61,15 +63,18 @@ export function EditGroupInfo(props:EditStyle)
             bio : CurrentBio ,
             UniqueGroupId : props.UniqueGroupId
         }
+        showLoading("Saving changes...");
         try{
             await axios.post(`${APIurl}/Users/Groups/Edit/Group/Profile` , Payload , Config);
+            hideLoading();
             props.SetEditGroupSelector();
             return;
         }
         catch(e)
         {
             console.log(e);
-            alert("Error Encountered while changing the group profile !");
+            hideLoading();
+            showError("Error encountered while changing the group profile!");
             return;
         }
     }
@@ -81,21 +86,24 @@ export function EditGroupInfo(props:EditStyle)
                 "authorization" : token
             }
         };
+        showLoading("Uploading group image...");
         try{
             await axios.post(`${APIurl}/Users/Groups/Edit/Group/Profile/Image` , ImageData , Config);
+            hideLoading();
             props.SetEditGroupSelector();
             return;
         }
         catch(e)
         {
-            alert("Error Encountered while changing the group profile Image !");
+            hideLoading();
+            showError("Error encountered while changing the group profile image!");
             return;
         }
     }
     return<>{
     !DeleteGroup
-    ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-            <div className=" bg-black-500 w-[30rem] h-[45rem] rounded-xl border-slate-300 border flex flex-col">
+    ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center p-4">
+            <div className=" bg-black-500 w-[95%] max-w-[30rem] max-h-[90vh] rounded-xl border-slate-300 border flex flex-col overflow-y-auto">
                 <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
                     <div className=" font-bold text-[1.3rem] text-white-800 flex justify-center items-center"><div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold"><div>!</div></div><div className="ml-[0.6rem] text-[1rem]">Edit Group Info</div></div>
                     <div className="flex justify-center items-center w-[2rem] h-[2rem] bg-black-800 rounded-xl"><button type="button" aria-label="Name" onClick={()=>props.SetEditGroupSelector()}><div><CloseIcon/></div></button></div>
@@ -128,9 +136,9 @@ export function EditGroupInfo(props:EditStyle)
                     <input type="text" className="w-full h-full rounded-md bg-slate-700 text-black-900 placeholder:text-slate-300 text-[0.9rem] pl-[1rem] pr-[1rem]" placeholder="New Description...." aria-label="Name" ref={BioRef}/>
                 </div>
                 <div className="flex justify-center items-center w-full pl-[2rem] pr-[2rem] pt-[1rem] pb-[1rem] mt-[0.5rem]">
-                    <button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-blue-950 border-blue-800 border rounded-md h-[2.5rem]">
+                    <button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-blue-950 border-blue-800 border rounded-md h-[2.5rem]" onClick={() => EdittextHitBackend()}>
                         <div><SaveChanges/></div>
-                        <div className="ml-[0.2rem] text-[0.9rem] text-slate-300 flex justify-center items-center" onClick={() => EdittextHitBackend()}>Save Edits</div>
+                        <div className="ml-[0.2rem] text-[0.9rem] text-slate-300 flex justify-center items-center">Save Edits</div>
                     </button>
                 </div>
                 <div className="h-[2px] w-full bg-slate-700 mt-[0.5rem]"></div>
@@ -140,7 +148,7 @@ export function EditGroupInfo(props:EditStyle)
                         <div className="text-[0.7rem] text-slate-300 font-bold">Changing the Group Name or Avatar will be visible to all members of this Group Instantly.</div>
                     </div>
                 </div>
-                <div className="w-full flex justify-center items-center pr-[2rem] pl-[2rem] mt-[2rem]">
+                <div className="w-full flex justify-center items-center pr-[2rem] pl-[2rem] mt-[2rem] pb-[1rem]">
                     <button type="button" aria-label="Name" className="w-full flex justify-center items-center bg-blue-800 text-white rounded-md h-[2.5rem] ml-[0.5rem]" onClick={()=>SetDeleteGroupFunction()}>Delete Group</button>
                     <button type="button" aria-label="Name" className="flex justify-center items-center w-2/6 bg-slate-900 border-slate-300 border rounded-md h-[2.5rem] ml-[0.7rem]" onClick={()=>props.SetEditGroupSelector()}>Cancel</button>
                 </div>

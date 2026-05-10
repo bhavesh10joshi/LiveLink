@@ -3,6 +3,7 @@ import { SendMessage } from "../Icons/SendMessage"
 import { useRef, useState } from "react"
 import axios from "axios"
 import { APIurl } from "../../Config/ApiConfig"
+import { useGlobalUI } from "../../Config/GlobalUIContext"
 
 interface Style {
     type: "personal" | "group",
@@ -12,6 +13,7 @@ interface Style {
 }
 
 export function TypeTheMessage(props: Style) {    
+    const { showError } = useGlobalUI();
     const [MessageType, SetMessageType] = useState("text");
     const [ImageData, SetImageData]: any = useState();
     const InputRef: any = useRef(null);
@@ -66,7 +68,7 @@ export function TypeTheMessage(props: Style) {
                 props.SetMessageSent?.();
                 return;
             } catch (e) {
-                alert("Error Occurred while sending text message!");
+                showError("Error occurred while sending text message!");
                 return;
             }
         } else {
@@ -81,7 +83,7 @@ export function TypeTheMessage(props: Style) {
                 props.SetMessageSent?.(); 
                 return;
             } catch (e) {
-                alert("Error Occurred while sending text message!");
+                showError("Error occurred while sending text message!");
                 return;
             } 
         }
@@ -105,7 +107,7 @@ export function TypeTheMessage(props: Style) {
                 props.SetMessageSent?.();
                 return;
             } catch (e) {
-                alert("Error Occurred while sending message to the user!");
+                showError("Error occurred while sending message to the user!");
                 return;
             }
         } else {
@@ -117,17 +119,17 @@ export function TypeTheMessage(props: Style) {
                 props.SetMessageSent?.();
                 return;
             } catch (e) {
-                alert("Error Occurred while sending message to the group!");
+                showError("Error occurred while sending message to the group!");
                 return;
             }
         }
     }
 
     return <>
-        <div className="w-full h-full pl-[1rem] pr-[2rem] pt-[0.5rem] pb-[0.5rem] flex"> 
-            <div className="flex justify-center items-center h-full bg-[#162456] pl-[1rem] rounded-l-lg pr-[1rem]">
+        <div className="w-full h-full px-2 lg:pl-[1rem] lg:pr-[2rem] py-[0.4rem] lg:pt-[0.5rem] lg:pb-[0.5rem] flex items-center"> 
+            <div className="flex items-center h-full bg-[#162456] pl-2 lg:pl-[1rem] rounded-l-lg pr-2 lg:pr-[1rem]">
                 <button aria-label="Name" type="button" onClick={HandleButton}>
-                    <div className="flex justify-center items-center h-full ">
+                    <div className="flex items-center h-full">
                         <div className="bg-blue-200 rounded-xl">
                             <PlusIcon/>
                         </div>
@@ -137,17 +139,17 @@ export function TypeTheMessage(props: Style) {
             
             <input type="file" accept="image/png, image/jpeg, image/webp" aria-label="name" className="invisible w-[0rem]" onChange={SelectImage} ref={ImageRef}/>
             
-            <div className="flex justify-center items-center w-full h-full ">
-                <input type="text" aria-label="Name" className=" bg-[#162456] h-full w-full placeholder:text-white pl-[1rem] outline-none" placeholder="Type a Message ...." ref={InputRef}/>
+            <div className="flex items-center w-full h-full">
+                <input type="text" aria-label="Name" className="bg-[#162456] h-full w-full placeholder:text-white pl-2 lg:pl-[1rem] outline-none text-[0.85rem] lg:text-base" placeholder="Type a Message ...." ref={InputRef}/>
             </div>
             
-            <div className="flex justify-center items-center h-full pl-[0.5rem] bg-[#162456] pr-[0.8rem] rounded-r-lg pt-[0.2rem] pb-[0.2rem]">
+            <div className="flex items-center h-full pl-1 lg:pl-[0.5rem] bg-[#162456] pr-2 lg:pr-[0.8rem] rounded-r-lg py-[0.2rem]">
                 <button 
                     aria-label="Send" 
                     type="button" 
                     onClick={MessageType === "text" ? SendthetextMessage : SendtheImageMessage}
                 >
-                    <div className="flex justify-center items-center h-full ">
+                    <div className="flex items-center h-full">
                         <div className="bg-black-800 rounded-xl p-[0.2rem] border border-white">
                             <SendMessage/>
                         </div>

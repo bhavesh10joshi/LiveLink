@@ -5,6 +5,7 @@ import axios from "axios"
 import { APIurl } from "../Config/ApiConfig"
 import { useRef } from "react"
 import { useNavigate } from "react-router-dom"
+import { useGlobalUI } from "../Config/GlobalUIContext"
 
 interface Style
 {
@@ -13,6 +14,7 @@ interface Style
 
 export function ConfirmPasswordChange(props:Style)
 {
+    const { showLoading, hideLoading, showError } = useGlobalUI();
     const Navigate = useNavigate();
     const [NewPassword , SetNewPassword] = useState(null);
     const [ConfirmNewPassword , SetConfirmNewPassword] = useState(null);
@@ -31,23 +33,26 @@ export function ConfirmPasswordChange(props:Style)
         const Payload = {
             password : NewPassword
         }
+        showLoading("Changing password...");
         try
         {
             await axios.post(`${APIurl}/Users/Profile/Change/password` , Payload , Config);
             localStorage.removeItem("token");
+            hideLoading();
             Navigate("/LiveLink/Introduction");
             return;
         }
         catch(e)
         {
-            alert("Error Occurred while changing the password !");
+            hideLoading();
+            showError("Error occurred while changing the password!");
             return;
         }
     }
 
     return<>
-    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-        <div className=" bg-black-500 w-[30rem] h-[43rem] rounded-xl border-slate-300 border flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center p-4">
+        <div className=" bg-black-500 w-[95%] max-w-[30rem] max-h-[90vh] rounded-xl border-slate-300 border flex flex-col overflow-y-auto">
             <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
                 <div className=" font-bold text-[1.3rem] text-white-800 flex justify-center items-center"><div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold"><div>!</div></div><div className="ml-[0.6rem] text-[1rem]">Change Password</div></div>
                 <div className="flex justify-center items-center w-[2rem] h-[2rem] bg-black-800 rounded-xl"><button type="button" aria-label="Name" onClick={() => props.SetChangePasswordFunction()}><div><CloseIcon/></div></button></div>
@@ -96,7 +101,7 @@ export function ConfirmPasswordChange(props:Style)
                 ?<button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-blue-800 rounded-md h-[3rem]" onClick={() => ConfirmPasswordChange()}>
                     <div className="ml-[0.2rem] text-[1rem] text-slate-300">Save Changes</div>
                 </button>
-                :<button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-blue-800 rounded-md h-[3rem]" onClick={() => alert("Passwords are not same!")}>
+                :<button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-blue-800 rounded-md h-[3rem]" onClick={() => showError("Passwords are not same!")}>
                     <div className="ml-[0.2rem] text-[1rem] text-slate-300">Save Changes</div>
                 </button>
                 }

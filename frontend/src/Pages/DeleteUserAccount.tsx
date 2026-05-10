@@ -2,6 +2,7 @@ import { Warning } from "../Components/Icons/Warning"
 import { APIurl } from "../Config/ApiConfig";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useGlobalUI } from "../Config/GlobalUIContext";
 
 interface DeleteGroupStyle
 {
@@ -10,6 +11,7 @@ interface DeleteGroupStyle
 
 export function DeleteUserAccount(props:DeleteGroupStyle)
 {
+    const { showLoading, hideLoading, showError } = useGlobalUI();
     const Navigate = useNavigate();
     async function HitDeleteAccountFunction()
     {
@@ -19,22 +21,25 @@ export function DeleteUserAccount(props:DeleteGroupStyle)
                 "authorization" : token
             }
         };
+        showLoading("Deleting account...");
         try
         {
             await axios.post(`${APIurl}/Users/Delete/Account` , Config);
             localStorage.removeItem("token");
+            hideLoading();
             Navigate("/LiveLink/Introduction");
             return;
         }
         catch(e)
         {
-            alert("Error occurred while Deleting the users account !");
+            hideLoading();
+            showError("Error occurred while deleting the users account!");
             return;
         }
     }
     return<>
-        <div className="fixed inset-0 bg-black-500 bg-opacity-30 backdrop-blur-md flex justify-center items-center">
-                    <div className=" bg-black-500 w-[30rem] h-[30rem] rounded-xl flex flex-col">
+        <div className="fixed inset-0 bg-black-500 bg-opacity-30 backdrop-blur-md flex justify-center items-center p-4">
+                    <div className=" bg-black-500 w-[95%] max-w-[30rem] rounded-xl flex flex-col">
                         <div className="flex justify-center items-center pt-[2rem] pl-[2rem] pr-[2rem]">
                             <div className="h-[7rem] w-[7rem] bg-red-950 rounded-md flex justify-center items-center"><Warning/></div>
                         </div>
@@ -46,7 +51,7 @@ export function DeleteUserAccount(props:DeleteGroupStyle)
                         <div className="h-[3rem] w-full pt-[5rem] pr-[2rem] pl-[2rem] text-white font-bold flex justify-center items-center rounded-xl">
                             <button className="bg-red-600 h-[3rem] w-full rounded-md" type="button" onClick={() => HitDeleteAccountFunction()}>Delete Account</button>
                         </div>
-                        <div className="h-[3rem] w-full pt-[5rem] pr-[2rem] pl-[2rem] text-white flex justify-center items-center rounded-xl">
+                        <div className="h-[3rem] w-full pt-[5rem] pr-[2rem] pl-[2rem] text-white flex justify-center items-center rounded-xl pb-[2rem]">
                             <button className="bg-slate-800 h-[3rem] w-[10rem] rounded-md border border-slate-500" type="button" onClick={()=>props.SetDeleteGroupFunction()}>Cancel</button>
                         </div>
                     </div>

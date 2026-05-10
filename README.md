@@ -55,8 +55,96 @@ Designed with a modern UI and a robust backend, LiveLink provides a responsive a
 5. **Media Uploads:** Images sent in chats are directly processed and stored in Cloudinary, returning a secure URL to the client.
 6. **Notification System:** Invites (personal or group) trigger immediate database updates and real-time alerts to the recipient's dashboard.
 
-## 📐 Architecture Diagram 
+## 📐 System Design & Architecture
+
+### High-Level Architecture
 <img width="5676" height="3652" alt="diagram" src="https://github.com/user-attachments/assets/bd23ace8-5f87-4cee-9b52-81e238794a38" />
+
+### System Architecture Diagram
+<img alt="System Architecture" src="frontend/public/system_architecture.png" />
+
+The application follows a **3-tier architecture**:
+
+| Layer | Technology | Responsibility |
+|---|---|---|
+| **Client** | React + Vite + Tailwind | UI rendering, routing, state management |
+| **API Server** | Express.js + JWT | Business logic, authentication, REST endpoints |
+| **Data Layer** | MongoDB Atlas + Cloudinary | Persistent storage, media CDN |
+
+### Request Flow
+
+```
+User → React Frontend (Vercel)
+        ↓ HTTP/REST (Axios)
+     Express.js API (Render)
+        ↓ JWT Middleware (Auth Check)
+     Route Handler
+        ├── MongoDB Atlas (Mongoose ODM) → Data CRUD
+        ├── Cloudinary SDK → Image Upload/Retrieval
+        └── Nodemailer → OTP Email Dispatch
+        ↓ JSON Response
+     React Frontend → UI Update
+```
+
+### Entity-Relationship (ER) Diagram
+<img alt="ER Diagram" src="frontend/public/er_diagram.png" />
+
+### Database Schema Overview
+
+```
+┌──────────────────────┐     ┌──────────────────────┐
+│        User          │     │       Group           │
+├──────────────────────┤     ├──────────────────────┤
+│ _id                  │     │ _id                  │
+│ name                 │     │ name                 │
+│ email                │     │ bio                  │
+│ password (hashed)    │     │ GroupProfileImage     │
+│ ProfilePhoto         │     │ UniqueId             │
+│ about                │     │ creatorUniqueId      │
+│ UniqueId             │     │ UsersList[]          │
+│ PersonalMessagingList│     └──────────────────────┘
+│ GroupList[]          │              │
+│ isonline             │              │ M:N
+└──────────────────────┘              │
+        │ 1:N                         │
+        ├──────────────────────────────┤
+        │                              │
+┌───────┴──────────────┐     ┌────────┴─────────────┐
+│  PersonalMessage     │     │   GroupMessage        │
+├──────────────────────┤     ├──────────────────────┤
+│ SenderUniqueId       │     │ groupUniqueId        │
+│ RecieverUniqueId     │     │ senderUniqueId       │
+│ Content              │     │ messages[]           │
+│ ContentType          │     │ name                 │
+│ Date, time           │     │ Date, time           │
+└──────────────────────┘     └──────────────────────┘
+
+┌──────────────────────┐     ┌──────────────────────┐
+│ PersonalInvitation   │     │  GroupInvitation      │
+├──────────────────────┤     ├──────────────────────┤
+│ UniqueId             │     │ UniqueId             │
+│ SenderUniqueId       │     │ SenderUniqueId       │
+│ SenderProfilePhoto   │     │ SenderProfilePhoto   │
+│ NameOfSender         │     │ NameOfSender         │
+│ RecieverUniqueId     │     │ GroupUniqueId        │
+│ Date, Time           │     │ GroupName            │
+└──────────────────────┘     │ RecieverUniqueId     │
+                             │ Date, Time           │
+                             └──────────────────────┘
+```
+
+### API Endpoint Map
+
+| Prefix | Router | Purpose |
+|---|---|---|
+| `/LiveLink/Users` | UserRouter | Auth, profile, search, unfriend |
+| `/LiveLink/Users/Groups` | GroupRouter | Create, edit, delete, leave groups |
+| `/LiveLink/Users/Message/UserToUser` | PersonalMessageRouter | Send/receive personal messages |
+| `/LiveLink/Users/Message/UserToGroup` | GroupMessageRouter | Send/receive group messages |
+| `/LiveLink/Users/Personal/Notifications` | PersonalNotificationRouter | Personal invite notifications |
+| `/LiveLink/Users/Group/Notifications` | GroupNotificationRouter | Group invite notifications |
+| `/LiveLink/Users/Invitation` | InviteFromUserforUserRouter | Accept/reject personal invites |
+| `/LiveLink/Users/Groups/Invitation` | InviteFromUserforGroupRouter | Accept/reject group invites |
 
 ## 📂 Project Structure
 

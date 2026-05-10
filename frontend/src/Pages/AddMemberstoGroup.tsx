@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { SuccessAddedtheMember } from "./SuccessAddedtheMember"
 import axios from "axios"
 import { APIurl } from "../Config/ApiConfig"
+import { useGlobalUI } from "../Config/GlobalUIContext"
 
 interface FunctionStyle {
     SetAddMembersFunction : ()=>void , 
@@ -13,6 +14,7 @@ interface FunctionStyle {
 
 export function AddMembers(props:FunctionStyle)
 {
+    const { showLoading, hideLoading, showError, showSuccess } = useGlobalUI();
     const[AddtheMember , SetAddtheMember] = useState(false);
     const[FilteredData , SetFileterdData] = useState([]);
     async function AddMemberToGroup(RecieverUniqueId:String)
@@ -27,14 +29,17 @@ export function AddMembers(props:FunctionStyle)
             GroupUniqueId : props.GroupUniqueId , 
             RecieverUniqueId : RecieverUniqueId
         };
+        showLoading("Sending invite...");
         try{
             await axios.post(`${APIurl}/Users/Groups/Add-Members/Send/Group-Invite` , Payload , Config);
-            alert("Added the members successfully !");
+            hideLoading();
+            showSuccess("Added the members successfully!");
             return;
         }
         catch(e)
         {
-            alert("Error occurred while adding members to the group !");
+            hideLoading();
+            showError("Error occurred while adding members to the group!");
             return;
         }
     }
@@ -51,8 +56,8 @@ export function AddMembers(props:FunctionStyle)
 
     return <>
         {!AddtheMember
-            ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-            <div className=" bg-black-500 w-[30rem] h-[42rem] rounded-xl border-slate-300 border flex flex-col">
+            ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center p-4">
+            <div className=" bg-black-500 w-[95%] max-w-[30rem] max-h-[90vh] rounded-xl border-slate-300 border flex flex-col overflow-y-auto">
                 <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
                     <div className=" font-bold text-[1.3rem] text-white-800 flex justify-center items-center"><div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold"><div>!</div></div><div className="ml-[0.6rem] text-[1rem]">Add Members</div></div>
                     <div className="flex justify-center items-center w-[2rem] h-[2rem] bg-black-800 rounded-xl"><button type="button" aria-label="Name" onClick={()=>props.SetAddMembersFunction()}><div><CloseIcon/></div></button></div>

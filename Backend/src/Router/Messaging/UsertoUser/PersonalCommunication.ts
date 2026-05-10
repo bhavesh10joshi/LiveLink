@@ -20,9 +20,7 @@ const UserToUserMessageRouter = Router();
 UserToUserMessageRouter.post("/Text/Send" , usermiddleware , async function(req:any , res)
 {
     const RecieverUniqueId : String = req.body.RecieverUniqueId;
-    // can be either be a text or image
     const ContentType : any = "text";
-    // if the content is a Image then the Message will be the link of the image 
     const Message : any = req.body.Message;
 
     try
@@ -34,33 +32,38 @@ UserToUserMessageRouter.post("/Text/Send" , usermiddleware , async function(req:
         {
             try
             {
-                const sendChatMessage = async (senderId:any, recieverId:any, messageContent:any) => {
-                try {
-                    await UserToUserMessageModel.findOneAndUpdate(
-                        // 1. Find a thread where these two are the sender/receiver
-                        { sender: senderId, reciever: recieverId }, 
-                        
-                        // 2. Push the new message into the array
-                        { 
-                            $push: { 
-                                messages: {
-                                    ContentType: ContentType ,
-                                    Date: getCurrentDate(),
-                                    time : getCurrentISTTime() , 
-                                    Content: messageContent,
-                                    MessageType : "Sent" 
-                                }
-                            } 
-                        },
-                        
-                        // 3. Options: upsert will CREATE the document using the query + update data if it fails to find one!
-                        { new: true, upsert: true } 
-                    );
-                    } catch (error) {
-                        console.error("Error sending message:", error);
-                    }
-                };
-                sendChatMessage(req.UserId , FindReciever._id , Message);
+                await UserToUserMessageModel.findOneAndUpdate(
+                    { sender: req.UserId, reciever: FindReciever._id }, 
+                    { 
+                        $push: { 
+                            messages: {
+                                ContentType: ContentType ,
+                                Date: getCurrentDate(),
+                                time : getCurrentISTTime() , 
+                                Content: Message,
+                                MessageType : "Sent" 
+                            }
+                        } 
+                    },
+                    { new: true, upsert: true } 
+                );
+
+                await UserToUserMessageModel.findOneAndUpdate(
+                    { sender: FindReciever._id, reciever: req.UserId }, 
+                    { 
+                        $push: { 
+                            messages: {
+                                ContentType: ContentType ,
+                                Date: getCurrentDate(),
+                                time : getCurrentISTTime() , 
+                                Content: Message,
+                                MessageType : "Received" 
+                            }
+                        } 
+                    },
+                    { new: true, upsert: true } 
+                );
+
                 res.status(SuccessStatusCodes.ResourceCreated).json({
                     msg : "Message Sent !"
                 });
@@ -131,6 +134,22 @@ UserToUserMessageRouter.post("/Image/send", usermiddleware, async function(req: 
                         time : getCurrentISTTime() , 
                         Content: result.url , 
                         MessageType : "Sent" 
+                    }
+                } 
+            },
+            { new: true, upsert: true }
+        );
+
+        await UserToUserMessageModel.findOneAndUpdate(
+            { sender: FindReciever._id, reciever: req.UserId },
+            { 
+                $push: { 
+                    messages: {
+                        ContentType: ContentType,
+                        Date: getCurrentDate(),
+                        time : getCurrentISTTime() , 
+                        Content: result.url , 
+                        MessageType : "Received" 
                     }
                 } 
             },

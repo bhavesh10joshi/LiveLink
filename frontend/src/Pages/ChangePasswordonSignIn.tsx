@@ -4,9 +4,11 @@ import axios from "axios"
 import { APIurl } from "../Config/ApiConfig"
 import { useRef } from "react"
 import { useNavigate } from "react-router-dom"
+import { useGlobalUI } from "../Config/GlobalUIContext"
 
 export function ConfirmPasswordChangeOnSignIn()
 {
+    const { showLoading, hideLoading, showError } = useGlobalUI();
     const Navigate = useNavigate();
     const [NewPassword , SetNewPassword] = useState(null);
     const [ConfirmNewPassword , SetConfirmNewPassword] = useState(null);
@@ -21,23 +23,26 @@ export function ConfirmPasswordChangeOnSignIn()
             email : email , 
             password : NewPassword
         }
+        showLoading("Changing password...");
         try
         {
             await axios.post(`${APIurl}/Users/Forgot-password/Change/password` , Payload);
             localStorage.removeItem("email");
+            hideLoading();
             Navigate("/LiveLink/Introduction");
             return;
         }
         catch(e)
         {
-            alert("Error Occurred while changing the password !");
+            hideLoading();
+            showError("Error occurred while changing the password!");
             return;
         }
     }
 
     return<>
-    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-        <div className=" bg-black-500 w-[30rem] h-[43rem] rounded-xl border-slate-300 border flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center p-4">
+        <div className=" bg-black-500 w-[95%] max-w-[30rem] max-h-[90vh] rounded-xl border-slate-300 border flex flex-col overflow-y-auto">
             <div className=" w-full flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
                 <button type="button" className="flex justify-center items-center bg-blue-800 text-white font-mono pl-[2rem] pr-[2rem] pt-[0.5rem] pb-[0.5rem] rounded-md text-[0.8rem]" onClick={() => Navigate("/LiveLink/Introduction")}>Back to SignIn</button>
             </div>
@@ -85,7 +90,7 @@ export function ConfirmPasswordChangeOnSignIn()
                 ?<button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-blue-800 rounded-md h-[3rem]" onClick={() => ConfirmPasswordChange()}>
                     <div className="ml-[0.2rem] text-[1rem] text-slate-300">Save Changes</div>
                 </button>
-                :<button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-blue-800 rounded-md h-[3rem]" onClick={() => alert("Passwords are not same!")}>
+                :<button type="button" aria-label="Name" className="flex justify-center items-center w-full bg-blue-800 rounded-md h-[3rem]" onClick={() => showError("Passwords are not same!")}>
                     <div className="ml-[0.2rem] text-[1rem] text-slate-300">Save Changes</div>
                 </button>
                 }

@@ -11,8 +11,9 @@ export function MainDashboard()
     
     return<>
         <div className="min-h-screen w-full bg-[#030712] bg-[radial-gradient(circle_at_50%_-20%,_rgba(13,89,242,0.15)_0%,_transparent_70%)] text-white">
-            <div className="flex h-screen overflow-hidden">
+            <div className="flex flex-col lg:flex-row h-screen overflow-hidden">
                 <SideBar Selector={selector} OnClick={(val:string)=>setselctor(val)}/>
+                <div className="flex-1 overflow-hidden pb-[4rem] lg:pb-0">
                 {
                     selector == "Home" ?<UserToUserChatDashboard/>: null
                 }
@@ -25,6 +26,7 @@ export function MainDashboard()
                 {
                     selector == "Notification" ?<NotificationDashboard/> : null
                 }
+                </div>
             </div>
         </div>
     </>

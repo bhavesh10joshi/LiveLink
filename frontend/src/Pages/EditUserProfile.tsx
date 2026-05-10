@@ -5,6 +5,7 @@ import { useRef } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { APIurl } from "../Config/ApiConfig"
+import { useGlobalUI } from "../Config/GlobalUIContext"
 
 interface EditStyle
 {
@@ -16,6 +17,7 @@ interface EditStyle
 
 export function EditUserProfile(props:EditStyle)
 {
+    const { showLoading, hideLoading, showError } = useGlobalUI();
     const Navigate = useNavigate();
     const FileRef:any = useRef(null);
 
@@ -36,6 +38,7 @@ export function EditUserProfile(props:EditStyle)
         const formData = new FormData();
         formData.append("photo" , file);
 
+        showLoading("Uploading profile image...");
         try{
             const token = localStorage.getItem("token");
             const config = {
@@ -45,18 +48,19 @@ export function EditUserProfile(props:EditStyle)
                 }
             };
             await axios.post(`${APIurl}/Users/Profile/Edit/Image` , formData , config);
+            hideLoading();
             Navigate("/LiveLink/User/Dashboard/Chat");
             return;
         }
         catch(e)
         {
-            alert("Failed to Upload new profile Image !");
+            hideLoading();
+            showError("Failed to upload new profile image!");
             return;
         }
     }
     async function HitEditTextBackend()
     {
-        // it is a safety net suppose if the user leaves the input box empty!
         const CurrentName = NameRef.current?.value||props.Name;
         const CurrentAbout = AboutRef.current.value||props.About;
 
@@ -70,14 +74,17 @@ export function EditUserProfile(props:EditStyle)
             name : CurrentName , 
             about : CurrentAbout
         } 
+        showLoading("Saving changes...");
         try{
             await axios.post(`${APIurl}/Users/Profile/Edit` , payload , config);
+            hideLoading();
             Navigate("/LiveLink/User/Edit/Success");
         }
         catch(e)
         {
             console.log(e);
-            alert("Error while Saving the Changes !");
+            hideLoading();
+            showError("Error while saving the changes!");
         }
     }
     const NameRef:any = useRef(null);
@@ -91,11 +98,11 @@ export function EditUserProfile(props:EditStyle)
     }
     return<>{
     !ChangePassword  
-            ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-                <div className=" bg-black-500 w-[30rem] h-[45rem] rounded-xl border-slate-300 border flex flex-col">
-                    <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
-                        <div className=" font-bold text-[1.3rem] text-white-800 flex justify-center items-center"><div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold"><div>!</div></div><div className="ml-[0.6rem] text-[1rem]">Edit Profile Info</div></div>
-                        <button type="button" className="bg-black-800 pl-[1rem] pr-[1rem] text-white text-[0.8rem] border border-red-600 rounded-md flex justify-center items-center ml-[5rem] hover:bg-red-950" onClick={()=>SetChangePasswordFunction()}>Change Password</button>
+            ?<div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center p-4">
+                <div className=" bg-black-500 w-[95%] max-w-[30rem] max-h-[90vh] rounded-xl border-slate-300 border flex flex-col overflow-y-auto">
+                    <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem] gap-2">
+                        <div className=" font-bold text-[1.3rem] text-white-800 flex justify-center items-center"><div className="w-[1.3rem] h-[1.3rem] bg-blue-800 text-black-800 rounded-xl flex justify-center items-center text-[1rem] font-extrabold"><div>!</div></div><div className="ml-[0.6rem] text-[0.8rem] lg:text-[1rem]">Edit Profile Info</div></div>
+                        <button type="button" className="bg-black-800 pl-[1rem] pr-[1rem] text-white text-[0.7rem] lg:text-[0.8rem] border border-red-600 rounded-md flex justify-center items-center hover:bg-red-950" onClick={()=>SetChangePasswordFunction()}>Change Password</button>
                         <div className="flex justify-center items-center w-[2rem] h-[2rem] bg-black-800 rounded-xl"><button type="button" aria-label="Name" onClick={()=>props.SetEditUserProfileSelector()}><div><CloseIcon/></div></button></div>
                     </div>
                     <div className="bg-slate-500 h-[0.1px] mt-[1rem] "></div>
@@ -130,7 +137,7 @@ export function EditUserProfile(props:EditStyle)
                             <div className="text-[0.7rem] text-slate-300 ">Changing your Name or Profile Photo will be visible to your Friends Instantly.</div>
                         </div>
                     </div>
-                    <div className="w-full pl-[2rem] pr-[2rem] pt-[0.5rem] mt-[2rem]">
+                    <div className="w-full pl-[2rem] pr-[2rem] pt-[0.5rem] mt-[2rem] pb-[1rem]">
                         <button type="button" className=" bg-blue-800 hover:shadow-blue-800/80 flex justify-center items-center h-[2.5rem] w-full rounded-md text-[0.9rem]" onClick={()=>HitEditTextBackend()}>
                             Save Edits
                         </button>

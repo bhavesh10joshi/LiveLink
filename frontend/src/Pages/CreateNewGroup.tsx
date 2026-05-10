@@ -6,6 +6,7 @@ import { useRef } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { APIurl } from "../Config/ApiConfig"
+import { useGlobalUI } from "../Config/GlobalUIContext"
 
 interface CreateNewGroupStyle
 {
@@ -15,6 +16,7 @@ interface CreateNewGroupStyle
 
 export function CreateNewGroup(props:CreateNewGroupStyle)
 {
+    const { showLoading, hideLoading, showError } = useGlobalUI();
     const Navigate = useNavigate();
     const NameRef:any = useRef(null);
     const AboutRef:any = useRef(null);
@@ -42,7 +44,7 @@ export function CreateNewGroup(props:CreateNewGroupStyle)
     {
         if(!ProfileImage.has("photo"))
         {
-            alert("Please Upload a Group Profile Photo !");
+            showError("Please upload a Group Profile Photo!");
             return;
         }
         else
@@ -51,6 +53,7 @@ export function CreateNewGroup(props:CreateNewGroupStyle)
             const CurrentAbout = AboutRef.current.value;
             ProfileImage.append("name" , CurrentName);
             ProfileImage.append("bio" , CurrentAbout);
+            showLoading("Creating group...");
             try{
                 const token = localStorage.getItem("token");
                 const config = {
@@ -60,18 +63,20 @@ export function CreateNewGroup(props:CreateNewGroupStyle)
                     }
                 };
                 await axios.post(`${APIurl}/Users/Groups/Create` , ProfileImage , config);
+                hideLoading();
                 Navigate("/LiveLink/User/Edit/Success");
             }
             catch(e)
             {
                 console.log("Error aaya" + e)
-                alert("Error Occured while Creating group !");
+                hideLoading();
+                showError("Error occurred while creating group!");
             }
         }
     }
     return<>
-        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-            <div className=" bg-black-500 w-[30rem] h-[37rem] rounded-xl border-slate-300 border flex flex-col">
+        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center p-4">
+            <div className=" bg-black-500 w-[95%] max-w-[30rem] max-h-[90vh] rounded-xl border-slate-300 border flex flex-col overflow-y-auto">
                 <div className="flex place-content-between pt-[1rem] pl-[2rem] pr-[2rem]">
                     <div className="flex justify-start items-center text-[1.1rem] text-blue-800 font-bold">Create New Group</div>
                     <div className="flex justify-center items-center w-[2rem] h-[2rem] bg-black-800 rounded-xl"><button type="button" aria-label="Name" onClick={()=>props.SetCreateNewGroupFunction()}><div><CloseIcon/></div></button></div>
@@ -96,7 +101,7 @@ export function CreateNewGroup(props:CreateNewGroupStyle)
                 <div className="w-full h-[3rem] pl-[2rem] pr-[2rem] mt-[0.5rem]">
                     <input type="text" className="w-full h-full rounded-md bg-slate-500 text-black-900 placeholder:text-white text-[0.9rem] pl-[1rem] pr-[1rem]" placeholder="Enter the Description of the group..." aria-label="Name" ref={AboutRef}/>
                 </div>
-                <div className="flex justify-center items-center w-full pl-[2rem] pr-[2rem]">
+                <div className="flex justify-center items-center w-full pl-[2rem] pr-[2rem] pb-[1rem]">
                     <button aria-label="name" type="button" className="bg-blue-800 w-full h-[3rem] rounded-md mt-[2rem]" onClick={() => HitBackend()}> Create</button>
                 </div>
             </div>
