@@ -1,16 +1,14 @@
-import React from 'react';
-
 interface ErrorOverlayProps {
   message?: string;
   onRetry?: () => void;
   onClose?: () => void;
 }
 
-export const ErrorOverlay: React.FC<ErrorOverlayProps> = ({ 
+export const ErrorOverlay = ({ 
   message = "Something went wrong.", 
   onRetry,
   onClose 
-}) => {
+}: ErrorOverlayProps) => {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-[#111827] border border-red-500/30 rounded-2xl p-6 max-w-sm w-full shadow-2xl flex flex-col items-center text-center">

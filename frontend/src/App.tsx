@@ -1,5 +1,5 @@
 import './App.css'
-import { IntroPage } from './Pages/IntroPage'
+import { IntroPage } from './Pages/Intropage'
 import { PricingPage } from './Pages/PricingPage'
 import { SecurityPage } from './Pages/SecurityPage'
 import { FeaturesPage } from './Pages/FeaturesPage'
