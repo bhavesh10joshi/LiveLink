@@ -58,13 +58,15 @@ async function main()
         await mongoose.connect(Mongo_url as string);
         // (0.0.0.0) => i was doing this in normal form , but the wsl was not responding 
         //therefore i did in this form , so that it works correctly
-        app.listen(5000 , '0.0.0.0', () => {
-            console.log(`Server running on port 5000`);
+        const PORT = Number(process.env.PORT) || 5000;
+        app.listen(PORT , '0.0.0.0', () => {
+            console.log(`Server running on port ${PORT}`);
         });
     }
     catch(e)
     {
-        console.log("Server has no response !");
+        console.error("Failed to connect to MongoDB or start server:", e);
+        process.exit(1);
     }
 }
 
