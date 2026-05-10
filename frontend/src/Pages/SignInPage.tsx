@@ -1,6 +1,5 @@
 import { Navbar } from "../Components/NavBar/Navbar";
 import { Input } from "../Components/Inputs/InputBox";
-import { Button } from "../Components/Buttons/Button";
 import { Footer } from "../Components/Footer/Footer";
 import { useNavigate } from "react-router-dom";
 import { useRef , useState } from "react";

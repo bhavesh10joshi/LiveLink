@@ -7,7 +7,7 @@ import { useGlobalUI } from "../Config/GlobalUIContext";
 
 export function ForgotPassword()
 {
-    const { showLoading, hideLoading, showError } = useGlobalUI();
+    const { showLoading, hideLoading } = useGlobalUI();
     const[RightEmail , SetRightEmail] = useState(false);
     const Navigate = useNavigate();
     const EmailRef:any = useRef(null);

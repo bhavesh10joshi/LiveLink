@@ -3,7 +3,6 @@ import { Input } from "../Components/Inputs/InputBox";
 import { Contact } from "../Components/Icons/ContactIcon";
 import { Mail } from "../Components/Icons/mail";
 import { Key } from "../Components/Icons/Pass";
-import { Button } from "../Components/Buttons/Button";
 import { Footer } from "../Components/Footer/Footer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
