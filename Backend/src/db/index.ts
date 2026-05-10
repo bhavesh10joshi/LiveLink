@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import {Schema , model} from "mongoose"
-import { boolean, string } from "zod";
+
 import { UniqueId } from "../uuid";
 const ObjectId = mongoose.Types.ObjectId;
 

@@ -1,12 +1,9 @@
-import { UserToUserMessageModel , UserModel, PersonalInvitationsModel } from "../../../db";
+import { UserToUserMessageModel , UserModel } from "../../../db";
 import { usermiddleware } from "../../../Middleware/Index";
 import { SuccessStatusCodes , ClientErrorStatusCodes ,ServerErrors } from "../../../StatusCodes";
 import { Router } from "express";
 import { getCurrentDate , getCurrentISTTime} from "../../../CurrentDateandTime/DateAndTime";
-import { CheckFortheFriend } from "../../../CheckForAFriend/CheckForaFriend";
 import { v2 as cloudinary } from 'cloudinary'
-import { receiveMessageOnPort } from "worker_threads";
-import { time } from "console";
 
 cloudinary.config({ 
   cloud_name: process.env.CLOUD_NAME as string , 
