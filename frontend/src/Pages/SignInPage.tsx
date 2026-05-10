@@ -77,7 +77,7 @@ export function SignInPage()
                 <div className="flex justify-center items-center mt-[2rem] lg:pb-[10rem] pb-[5rem]">
                     <div className="flex">
                         <div className="text-slate-300 text-[0.6rem] lg:text-[0.8rem] font-bold" onClick={()=>Navigatetosignin()}>Don't have an Account ?</div>
-                        <button type="button" className="text-blue-800 hover:text-slate-500 text-[0.6rem] lg:text-[0.8rem] font-bold ml-[0.2rem]">Create Account</button>
+                        <button type="button" className="text-blue-800 hover:text-slate-500 text-[0.6rem] lg:text-[0.8rem] font-bold ml-[0.2rem]" onClick={() => Navigatetosignin()}>Create Account</button>
                     </div>
                 </div>
             </div>

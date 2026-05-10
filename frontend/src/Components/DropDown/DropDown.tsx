@@ -1,4 +1,5 @@
 import { Button } from "../Buttons/Button"
+import { useNavigate } from "react-router-dom";
 
 interface Styling
 {
@@ -7,6 +8,7 @@ interface Styling
 
 export function DropDown(props:Styling)
 {
+    const navigate:any = useNavigate();
     return<>
         {
             props.DropDown ?<div className="w-full h-[11rem] border-white border rounded text-white text-[0.9rem] font-bold hover:text-white p-1">
@@ -14,7 +16,7 @@ export function DropDown(props:Styling)
                 <div className="flex justify-center items-center bg-slate-700 rounded pt-2 pb-2 mt-1"><a href="">Security</a></div>
                 <div className="flex justify-center items-center bg-slate-700 rounded pt-2 pb-2 mt-1"><a href="">Pricing</a></div>
                 <div className="flex justify-center items-center rounded pt-2 pb-2 ">
-                    <Button size="secondry" color="Blue" text="Sign In"/>
+                    <Button size="secondry" color="Blue" text="Sign In" onClick={() => navigate("/LiveLink/User/SignIn")}/>
                 </div>
             </div> :null
         }

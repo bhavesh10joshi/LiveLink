@@ -5,14 +5,16 @@ import { GroupInfo } from "../../Pages/GroupInfo";
 import { useEffect, useState } from "react"
 import axios from "axios";
 import { APIurl } from "../../Config/ApiConfig"
-
+import { SkeletonProfile, SkeletonMessage } from "../Loader/Skeleton"
 
 export function UserToGroupChatDashboard() {
     const[GroupInfoStatus , SetGroupInfo] = useState(false);
     const [selectedId, setSelectedId]:any = useState(null);
     const [GroupList , SetGroupList]:any = useState([]);
+    const [isLoadingGroup, setIsLoadingGroup] = useState(true);
     const [UserFriends , SetUserFriends]:any = useState([]);
     const [Messagedata , SetMessagedata]:any = useState(null); 
+    const [isLoadingMessages, setIsLoadingMessages] = useState(false);
     const [UserDetails , SetUserDetails]:any = useState();
     const[MessageSent , SetMessageSent]:any = useState(false);
 
@@ -36,10 +38,12 @@ export function UserToGroupChatDashboard() {
                 const data = await axios.get(`${APIurl}/Users/Profile/Details` , Config);
                 SetGroupList(data.data.msg.GroupList);
                 SetUserFriends(data.data.msg.PersonalMessagingList);
+                setIsLoadingGroup(false);
                 return;
             }
             catch(e)
             {
+                setIsLoadingGroup(false);
                 alert("Error Occurred while Fetching Group List !");
                 return;
             }
@@ -67,6 +71,7 @@ export function UserToGroupChatDashboard() {
     useEffect(function(){
         const token = localStorage.getItem("token");
         const GetMessageData = async () => {
+            setIsLoadingMessages(true);
             const Config = {
                 headers : {
                     "authorization" : token
@@ -80,13 +85,16 @@ export function UserToGroupChatDashboard() {
                 if(result.data.msg.length != 0)
                 {
                     SetMessagedata(result.data.msg[0].messages);
+                    setIsLoadingMessages(false);
                     return ;
                 }
+                setIsLoadingMessages(false);
                 return;
             }
             catch(e)
             {   
                 console.log(e);
+                setIsLoadingMessages(false);
                 alert("Error Occurred while fetching messages data!");
                 return;
             }
@@ -103,11 +111,15 @@ export function UserToGroupChatDashboard() {
             )
         }</div>:
         <>
-        <div className="flex w-full h-full justify-center items-center">
-            <div className="h-full pt-[1rem] pb-[1rem]">
-                <div className="bg-black-500 w-[20rem] rounded-md px-8 py-4 ml-4 flex flex-col gap-4 border border-slate-500  h-full">
+        <div className="flex w-full h-full justify-center items-center flex-col lg:flex-row pb-[5rem] lg:pb-0">
+            <div className={`h-full pt-[1rem] pb-[1rem] w-full lg:w-auto lg:block ${selectedId ? 'hidden' : 'block'}`}>
+                <div className="bg-black-500 w-full lg:w-[20rem] rounded-md px-8 py-4 lg:ml-4 flex flex-col gap-4 border border-slate-500 h-full">
                     <div className="w-full">
-                         {GroupList.length != 0
+                         {isLoadingGroup
+                            ? <div className="flex flex-col gap-2 overflow-y-auto overflow-hidden">
+                                <SkeletonProfile /><SkeletonProfile /><SkeletonProfile />
+                              </div>
+                            : GroupList.length != 0
                             ?<div className="flex flex-col gap-2 overflow-y-auto overflow-hidden">
                                 {GroupList.map((user:any)=>(<FriendsSideBar ProfileImage={user.Groupprofilephoto} Name={user.name}  UniqueId={user.Groupuniqueid} SetSelectedId={()=>SetSelectedId(user.Groupuniqueid)} selectedId={selectedId}/>))}
                             </div>
@@ -116,9 +128,9 @@ export function UserToGroupChatDashboard() {
                     </div>
                 </div>
             </div>            
-            <div className="bg-slate-600 w-[0.2px]"></div>
+            <div className="bg-slate-600 w-[0.2px] hidden lg:block"></div>
             
-            <div className="flex-1 flex flex-col h-full relative">
+            <div className={`flex-1 flex flex-col h-full relative w-full lg:w-auto lg:flex ${selectedId ? 'flex' : 'hidden'}`}>
             {selectedId != null
             ?<>
                 <div className=" bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
@@ -128,7 +140,9 @@ export function UserToGroupChatDashboard() {
                 </div>
                 
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700">
-                    {Messagedata != null
+                    {isLoadingMessages
+                        ? <div className="flex flex-col gap-4 w-full"><SkeletonMessage /><SkeletonMessage isSender /><SkeletonMessage /><SkeletonMessage isSender /></div>
+                        : Messagedata != null
                         ? Messagedata.map((msg:any, index:any) => (
                             <div
                                 key={index}

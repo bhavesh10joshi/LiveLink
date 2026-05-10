@@ -8,14 +8,16 @@ import { AddUserToGroup } from "../../Pages/AddUserToGroup"
 import { APIurl } from "../../Config/ApiConfig"
 import { SearchIcon } from "../Icons/Search"
 import { SearchUserPage } from "../../Pages/SearchUserPage"
-
+import { SkeletonProfile, SkeletonMessage } from "../Loader/Skeleton"
 
 export function UserToUserChatDashboard() {
     const[UserInfoStatus , SetUserInfo] = useState(false);
     const [selectedId, setSelectedId]:any = useState(null);
     const [FriendsList , SetFriendsList]:any = useState([]);
+    const [isLoadingFriends, setIsLoadingFriends] = useState(true);
     const[AddUserToGroupState , SetAddUserToGroup] = useState(false);
     const[MessagesData , SetMessagesData]:any = useState(null);
+    const[isLoadingMessages, setIsLoadingMessages] = useState(false);
     const[SearchUser , SetSearchUser]:any = useState(false);
     const[MessageSent , SetMessageSent]:any = useState(false);
 
@@ -48,10 +50,12 @@ export function UserToUserChatDashboard() {
                 const result:any = await axios.get(`${APIurl}/Users/Get/Personal/Messaging/List` , config);  
                 console.log(result);
                 SetFriendsList(result.data.msg);
+                setIsLoadingFriends(false);
                 return;
             }
             catch(e)
             {
+                setIsLoadingFriends(false);
                 alert("error Occurred while fetching details for Users!");
                 return;
             }
@@ -66,9 +70,10 @@ export function UserToUserChatDashboard() {
                 return;
             }
             const token = localStorage.getItem("token");
-            const HitBackendForMessages = async () => {
+                const HitBackendForMessages = async () => {
                 console.log("selectedId is "+ selectedId);
                 console.log("O My");
+                setIsLoadingMessages(true);
                 const config = {
                     headers : {
                         "authorization" : token
@@ -81,11 +86,13 @@ export function UserToUserChatDashboard() {
                     const result:any = await axios.get(`${APIurl}/Users/Message/UserToUser/Access/Messages/All` , config);
                     console.log(result.data.msg);
                     SetMessagesData(result.data.msg);
+                    setIsLoadingMessages(false);
                     return;
                 }
                 catch(e)
                 {
                     console.log(e);
+                    setIsLoadingMessages(false);
                     alert("Error Occured while fetching Messages !");
                     return;
                 }
@@ -106,16 +113,20 @@ export function UserToUserChatDashboard() {
             ? !AddUserToGroupState
             ?// --- ADDED FRAGMENT WRAPPER < > ---
             <>
-            <div className="flex w-full h-full justify-center items-center">
-                    <div className="h-full pt-[1rem] pb-[1rem]">
-                        <div className="bg-black-500 w-[20rem] rounded-md px-8 py-4 ml-4 flex flex-col gap-4 border border-slate-500  h-full">
+            <div className="flex w-full h-full justify-center items-center flex-col lg:flex-row pb-[5rem] lg:pb-0">
+                    <div className={`h-full pt-[1rem] pb-[1rem] w-full lg:w-auto lg:block ${selectedId ? 'hidden' : 'block'}`}>
+                        <div className="bg-black-500 w-full lg:w-[20rem] rounded-md px-8 py-4 lg:ml-4 flex flex-col gap-4 border border-slate-500 h-full">
                             <div className="w-full">
                                 <button type="button" aria-label="name" className="w-full h-[3rem] bg-blue-950 rounded-full border border-blue-500 pl-[1rem] pr-[1rem] flex justify-center items-center" onClick={() => SetSearchUserFunction()}>
                                     <div className=" w-1/5 flex justify-start items-center"><SearchIcon/></div>
                                     <div className="w-4/5 flex justify-start items-center text-[0.9rem] text-slate-300">Search Users</div>
                                 </button>
                                 {
-                                FriendsList.length != 0    
+                                isLoadingFriends 
+                                    ? <div className="flex flex-col gap-2 overflow-y-auto overflow-hidden mt-[1rem]">
+                                        <SkeletonProfile /><SkeletonProfile /><SkeletonProfile />
+                                      </div>
+                                    : FriendsList.length != 0    
                                     ?<div className="flex flex-col gap-2 overflow-y-auto overflow-hidden mt-[1rem]">
                                         {FriendsList.map((user:any)=>(<FriendsSideBar ProfileImage={user.profilephoto} Name={user.name}  UniqueId={user.uniqueid} SetSelectedId={()=>SetSelectedId(user.uniqueid)} selectedId={selectedId}/>))}
                                     </div>
@@ -124,7 +135,7 @@ export function UserToUserChatDashboard() {
                             </div>
                         </div>
                     </div>
-                    <div className="flex-1 flex flex-col h-full relative">
+                    <div className={`flex-1 flex flex-col h-full relative w-full lg:w-auto lg:flex ${selectedId ? 'flex' : 'hidden'}`}>
                     {/* Header / Top Bar could go here */}
                         {/* Input Area (Your UserToUser or GroupToUser Portal) */}
                     {selectedId != null
@@ -137,7 +148,9 @@ export function UserToUserChatDashboard() {
                         </div>
                         {/* MESSAGE CONTAINER: Scrollable Area */}
                         <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 ">
-                            {MessagesData != null
+                            {isLoadingMessages
+                                ? <div className="flex flex-col gap-4 w-full"><SkeletonMessage /><SkeletonMessage isSender /><SkeletonMessage /><SkeletonMessage isSender /></div>
+                                : MessagesData != null
                                 ?MessagesData.map((msg:any, index:any) => (
                                     <div
                                         key={index}

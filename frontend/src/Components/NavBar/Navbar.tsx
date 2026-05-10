@@ -70,7 +70,7 @@ export function Navbar()
         NavigatetoPages("Features");
     }
     
-    const [dropDown , SetDropDown] = useState(true);
+    const [dropDown , SetDropDown] = useState(false);
     const [selector , SetSelector] = useState(String);
     console.log(selector);
     return <> 

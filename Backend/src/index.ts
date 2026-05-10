@@ -33,7 +33,12 @@ app.use(fileUpload({
 app.get("/" , function(req,res)
 {
     res.status(SuccessStatusCodes.Success).send("Successfully Deployed the website ! ");
-})
+});
+
+app.get("/ping" , function(req,res)
+{
+    res.status(SuccessStatusCodes.Success).send("pong");
+});
 
 app.use("/LiveLink/Users" , UserRouter);
 app.use("/LiveLink/Users/Groups" , GroupRouter);

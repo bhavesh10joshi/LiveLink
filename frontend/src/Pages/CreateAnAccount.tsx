@@ -95,7 +95,7 @@ export function CreateAccount()
                 <div className="text-slate-300 mt-[1rem] flex justify-between items-center">
                     <div className="font-bold text-[0.9rem]">Password</div>
                     {ZodError
-                        ?<div className="text-[0.7rem] font-bold text-green-700">Must be at least 10 characters with 1 letter and 1 number</div>
+                        ?<div className="text-[0.7rem] font-bold text-green-700">The password should be atleast 3 characters long</div>
                         :null
                     }
                 </div>

@@ -123,9 +123,9 @@ export function NotificationDashboard()
         }
     }
     return<>
-        <div className="w-full pt-[2rem] pl-[4rem] pr-[4rem] border border-white rounded-md mt-[1rem] ml-[2rem] mr-[2rem] mb-[1rem] overflow-hidden">
+        <div className="w-full pt-[2rem] px-[1rem] lg:pl-[4rem] lg:pr-[4rem] border border-white rounded-md mt-[1rem] lg:ml-[2rem] lg:mr-[2rem] mb-[6rem] lg:mb-[1rem] overflow-hidden flex flex-col">
             <div className="flex place-content-between">
-                <div className="font-bold text-[2rem] text-white">Notifications</div>
+                <div className="font-bold text-[1.5rem] lg:text-[2rem] text-white">Notifications</div>
             </div>
             <div className="text-green-600 text-[0.8rem] font-bold">
                 {   TotalNotifications != 0            
