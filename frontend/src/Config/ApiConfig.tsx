@@ -1,1 +1,1 @@
-export const APIurl:String = "https://livelink-5184.onrender.com/LiveLink";
+export const APIurl:String = "https://live-link-59rr.vercel.app/LiveLink";
